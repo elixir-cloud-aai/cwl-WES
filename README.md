@@ -14,9 +14,22 @@ Note that this project is a work in progress. **The release of a functional prot
 
 ## Docker
 
+### Requirements
+* Docker
+* docker-compose
+
+### Instructions
+
 Coming soon...
 
 ## Non-dockerized
+
+### Requirements
+* MongoDB
+* Python3
+* virtualenv
+
+### Instructions
 
 Clone repository
 ```bash
@@ -47,6 +60,11 @@ python setup.py develop
 Set config file environment variable
 ```bash
 export WES_CONFIG="$PWD/config.yaml"
+```
+
+Start MongoDB daemon
+```bash
+sudo service mongod start
 ```
 
 Start service

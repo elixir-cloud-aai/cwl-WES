@@ -4,7 +4,7 @@ Controllers for the workflow execution service
 """
 
 from connexion import request
-from app import app, config, mongo
+from app import config, db_runs, db_service_info
 
 
 def CancelRun(**kwargs):
