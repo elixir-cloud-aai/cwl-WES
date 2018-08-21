@@ -25,7 +25,7 @@ git clone https://github.com/elixir-europe/WES-ELIXIR.git
 
 Traverse to project directory
 ```bash
-cd WES_ELIXIR
+cd WES-ELIXIR
 ```
 
 Create and activate virtual environment
