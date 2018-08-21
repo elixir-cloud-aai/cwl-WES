@@ -1,0 +1,14 @@
+# General server settings
+server:
+  host: 'localhost'
+  port: 7777
+  debug: True
+
+# Location of API specs
+openapi:
+  path: 'openapi'
+  yaml_specs: 'ga4gh.wes.0.3.0.openapi.yaml'
+
+# Endpoint parameters
+api_endpoints:
+  default_page_size: 100

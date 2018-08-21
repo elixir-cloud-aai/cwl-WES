@@ -1,20 +1,18 @@
+from configloader import ConfigLoader
 from connexion import App
 from flask_cors import CORS
 from flask_pymongo import PyMongo
 
 
-# Set parameters
-HOST = 'localhost'
-PORT = 8888
-DEBUG = True
-OPENAPI_PATH = 'openapi'
-OPENAPI_FILE = 'ga4gh.wes.0.3.0.openapi.yaml'
+# Parse config file
+config = ConfigLoader()
+config.update_from_yaml_env('WES_CONFIG')
 
 
 # Initialize app
 app = App(
     __name__,
-    specification_dir=OPENAPI_PATH,
+    specification_dir=config['openapi']['path'],
     swagger_ui=True,
     swagger_json=True
 )
@@ -32,16 +30,16 @@ def configure_app(app):
     app.app = apply_cors(app.app)
 
     # Add OpenAPIs
-    app = add_openapis(app)
+    app = add_openapi(app)
 
     return app
 
 
 def add_settings(app):
     '''Add settings to Flask app instance'''
-    app.host = HOST
-    app.port = PORT
-    app.debug = DEBUG
+    app.host = config['server']['host']
+    app.port = config['server']['port']
+    app.debug = config['server']['debug']
 
     return(app)
 
@@ -53,11 +51,11 @@ def apply_cors(app):
     return(app)
 
 
-def add_openapis(app):
-    '''Add OpenAPI specifications to connexion app instance'''
+def add_openapi(app):
+    '''Add OpenAPI specification to connexion app instance'''
     app.add_api(
-        OPENAPI_FILE,
-        validate_responses=True,
+        config['openapi']['yaml_specs'],
+        validate_responses=True,  # FIXME: This does not seem to work
     )
 
     return(app)

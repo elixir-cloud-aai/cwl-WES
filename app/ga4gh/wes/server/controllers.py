@@ -3,9 +3,8 @@ Controllers for the workflow execution service
 
 """
 
-
 from connexion import request
-from app import app, mongo
+from app import app, config, mongo
 
 
 def CancelRun(**kwargs):
