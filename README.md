@@ -44,6 +44,11 @@ Install service
 python setup.py develop
 ```
 
+Set config file environment variable
+```bash
+export WES_CONFIG="$PWD/config.yaml"
+```
+
 Start service
 ```bash
 python app/app.py
