@@ -26,8 +26,22 @@ try:
 except KeyError:
     sys.exit("Config file corrupt. Execution aborted.")
 
-app.app.config["MONGO_URI"] = "mongodb://localhost:27017/myDatabase"
-mongo = PyMongo(app.app)
+
+# Initialize database
+try:
+    mongo = PyMongo(app.app, uri="mongodb://{host}:{port}/{name}".format(
+        host=config['database']['host'],
+        port=config['database']['port'],
+        name=config['database']['name']
+    ))
+    db = mongo.db[config['database']['name']]
+except KeyError:
+    sys.exit("Config file corrupt. Execution aborted.")
+
+
+# Add database collections
+db_service_info = mongo.db['service-info']
+db_runs = mongo.db['runs']
 
 
 def configure_app(app):
