@@ -46,4 +46,4 @@ database:
 
 # Endpoint parameters
 api_endpoints:
-    default_page_size: 100
+    default_page_size: 10

@@ -18,4 +18,8 @@ debug_params:
                 some_param_4: yet_another_thing
                 some_param_5: and_yet_another_thing
             workflow_engine_parameters:
+                some_param_1: something
+                some_param_2: something_else
+                some_param_3: another_thing
+            workflow_url: https://github.com/shinra-tensei/toilCWLTest.git
             workflow_url: https://github.com/shinra-tensei/toilCWLTest.git

@@ -69,8 +69,10 @@ service_info = ServiceInfo(db_service_info, config['service_info'], version)
 if config['server']['debug']:
     runs = Runs(
         collection=db_runs,
+        index='run_id',
         run_id_length=config['database']['run_id']['length'],
         run_id_charset=eval(config['database']['run_id']['charset']),
+        default_page_size=config['api_endpoints']['default_page_size'],
         debug=config['server']['debug'],
         dummy_request=config['debug_params']['dummy_runs']['request'],
         limit=config['debug_params']['dummy_runs']['limit']
@@ -78,8 +80,10 @@ if config['server']['debug']:
 else:
     runs = Runs(
         collection=db_runs,
+        index='run_id',
         run_id_length=config['database']['run_id']['length'],
         run_id_charset=eval(config['database']['run_id']['charset']),
+        default_page_size=config['api_endpoints']['default_page_size'],
         debug=config['server']['debug']
     )
 
