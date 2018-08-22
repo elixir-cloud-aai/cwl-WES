@@ -1,19 +1,19 @@
-from app import config, db_runs, service_info
+from app import config, db_runs, runs, service_info
 from connexion import request
 
 
 class server:
     '''Controllers for the GA4GH WES API endpoints'''
 
-    def CancelRun(self, **kwargs):
+    def CancelRun():
         return {}
 
 
-    def GetRunLog(self, **kwargs):
+    def GetRunLog():
         return {}
 
 
-    def GetRunStatus(self, **kwargs):
+    def GetRunStatus():
         return {}
 
 
@@ -24,10 +24,14 @@ class server:
         return response
 
 
-    def ListRuns(self, page_size, page_token, **kwargs):
+    def ListRuns(page_size, page_token, **kwargs):
         ''''''
         return {}
 
 
-    def RunWorkflow(self, **kwargs):
-        return {}
+    def RunWorkflow():
+        '''Execute workflow'''
+        payload_dict = dict()
+        # TODO: handle 'multipart/form-data': save files, convert rest to dictionary
+        response = runs.insert_workflow_run(payload_dict)
+        return {"run_id": response}

@@ -4,14 +4,14 @@ from services.db import PyMongoUtils
 
 class ServiceInfo:
 
-    def __init__(self, collection, config, version):
+    def __init__(self, collection, document, version):
         '''Instantiate ServiceInfo object'''
 
         # Set collection
         self.collection = collection
 
         # Set service info
-        self.service_info = config
+        self.service_info = document
 
         # Add version
         self.service_info['tags']['version'] = version

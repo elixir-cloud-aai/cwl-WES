@@ -13,7 +13,7 @@ service_info:
     supported_wes_versions:
         - 0.3.0
     workflow_type_versions:
-        cwl:
+        CWL:
             workflow_type_version:
                 - v1.0
     workflow_engine_versions:
@@ -27,6 +27,8 @@ service_info:
         some_param_1: something
         some_param_2: something_else
         some_param_3: another_thing
+        some_param_4: yet_another_thing
+        some_param_5: and_yet_another_thing
 
 # Location of OpenAPI specs
 openapi:
@@ -38,6 +40,9 @@ database:
     host: 'localhost'
     port: 27017
     name: wes-elixir-db
+    run_id:
+        length: 6
+        charset: string.ascii_uppercase + string.digits
 
 # Endpoint parameters
 api_endpoints:

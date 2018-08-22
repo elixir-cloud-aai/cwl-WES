@@ -59,7 +59,12 @@ python setup.py develop
 
 Set config file environment variable
 ```bash
-export WES_CONFIG="$PWD/config.yaml"
+export WES_CONFIG="$PWD/app/config.yaml"
+```
+
+Set debug config file environment variable (only required if `server: debug` is set to `True` in `config.yaml`):
+```bash
+export WES_CONFIG_DEBUG="$PWD/app/config_debug.yaml"
 ```
 
 Start MongoDB daemon
