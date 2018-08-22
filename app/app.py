@@ -2,8 +2,13 @@ from configloader import ConfigLoader
 from connexion import App
 from flask_cors import CORS
 from flask_pymongo import PyMongo
+from ga4gh.utils.service_info import ServiceInfo
 from pathlib import Path
 import os, sys
+
+
+# Global app parameters
+version = "0.1.0"
 
 
 # Parse config file
@@ -42,6 +47,10 @@ except KeyError:
 # Add database collections
 db_service_info = mongo.db['service-info']
 db_runs = mongo.db['runs']
+
+
+# Add service info
+service_info = ServiceInfo(db_service_info, config['service_info'], version)
 
 
 def configure_app(app):
@@ -83,7 +92,7 @@ def add_openapi(app):
     try:
         app.add_api(
             config['openapi']['yaml_specs'],
-            validate_responses=True,  # FIXME: This does not seem to work
+            validate_responses=False,  # FIXME: This does not seem to work
         )
     except KeyError:
         sys.exit("Config file corrupt. Execution aborted.")
