@@ -14,9 +14,22 @@ Note that this project is a work in progress. **The release of a functional prot
 
 ## Docker
 
+### Requirements
+* Docker
+* docker-compose
+
+### Instructions
+
 Coming soon...
 
 ## Non-dockerized
+
+### Requirements
+* MongoDB
+* Python3
+* virtualenv
+
+### Instructions
 
 Clone repository
 ```bash
@@ -25,7 +38,7 @@ git clone https://github.com/elixir-europe/WES-ELIXIR.git
 
 Traverse to project directory
 ```bash
-cd WES_ELIXIR
+cd WES-ELIXIR
 ```
 
 Create and activate virtual environment
@@ -42,6 +55,21 @@ pip install -r requirements.txt
 Install service
 ```bash
 python setup.py develop
+```
+
+Set config file environment variable
+```bash
+export WES_CONFIG="$PWD/app/config.yaml"
+```
+
+Set debug config file environment variable (only required if `server: debug` is set to `True` in `config.yaml`):
+```bash
+export WES_CONFIG_DEBUG="$PWD/app/config_debug.yaml"
+```
+
+Start MongoDB daemon
+```bash
+sudo service mongod start
 ```
 
 Start service

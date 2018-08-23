@@ -1,0 +1,24 @@
+debug_params:
+    dummy_runs:
+        limit: 20
+        request:
+            workflow_params:
+                input_1:
+                    name: input_file_1
+                    url: /path/to/input_1
+                input_2: /path/to/input_2
+                input_3: /path/to/input_3
+            workflow_type: CWL
+            workflow_type_version: v1.0
+            tags:
+                some_param_1: something
+                some_param_2: something_else
+                some_param_3: another_thing
+                some_param_4: yet_another_thing
+                some_param_5: and_yet_another_thing
+            workflow_engine_parameters:
+                some_param_1: something
+                some_param_2: something_else
+                some_param_3: another_thing
+            workflow_url: https://github.com/shinra-tensei/toilCWLTest.git
+            workflow_url: https://github.com/shinra-tensei/toilCWLTest.git
