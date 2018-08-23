@@ -1,9 +1,16 @@
 from configloader import ConfigLoader
 from connexion import App
 from flask_cors import CORS
-from flask_pymongo import PyMongo
+from flask_pymongo import ASCENDING, PyMongo
+from ga4gh.utils.runs import Runs
+from ga4gh.utils.service_info import ServiceInfo
 from pathlib import Path
 import os, sys
+import string
+
+
+# Global app parameters
+version = "0.1.0"
 
 
 # Parse config file
@@ -13,6 +20,15 @@ if 'WES_CONFIG' not in os.environ:
 if not os.path.isfile(os.environ['WES_CONFIG']):
     sys.exit("No config file found at location specified in 'WES_CONFIG': {}.\nExecution aborted.".format(os.environ['WES_CONFIG']))
 config.update_from_yaml_env('WES_CONFIG')
+
+
+# Add debug config
+if config['server']['debug']:
+    if 'WES_CONFIG_DEBUG' not in os.environ:
+        sys.exit("Environment variable 'WES_CONFIG_DEBUG' not set.\nExecution aborted.")
+    if not os.path.isfile(os.environ['WES_CONFIG_DEBUG']):
+        sys.exit("No config file found at location specified in 'WES_CONFIG_DEBUG': {}.\nExecution aborted.".format(os.environ['WES_CONFIG_DEBUG']))
+    config.update_from_yaml_env('WES_CONFIG_DEBUG')
 
 
 # Initialize app
@@ -42,6 +58,34 @@ except KeyError:
 # Add database collections
 db_service_info = mongo.db['service-info']
 db_runs = mongo.db['runs']
+db_runs.create_index([('run_id', ASCENDING)], unique=True)
+
+
+# Instantiate service info object
+service_info = ServiceInfo(db_service_info, config['service_info'], version)
+
+
+# Instantiate runs object
+if config['server']['debug']:
+    runs = Runs(
+        collection=db_runs,
+        index='run_id',
+        run_id_length=config['database']['run_id']['length'],
+        run_id_charset=eval(config['database']['run_id']['charset']),
+        default_page_size=config['api_endpoints']['default_page_size'],
+        debug=config['server']['debug'],
+        dummy_request=config['debug_params']['dummy_runs']['request'],
+        limit=config['debug_params']['dummy_runs']['limit']
+    )
+else:
+    runs = Runs(
+        collection=db_runs,
+        index='run_id',
+        run_id_length=config['database']['run_id']['length'],
+        run_id_charset=eval(config['database']['run_id']['charset']),
+        default_page_size=config['api_endpoints']['default_page_size'],
+        debug=config['server']['debug']
+    )
 
 
 def configure_app(app):
@@ -83,7 +127,7 @@ def add_openapi(app):
     try:
         app.add_api(
             config['openapi']['yaml_specs'],
-            validate_responses=True,  # FIXME: This does not seem to work
+            validate_responses=True,
         )
     except KeyError:
         sys.exit("Config file corrupt. Execution aborted.")
