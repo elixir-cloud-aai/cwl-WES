@@ -1,6 +1,5 @@
-from app import config, db_runs, runs, service_info
+from app import runs, service_info
 from connexion import request
-from ga4gh.utils.server import ServerUtils
 
 
 class server:
@@ -39,7 +38,4 @@ class server:
     def RunWorkflow():
         '''Execute workflow'''
         # TODO: Handle errors
-        payload_dict = dict()
-        # TODO: handle 'multipart/form-data': save files, convert rest to dictionary
-        #ServerUtils.parse_multipart_form_data(payload)
-        return {"run_id": runs.run_workflow(payload_dict)}
+        return {"run_id": runs.run_workflow(request.form)}

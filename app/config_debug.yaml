@@ -3,12 +3,11 @@ debug_params:
         limit: 20
         request:
             workflow_params:
-                input_1: /path/to/input_1
+                input_1:
+                    name: input_file_1
+                    url: /path/to/input_1
                 input_2: /path/to/input_2
                 input_3: /path/to/input_3
-                output_1: /path/to/output_1
-                output_2: /path/to/output_2
-                output_3: /path/to/output_3
             workflow_type: CWL
             workflow_type_version: v1.0
             tags:

@@ -1,7 +1,9 @@
 from datetime import datetime, timezone
+from json import decoder, loads
 from pymongo.errors import DuplicateKeyError
 from random import choice
 from services.db import PyMongoUtils
+from services.utils import ServerUtils
 
 
 class Runs:
@@ -26,6 +28,9 @@ class Runs:
 
         # Initialize service info object id
         self.latest_object_id = PyMongoUtils.find_id_latest(self.collection)
+
+        # Initialize workflow attachments
+        self.workflow_attachment = None
 
         # DEBUG: Save dummy workflow in database
         if self.debug:
@@ -52,6 +57,17 @@ class Runs:
 
         # Return run document
         return(document)
+
+
+    def __manage_workflow_attachments(self, form_data):
+        '''Extract workflow attachments from form data'''
+
+        # Extract workflow attachments from form data dictionary
+        self.workflow_attachment = form_data['workflow_attachment']
+        del form_data['workflow_attachment']
+
+        # Return form data stripped of workflow attachments
+        return form_data
 
 
     def __run_workflow(self, document):
@@ -114,11 +130,20 @@ class Runs:
         }
 
 
-    def run_workflow(self, request, debug=False):
+    def run_workflow(self, form_data, debug=False):
         '''Execute workflow and save info to database; returns unique run id'''
 
+        # Format request
+        if not debug:
+
+            # Convert ImmutableMultiDict to nested dictionary
+            form_data = ServerUtils.immutable_multi_dict_to_nested_dict(form_data)
+
+            # Handle workflow attachments
+            form_data = self.__manage_workflow_attachments(form_data)
+
         # Initialize run document
-        document = self.__init_run_document(request)
+        document = self.__init_run_document(form_data)
 
         # Unless a specified limit of entries is already available...
         if not debug or self.debug_limit is None or self.collection.count() < self.debug_limit:
