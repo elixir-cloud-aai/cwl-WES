@@ -57,12 +57,12 @@ Install service
 python setup.py develop
 ```
 
-Set config file environment variable
+Set config file environment variable and optionally edit config file
 ```bash
 export WES_CONFIG="$PWD/app/config.yaml"
 ```
 
-Set debug config file environment variable (only required if `server: debug` is set to `True` in `config.yaml`):
+Set debug config file environment variable and optionally edit debug config file (only required if `server: debug` is set to `True` in `config.yaml`):
 ```bash
 export WES_CONFIG_DEBUG="$PWD/app/config_debug.yaml"
 ```
@@ -77,7 +77,8 @@ Start service
 python app/app.py
 ```
 
-Visit Swagger UI for service at <http://localhost:8888/api/ga4gh/wes/v1/ui>
+Visit Swagger UI at <http://localhost:7777/ga4gh/wes/v1/ui>. If you have edited `$WES_CONFIG`, make sure host and port match the values specified in the file.
+
 
 # Q&A
 
