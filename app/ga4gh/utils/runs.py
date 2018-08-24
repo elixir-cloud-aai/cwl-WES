@@ -118,7 +118,7 @@ class Runs:
         # Query database for workflow runs
         cursor = PyMongoUtils.find_fields(self.collection, ['run_id', 'state'])
 
-        # Iterate through list 
+        # Iterate through list
         runs_list = list()
         for record in cursor:
             runs_list.append(record)
