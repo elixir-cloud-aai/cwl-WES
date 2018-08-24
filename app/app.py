@@ -62,7 +62,12 @@ db_runs.create_index([('run_id', ASCENDING)], unique=True)
 
 
 # Instantiate service info object
-service_info = ServiceInfo(db_service_info, config['service_info'], version)
+service_info = ServiceInfo(
+    collection=db_service_info,
+    runs=db_runs,
+    config=config['service_info'],
+    version=version
+)
 
 
 # Instantiate runs object

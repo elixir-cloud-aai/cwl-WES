@@ -4,14 +4,15 @@ from services.db import PyMongoUtils
 
 class ServiceInfo:
 
-    def __init__(self, collection, document, version):
+    def __init__(self, collection, runs, config, version):
         '''Instantiate ServiceInfo object'''
 
-        # Set collection
+        # Set collections
         self.collection = collection
+        self.runs = runs
 
         # Set service info
-        self.service_info = document
+        self.service_info = config
 
         # Add version
         self.service_info['tags']['version'] = version
@@ -22,9 +23,6 @@ class ServiceInfo:
         # Initialize complete service info object
         self.service_info_complete = None
 
-        # Initialize system state counts
-        self.__init_system_state_counts()
-
         # Set service info
         self.__set_service_info()
 
@@ -34,7 +32,7 @@ class ServiceInfo:
 
         # Set all state counts to zero
         # TODO: Get states programmatically
-        self.system_state_counts = {
+        return {
             "UNKNOWN": 0,
             "QUEUED": 0,
             "INITIALIZING": 0,
@@ -51,8 +49,20 @@ class ServiceInfo:
         '''Get current system state counts'''
         # TODO: Get state counts from database
 
+        # Iterate through list
+        current_counts = self.__init_system_state_counts()
+
+        # Query database for workflow run states
+        cursor = PyMongoUtils.find_fields(self.runs, ['state'])
+
+        # Iterate over states
+        for record in cursor:
+
+            # Increase counter for state of current record
+            current_counts[record['state']] += 1
+
         # Return counts
-        return(self.system_state_counts)
+        return(current_counts)
 
     def __set_service_info(self):
         '''Set service info'''
