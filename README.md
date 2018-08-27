@@ -52,6 +52,41 @@ Install required packages
 pip install -r requirements.txt
 ```
 
+Install additionally cwl-tes
+
+Clone the cwl-tes repo
+```bash
+git clone https://github.com/common-workflow-language/cwl-tes.git
+```
+
+Go to the cloned project directory
+```bash
+cd cwl-tes
+```
+
+Comment the lines 213 to 220 of the cwl_tes/tes.py file (see below)
+```bash
+#output_parameters.append(
+#    tes.Output(
+#        name="workdir",
+#        url=self.output2url(""),
+#        path=self.docker_workdir,
+#        type="DIRECTORY"
+#    )
+#)
+```
+
+Install cwl-tes
+```bash
+python setup.py install
+```
+
+Now that you installed the customized version of cwl-tes return to the WES-ELIXIR repository
+```bash
+cd ../
+```
+
+
 Install service
 ```bash
 python setup.py develop
