@@ -76,8 +76,6 @@ class Runs:
 
         cwl_path = "tests/cwl/echo-job.yml"
 
-        cwl_path = "https://github.com/elixir-europe/WES-ELIXIR/blob/cwl_tes_integration/tests/cwl/echo-job.yml"
-
         test_command = "cwl-tes --tes https://tes-dev.tsi.ebi.ac.uk/ " + cwl_path + " --message \"Hello from Basel !!!\""
 
         command_args = shlex.split(test_command)
