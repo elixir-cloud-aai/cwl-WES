@@ -4,7 +4,7 @@ from pymongo.errors import DuplicateKeyError
 from random import choice
 from services.db import PyMongoUtils
 from services.utils import ServerUtils
-
+import shlex, subprocess, os
 
 class Runs:
 
@@ -73,7 +73,18 @@ class Runs:
     def __run_workflow(self, document):
         '''Helper function for `run_workflow()`'''
         # TODO: implement logic & run in background
-        pass
+
+        cwl_path = "tests/cwl/echo-job.yml"
+
+        cwl_path = "https://github.com/elixir-europe/WES-ELIXIR/blob/cwl_tes_integration/tests/cwl/echo-job.yml"
+
+        test_command = "cwl-tes --tes https://tes-dev.tsi.ebi.ac.uk/ " + cwl_path + " --message \"Hello from Basel !!!\""
+
+        command_args = shlex.split(test_command)
+
+        subprocess.run(command_args)
+
+        return
 
 
     def __cancel_run(self, run_id):
@@ -141,6 +152,7 @@ class Runs:
 
             # Handle workflow attachments
             form_data = self.__manage_workflow_attachments(form_data)
+
 
         # Initialize run document
         document = self.__init_run_document(form_data)
