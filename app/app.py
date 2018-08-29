@@ -78,6 +78,7 @@ if config['server']['debug']:
         run_id_length=config['database']['run_id']['length'],
         run_id_charset=eval(config['database']['run_id']['charset']),
         default_page_size=config['api_endpoints']['default_page_size'],
+        url=config['tes']['url'],
         debug=config['server']['debug'],
         dummy_request=config['debug_params']['dummy_runs']['request'],
         limit=config['debug_params']['dummy_runs']['limit']
@@ -89,6 +90,7 @@ else:
         run_id_length=config['database']['run_id']['length'],
         run_id_charset=eval(config['database']['run_id']['charset']),
         default_page_size=config['api_endpoints']['default_page_size'],
+        url=config['tes']['url'],
         debug=config['server']['debug']
     )
 

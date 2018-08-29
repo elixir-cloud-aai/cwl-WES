@@ -8,7 +8,7 @@ import shlex, subprocess, os
 
 class Runs:
 
-    def __init__(self, collection, index, run_id_length, run_id_charset, default_page_size, debug=False, dummy_request=None, limit=None):
+    def __init__(self, collection, index, run_id_length, run_id_charset, default_page_size, url, debug=False, dummy_request=None, limit=None):
         '''Instantiate ServiceInfo object'''
 
         # Set run mode and debug params
@@ -25,6 +25,9 @@ class Runs:
 
         # Set default page size for run collection list
         self.default_page_size = default_page_size
+
+        # Set the TES url
+        self.url = url
 
         # Initialize service info object id
         self.latest_object_id = PyMongoUtils.find_id_latest(self.collection)
@@ -76,7 +79,7 @@ class Runs:
 
         cwl_path = "tests/cwl/echo-job.yml"
 
-        test_command = "cwl-tes --tes https://tes-dev.tsi.ebi.ac.uk/ " + cwl_path + " --message \"Hello from Basel !!!\""
+        test_command = "cwl-tes --tes " + self.url + " " + cwl_path + " --message \"Hello, from Basel !!!\""
 
         command_args = shlex.split(test_command)
 
@@ -164,6 +167,7 @@ class Runs:
 
                     # Create unique run id and add to document
                     document['run_id'] = self.__create_run_id()
+                    # add this here: ['service_info']['tags']['known_tes_endpoints'][0]
 
                     # Try to insert
                     self.latest_object_id = self.collection.insert(document)

@@ -47,3 +47,7 @@ database:
 # Endpoint parameters
 api_endpoints:
     default_page_size: 10
+
+# TES server
+tes:
+    url: https://tes-dev.tsi.ebi.ac.uk/
