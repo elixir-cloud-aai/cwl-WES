@@ -10,6 +10,7 @@ from ga4gh.utils.runs import Runs
 from ga4gh.utils.service_info import ServiceInfo
 from services.error_handling import error_handlers as eh
 from services.error_handling.custom_errors import BadRequest, InternalServerError, WorkflowNotFound
+from services.tasks import make_celery
 
 
 # Global app parameters
@@ -113,6 +114,25 @@ else:
     )
 
 
+# Add task queue
+celery = make_celery(
+    app=app.app,
+    result_backend=config['celery']['result_backend'],
+    broker_url=config['celery']['broker_url']
+)
+
+
+#@celery.task
+#def test_func():
+#    print("STARTED")
+#    import time
+#    time.sleep(5)
+#    print("FINISHED")
+#    return None
+#result = test_func.delay()
+#result.wait()
+
+
 def configure_app(app):
     '''Configure app'''
 
@@ -129,7 +149,7 @@ def configure_app(app):
 
 
 def add_settings(app):
-    '''Add settings to Flask app instance'''
+    '''Add settings to connexion app instance'''
     try:
         app.host = config['server']['host']
         app.port = config['server']['port']

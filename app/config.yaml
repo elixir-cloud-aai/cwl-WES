@@ -44,6 +44,11 @@ database:
         length: 6
         charset: string.ascii_uppercase + string.digits
 
+# Celery task queuer
+celery:
+    result_backend: rpc://
+    broker_url: pyamqp://localhost:5672//
+
 # Endpoint parameters
 api_endpoints:
     default_page_size: 10

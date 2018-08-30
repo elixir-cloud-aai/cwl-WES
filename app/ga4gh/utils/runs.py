@@ -113,10 +113,10 @@ class Runs:
         if 'workflow_attachment' in form_data:
 
             # TODO: do something with form_data['workflow_attachment']
-    
+
             # Strip workflow attachments from form data
             del form_data['workflow_attachment']
-    
+
         # Return form data stripped of workflow attachments
         return form_data
 
@@ -142,7 +142,7 @@ class Runs:
         # Raise error if workflow run was not found
         if state is None:
             raise WorkflowNotFound
-        
+
         # Cancel workflow run
         run_id = self.__cancel_run(run_id)
 
@@ -173,7 +173,7 @@ class Runs:
         # Raise error if workflow run was not found
         if state is None:
             raise WorkflowNotFound
-        
+
         # Return response
         return {
             "run_id": run_id,
