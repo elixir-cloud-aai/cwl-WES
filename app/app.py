@@ -1,12 +1,15 @@
-from configloader import ConfigLoader
+import configloader
+import flask_cors
+import flask_pymongo
+import os
+import string
+import sys
 from connexion import App
-from flask_cors import CORS
-from flask_pymongo import ASCENDING, PyMongo
+from connexion.exceptions import ExtraParameterProblem, Forbidden, Unauthorized
 from ga4gh.utils.runs import Runs
 from ga4gh.utils.service_info import ServiceInfo
-from pathlib import Path
-import os, sys
-import string
+from services.error_handling import error_handlers as eh
+from services.error_handling.custom_errors import BadRequest, InternalServerError, WorkflowNotFound
 
 
 # Global app parameters
@@ -14,7 +17,7 @@ version = "0.2.0"
 
 
 # Parse config file
-config = ConfigLoader()
+config = configloader.ConfigLoader()
 if 'WES_CONFIG' not in os.environ:
     sys.exit("Environment variable 'WES_CONFIG' not set.\nExecution aborted.")
 if not os.path.isfile(os.environ['WES_CONFIG']):
@@ -37,15 +40,32 @@ try:
         __name__,
         specification_dir=config['openapi']['path'],
         swagger_ui=True,
-        swagger_json=True
+        swagger_json=True,
     )
 except KeyError:
     sys.exit("Config file corrupt. Execution aborted.")
 
 
+# Add error handlers
+app.add_error_handler(ExtraParameterProblem, eh.handle_bad_request)
+app.add_error_handler(BadRequest, eh.handle_bad_request)
+app.add_error_handler(Unauthorized, eh.handle_unauthorized)
+app.add_error_handler(Forbidden, eh.handle_forbidden)
+app.add_error_handler(WorkflowNotFound, eh.handle_workflow_not_found)
+app.add_error_handler(InternalServerError, eh.handle_internal_server_error)
+# Workaround for adding a custom handler for `connexion.problem` responses
+# Responses from request and paramater validators are not raised and cannot be intercepted by `add_error_handler`
+# See here: https://github.com/zalando/connexion/issues/138
+@app.app.after_request
+def rewrite_bad_request(response):
+    if response.status_code == 400 and response.data.decode('utf-8').find('"title":') != None:
+        response = eh.handle_bad_request(400)
+    return response
+
+
 # Initialize database
 try:
-    mongo = PyMongo(app.app, uri="mongodb://{host}:{port}/{name}".format(
+    mongo = flask_pymongo.PyMongo(app.app, uri="mongodb://{host}:{port}/{name}".format(
         host=config['database']['host'],
         port=config['database']['port'],
         name=config['database']['name']
@@ -58,7 +78,7 @@ except KeyError:
 # Add database collections
 db_service_info = mongo.db['service-info']
 db_runs = mongo.db['runs']
-db_runs.create_index([('run_id', ASCENDING)], unique=True)
+db_runs.create_index([('run_id', flask_pymongo.ASCENDING)], unique=True)
 
 
 # Instantiate service info object
@@ -122,7 +142,7 @@ def add_settings(app):
 
 def apply_cors(app):
     '''Apply cross-origin resource sharing to Flask app instance'''
-    CORS(app)
+    flask_cors.CORS(app)
 
     return(app)
 
@@ -132,6 +152,8 @@ def add_openapi(app):
     try:
         app.add_api(
             config['openapi']['yaml_specs'],
+            base_path="/ga4gh/wes/v1",
+            strict_validation=True,
             validate_responses=True,
         )
     except KeyError:
