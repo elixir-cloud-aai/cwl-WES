@@ -23,7 +23,7 @@ class server:
         return runs.get_run_status(run_id)
 
 
-    def GetServiceInfo(run_id):
+    def GetServiceInfo():
         '''Return service info'''
         # TODO: Handle errors
         return service_info.get_service_info()
