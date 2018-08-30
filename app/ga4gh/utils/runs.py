@@ -62,6 +62,12 @@ class Runs:
         return(document)
 
 
+    def __check_service_info_compatibility(self, form_data):
+        '''Check compatibility with service info; raise bad request error'''
+        #TODO implement me
+        pass
+
+
     def __manage_workflow_attachments(self, form_data):
         '''Extract workflow attachments from form data'''
 
@@ -73,15 +79,18 @@ class Runs:
         return form_data
 
 
-    def __run_workflow(self, document):
+    def __run_workflow(self, form_data):
         '''Helper function for `run_workflow()`'''
-        # TODO: implement logic & run in background
+        # TODO: run in background
 
-        cwl_path = "tests/cwl/echo-job.yml"
-
-        test_command = "cwl-tes --tes " + self.url + " " + cwl_path + " --message \"Hello, from Basel !!!\""
-
-        command_args = shlex.split(test_command)
+        command = " ".join([
+            "cwl-tes",
+            "--tes",
+            self.url,
+            form_data['workflow_url'],
+            form_data['workflow_params']
+        ])
+        command_args = shlex.split(command)
 
         subprocess.run(command_args)
 
@@ -151,9 +160,12 @@ class Runs:
             # Convert ImmutableMultiDict to nested dictionary
             form_data = ServerUtils.immutable_multi_dict_to_nested_dict(form_data)
 
+            # check compatibility with service info
+            # TODO: implement me
+            self.__check_service_info_compatibility(form_data)
+
             # Handle workflow attachments
             form_data = self.__manage_workflow_attachments(form_data)
-
 
         # Initialize run document
         document = self.__init_run_document(form_data)
@@ -172,16 +184,16 @@ class Runs:
                     # Try to insert
                     self.latest_object_id = self.collection.insert(document)
 
-                    # Execute workflow (unless debug)
-                    # TODO: run in background
-                    if not debug:
-                        self.__run_workflow(document)
-
-                    # Return run id
-                    return document['run_id']
+                    break
 
                 except DuplicateKeyError:
                     continue
+
+            # TODO: run in background
+            self.__run_workflow(form_data)
+
+            # Return run id
+            return document['run_id']
 
         # Else return None
         return None
