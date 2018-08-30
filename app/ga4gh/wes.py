@@ -23,16 +23,16 @@ class server:
         return runs.get_run_status(run_id)
 
 
-    def GetServiceInfo():
+    def GetServiceInfo(run_id):
         '''Return service info'''
         # TODO: Handle errors
         return service_info.get_service_info()
 
 
-    def ListRuns(page_size, page_token):
+    def ListRuns(**kwargs):
         '''List ids and status of all workflow runs'''
         # TODO: Handle errors
-        return runs.list_runs(page_size)
+        return runs.list_runs(**kwargs)
 
 
     def RunWorkflow():

@@ -2,7 +2,7 @@
 ### AUTOMATIC ADDITIONS ###
 ###########################
 
-# Created by https://www.gitignore.io/api/vim,linux,emacs,python
+# Created by https://www.gitignore.io/api/vim,linux,emacs,python,visualstudiocode
 
 ### Emacs ###
 # -*- mode: gitignore; -*-
@@ -203,12 +203,19 @@ tags
 # Persistent undo
 [._]*.un~
 
+### VisualStudioCode ###
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
 
-# End of https://www.gitignore.io/api/vim,linux,emacs,python
 
+# End of https://www.gitignore.io/api/vim,linux,emacs,python,visualstudiocode
 
 ########################
 ### Custom additions ###
 ########################
 
 # Add any custom additions below
+.vscode/
