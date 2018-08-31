@@ -51,3 +51,7 @@ api_endpoints:
 # TES server
 tes:
     url: https://tes-dev.tsi.ebi.ac.uk/
+
+# Temporary directories
+tmp:
+    TPMDIR: "tmp"

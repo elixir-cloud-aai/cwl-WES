@@ -1,5 +1,5 @@
 from datetime import datetime, timezone
-from json import decoder, loads
+from json import decoder, loads, dump
 from pymongo.errors import DuplicateKeyError
 from random import choice
 from services.db import PyMongoUtils
@@ -9,7 +9,7 @@ import shlex, subprocess, os
 
 class Runs:
 
-    def __init__(self, collection, index, run_id_length, run_id_charset, default_page_size, url, debug=False, dummy_request=None, limit=None):
+    def __init__(self, collection, index, run_id_length, run_id_charset, default_page_size, tmp_dir, url, debug=False, dummy_request=None, limit=None):
         '''Instantiate ServiceInfo object'''
 
         # Set run mode and debug params
@@ -26,6 +26,9 @@ class Runs:
 
         # Set default page size for run collection list
         self.default_page_size = default_page_size
+
+        # Set the tmp directory
+        self.tmp_dir = tmp_dir
 
         # Set the TES url
         self.url = url
@@ -94,6 +97,7 @@ class Runs:
         required = {'workflow_params', 'workflow_type', 'workflow_type_version', 'workflow_url'}
         type_str = dict((key, form_data[key]) for key in ['workflow_type', 'workflow_type_version', 'workflow_url'] if key in form_data)
         type_dict = dict((key, form_data[key]) for key in ['workflow_params', 'workflow_engine_parameters', 'tags'] if key in form_data)
+
         # TODO: implement type casting/checking for workflow attachment
 
         # Raise error if any required params are missing
@@ -130,16 +134,22 @@ class Runs:
         return form_data
 
 
-    def __run_workflow(self, form_data):
+    def __run_workflow(self, form_data, run_id):
         '''Helper function for `run_workflow()`'''
         # TODO: run in background
+
+        workflow_params_json = \
+            os.path.join(self.tmp_dir, run_id + ".workflow_params.json")
+
+        with open(workflow_params_json, 'w') as f:
+            dump(form_data["workflow_params"], f, ensure_ascii=False)
 
         command = " ".join([
             "cwl-tes",
             "--tes",
             self.url,
             form_data['workflow_url'],
-            form_data['workflow_params']
+            workflow_params_json
         ])
         command_args = shlex.split(command)
 
@@ -268,7 +278,7 @@ class Runs:
                     continue
 
             # TODO: run in background
-            self.__run_workflow(form_data)
+            self.__run_workflow(form_data, document['run_id'])
 
             # Return run id
             return document['run_id']

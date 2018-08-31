@@ -2,12 +2,8 @@ debug_params:
     dummy_runs:
         limit: 5
         request:
-            workflow_params: tests/cwl/tools/echo-job.yml
-                # input_1:
-                #     name: input_file_1
-                #     url: /path/to/input_1
-                # input_2: /path/to/input_2
-                # input_3: /path/to/input_3
+            workflow_params:
+                message: Hello, from Basel
             workflow_type: CWL
             workflow_type_version: v1.0
             tags:
