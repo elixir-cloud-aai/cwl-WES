@@ -16,7 +16,10 @@ class PyMongoUtils:
 
     def find_one_field_by_index(collection, index, value, select):
         '''Returns single field from single object by index field value, stripped of object id, or None if object not found'''
-        return collection.find_one({index: value}, {select: True, '_id': False})[select]
+        result = collection.find_one({index: value}, {select: True, '_id': False})
+        if result is not None and select in result:
+            result = result[select]
+        return 
 
 
     def find_fields(collection, projection):

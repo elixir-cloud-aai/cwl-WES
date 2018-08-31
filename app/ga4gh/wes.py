@@ -29,10 +29,10 @@ class server:
         return service_info.get_service_info()
 
 
-    def ListRuns(page_size, page_token):
+    def ListRuns(**kwargs):
         '''List ids and status of all workflow runs'''
         # TODO: Handle errors
-        return runs.list_runs(page_size)
+        return runs.list_runs(**kwargs)
 
 
     def RunWorkflow():
