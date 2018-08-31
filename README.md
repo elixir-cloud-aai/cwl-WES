@@ -28,6 +28,7 @@ Coming soon...
 * MongoDB
 * Python3
 * virtualenv
+* curl
 
 ### Instructions
 
@@ -50,6 +51,40 @@ source venv/bin/activate
 Install required packages
 ```bash
 pip install -r requirements.txt
+```
+
+Install additionally cwl-tes
+
+Clone the cwl-tes repo
+```bash
+git clone https://github.com/common-workflow-language/cwl-tes.git
+```
+
+Checkout a specific version
+```bash
+cd cwl-tes
+git checkout e94d2162b6f7c86bdb7a7c90b3362d6a5163200b
+```
+
+Apply patches
+```bash
+cd ../patches
+./apply_patches.sh
+```
+
+Go to the cloned cwl-tes directory
+```bash
+cd ../cwl-tes
+```
+
+Install cwl-tes
+```bash
+python setup.py install
+```
+
+Now that you installed cwl-tes return to the WES-ELIXIR repository
+```bash
+cd ../
 ```
 
 Install service
@@ -88,9 +123,9 @@ Coming soon...
 
 **Join us at the [2018 BioHackathon in Paris](https://bh2018paris.info/), organized by [ELIXIR Europe](https://www.elixir-europe.org/) (November 12-16)!** Check out our [project description](https://github.com/elixir-europe/BioHackathon/tree/master/tools/Development%20of%20a%20GA4GH-compliant%2C%20language-agnostic%20workflow%20execution%20service).
 
-This project is a community effort and lives off your contributions, be it in the form of bug 
-reports, feature requests, discussions, or fixes and other code changes. Please read [these 
-guidelines](CONTRIBUTING.md) if you want to contribute. And please mind the [code of 
+This project is a community effort and lives off your contributions, be it in the form of bug
+reports, feature requests, discussions, or fixes and other code changes. Please read [these
+guidelines](CONTRIBUTING.md) if you want to contribute. And please mind the [code of
 conduct](CODE_OF_CONDUCT.md) for all interactions with the community.
 
 # Versioning
@@ -103,11 +138,11 @@ This project is covered by the [Apache License 2.0](https://www.apache.org/licen
 
 # Contact
 
-The project is a collaborative effort under the umbrella of [ELIXIR 
+The project is a collaborative effort under the umbrella of [ELIXIR
 Europe](https://www.elixir-europe.org/).
 
-Please contact the [project leader](mailto:alexander.kanitz@sib.swiss) for inquiries, 
-proposals, questions etc. that are not covered by the [Q&A](#Q&A) and [Contributing](#Contributing) 
+Please contact the [project leader](mailto:alexander.kanitz@sib.swiss) for inquiries,
+proposals, questions etc. that are not covered by the [Q&A](#Q&A) and [Contributing](#Contributing)
 sections.
 
 # References

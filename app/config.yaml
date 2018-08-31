@@ -24,7 +24,7 @@ service_info:
         - type: int
           default_value: "5"
     tags:
-        some_param_1: something
+        known_tes_endpoints: ["https://tes-dev.tsi.ebi.ac.uk/"]
         some_param_2: something_else
         some_param_3: another_thing
         some_param_4: yet_another_thing
@@ -47,3 +47,7 @@ database:
 # Endpoint parameters
 api_endpoints:
     default_page_size: 10
+
+# TES server
+tes:
+    url: https://tes-dev.tsi.ebi.ac.uk/

@@ -5,11 +5,11 @@ from random import choice
 from services.db import PyMongoUtils
 from services.error_handling.custom_errors import BadRequest, WorkflowNotFound
 from services.utils import ServerUtils
-
+import shlex, subprocess, os
 
 class Runs:
 
-    def __init__(self, collection, index, run_id_length, run_id_charset, default_page_size, debug=False, dummy_request=None, limit=None):
+    def __init__(self, collection, index, run_id_length, run_id_charset, default_page_size, url, debug=False, dummy_request=None, limit=None):
         '''Instantiate ServiceInfo object'''
 
         # Set run mode and debug params
@@ -26,6 +26,9 @@ class Runs:
 
         # Set default page size for run collection list
         self.default_page_size = default_page_size
+
+        # Set the TES url
+        self.url = url
 
         # Initialize service info object id
         self.latest_object_id = PyMongoUtils.find_id_latest(self.collection)
@@ -82,9 +85,9 @@ class Runs:
         #   required: False
         # workflow_url:
         #   type: str
-        #   required: True 
+        #   required: True
         # workflow_attachment:
-        #   type: 
+        #   type:
         #   required: False
 
         # Set required parameters
@@ -106,6 +109,12 @@ class Runs:
             raise BadRequest()
 
 
+    def __check_service_info_compatibility(self, form_data):
+        '''Check compatibility with service info; raise bad request error'''
+        #TODO implement me
+        pass
+
+
     def __manage_workflow_attachments(self, form_data):
         '''Extract workflow attachments from form data'''
 
@@ -113,18 +122,30 @@ class Runs:
         if 'workflow_attachment' in form_data:
 
             # TODO: do something with form_data['workflow_attachment']
-    
+
             # Strip workflow attachments from form data
             del form_data['workflow_attachment']
-    
+
         # Return form data stripped of workflow attachments
         return form_data
 
 
-    def __run_workflow(self, document):
+    def __run_workflow(self, form_data):
         '''Helper function for `run_workflow()`'''
-        # TODO: implement logic & run in background
-        pass
+        # TODO: run in background
+
+        command = " ".join([
+            "cwl-tes",
+            "--tes",
+            self.url,
+            form_data['workflow_url'],
+            form_data['workflow_params']
+        ])
+        command_args = shlex.split(command)
+
+        subprocess.run(command_args)
+
+        return
 
 
     def __cancel_run(self, run_id):
@@ -136,13 +157,13 @@ class Runs:
     def cancel_run(self, run_id):
         '''Cancel running workflow'''
 
-        # Get workflow run state        
+        # Get workflow run state
         state = PyMongoUtils.find_one_field_by_index(self.collection, self.index, run_id, 'state')
 
         # Raise error if workflow run was not found
         if state is None:
             raise WorkflowNotFound
-        
+
         # Cancel workflow run
         run_id = self.__cancel_run(run_id)
 
@@ -167,13 +188,13 @@ class Runs:
     def get_run_status(self, run_id):
         '''Get status information for specific run'''
 
-        # Get workflow run state        
+        # Get workflow run state
         state = PyMongoUtils.find_one_field_by_index(self.collection, self.index, run_id, 'state')
 
         # Raise error if workflow run was not found
         if state is None:
             raise WorkflowNotFound
-        
+
         # Return response
         return {
             "run_id": run_id,
@@ -217,6 +238,10 @@ class Runs:
             # Validate workflow run request
             self.__validate_run_request(form_data)
 
+            # Check compatibility with service info
+            # TODO: implement me
+            self.__check_service_info_compatibility(form_data)
+
             # Handle workflow attachments
             form_data = self.__manage_workflow_attachments(form_data)
 
@@ -232,20 +257,21 @@ class Runs:
 
                     # Create unique run id and add to document
                     document['run_id'] = self.__create_run_id()
+                    # add this here: ['service_info']['tags']['known_tes_endpoints'][0]
 
                     # Try to insert
                     self.latest_object_id = self.collection.insert(document)
 
-                    # Execute workflow (unless debug)
-                    # TODO: run in background
-                    if not debug:
-                        self.__run_workflow(document)
-
-                    # Return run id
-                    return document['run_id']
+                    break
 
                 except DuplicateKeyError:
                     continue
+
+            # TODO: run in background
+            self.__run_workflow(form_data)
+
+            # Return run id
+            return document['run_id']
 
         # Else return None
         return None
