@@ -27,6 +27,7 @@ Coming soon...
 ### Requirements
 * MongoDB
 * Python3
+* RabbitMQ
 * virtualenv
 
 ### Instructions
@@ -59,12 +60,7 @@ python setup.py develop
 
 Set config file environment variable and optionally edit config file
 ```bash
-export WES_CONFIG="$PWD/app/config.yaml"
-```
-
-Set debug config file environment variable and optionally edit debug config file (only required if `server: debug` is set to `True` in `config.yaml`):
-```bash
-export WES_CONFIG_DEBUG="$PWD/app/config_debug.yaml"
+export WES_CONFIG="$PWD/wes_elixir/config.yaml"
 ```
 
 Start MongoDB daemon
@@ -74,7 +70,7 @@ sudo service mongod start
 
 Start service
 ```bash
-python app/app.py
+python wes_elixir/app.py
 ```
 
 Visit Swagger UI at <http://localhost:7777/ga4gh/wes/v1/ui>. If you have edited `$WES_CONFIG`, make sure host and port match the values specified in the file.
