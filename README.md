@@ -62,12 +62,13 @@ git clone https://github.com/common-workflow-language/cwl-tes.git
 
 Checkout a specific version
 ```bash
+cd cwl-tes
 git checkout e94d2162b6f7c86bdb7a7c90b3362d6a5163200b
 ```
 
 Apply patches
 ```bash
-cd patches
+cd ../patches
 ./apply_patches.sh
 ```
 
