@@ -63,7 +63,7 @@ class Runs:
         return(document)
 
 
-      def __validate_run_request(self, form_data):
+    def __validate_run_request(self, form_data):
         '''Validate presence and types of workflow run request form data; sets defaults for optional'''
 
         # The form data is not validated properly because all types except 'workflow_attachment' are string and none are labeled as required
@@ -85,9 +85,9 @@ class Runs:
         #   required: False
         # workflow_url:
         #   type: str
-        #   required: True 
+        #   required: True
         # workflow_attachment:
-        #   type: 
+        #   type:
         #   required: False
 
         # Set required parameters
@@ -122,10 +122,10 @@ class Runs:
         if 'workflow_attachment' in form_data:
 
             # TODO: do something with form_data['workflow_attachment']
-    
+
             # Strip workflow attachments from form data
             del form_data['workflow_attachment']
-    
+
         # Return form data stripped of workflow attachments
         return form_data
 
@@ -157,13 +157,13 @@ class Runs:
     def cancel_run(self, run_id):
         '''Cancel running workflow'''
 
-        # Get workflow run state        
+        # Get workflow run state
         state = PyMongoUtils.find_one_field_by_index(self.collection, self.index, run_id, 'state')
 
         # Raise error if workflow run was not found
         if state is None:
             raise WorkflowNotFound
-        
+
         # Cancel workflow run
         run_id = self.__cancel_run(run_id)
 
@@ -188,13 +188,13 @@ class Runs:
     def get_run_status(self, run_id):
         '''Get status information for specific run'''
 
-        # Get workflow run state        
+        # Get workflow run state
         state = PyMongoUtils.find_one_field_by_index(self.collection, self.index, run_id, 'state')
 
         # Raise error if workflow run was not found
         if state is None:
             raise WorkflowNotFound
-        
+
         # Return response
         return {
             "run_id": run_id,
@@ -237,7 +237,7 @@ class Runs:
 
             # Validate workflow run request
             self.__validate_run_request(form_data)
-            
+
             # Check compatibility with service info
             # TODO: implement me
             self.__check_service_info_compatibility(form_data)
