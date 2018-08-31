@@ -1,14 +1,14 @@
 from celery import Celery
 
 
-def make_celery(app, result_backend, broker_url):
+def register_celery(app):
     '''Instantiate Celery object and overwrite Task class'''
 
     # Instantiate Celery object with backend and broker paths
     celery = Celery(
         app.import_name,
-        backend=result_backend,
-        broker=broker_url
+        backend=app.config['celery']['result_backend'],
+        broker=app.config['celery']['broker_url']
     )
 
     # Update Celery config from Flask app config
