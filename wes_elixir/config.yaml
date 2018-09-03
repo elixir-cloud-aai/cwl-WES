@@ -17,7 +17,7 @@ database:
 
 # Storage
 storage:
-    tmp_dir: 'tmp'
+    tmp_dir: 'tests/tmp'
 
 # Celery task queuer
 celery:
@@ -50,7 +50,7 @@ service_info:
         - type: string
           default_value: "something_new"
     tags:
-        known_tes_endpoints: ["https://tes-dev.tsi.ebi.ac.uk/"]
+        known_tes_endpoints: "https://tes-dev.tsi.ebi.ac.uk/"
         wes_elixir_version: 0.2.0
         some_param_3: another_thing
         some_param_4: yet_another_thing

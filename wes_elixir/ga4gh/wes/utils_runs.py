@@ -132,6 +132,7 @@ def __run_workflow(form_data, run_dir):
     ]
 
     # Execute command
+    import subprocess
     subprocess.run(command)
 
     # TODO: Return status
@@ -147,7 +148,7 @@ def __cancel_run(run_id):
 def cancel_run(run_id):
     '''Cancel running workflow'''
 
-    # Get workflow run state        
+    # Get workflow run state
     state = db.find_one_field_by_index(db_runs, index_field, run_id, 'state')
 
     # Raise error if workflow run was not found
@@ -242,7 +243,7 @@ def run_workflow(form_data):
         try:
             # TODO: Think about permissions
             # TODO: Add this to document
-            run_dir = os.path.join(cnx_app.app.config['storage']['tmp_dir'], document['run_id']))
+            run_dir = os.path.join(cnx_app.app.config['storage']['tmp_dir'], document['run_id'])
             os.mkdir(run_dir)
 
         # Try new run id if directory already exists
