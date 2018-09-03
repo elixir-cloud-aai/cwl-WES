@@ -1,5 +1,6 @@
 import os
 import string
+import subprocess
 
 from json import dump
 from pymongo.errors import DuplicateKeyError
@@ -8,7 +9,7 @@ from random import choice
 import wes_elixir.services.db as db
 
 from wes_elixir.services.errors import BadRequest, WorkflowNotFound
-from wes_elixir.app import cnx_app, db_runs, db_service_info
+from wes_elixir.app import celery, cnx_app, db_runs, db_service_info
 from wes_elixir.ga4gh.wes.utils_misc import immutable_multi_dict_to_nested_dict
 
 
@@ -123,6 +124,20 @@ def __run_workflow(form_data, run_dir):
         dump(form_data["workflow_params"], f, ensure_ascii=False)
 
     # Build command
+    __execute_bg_task.delay(
+        tes_server=cnx_app.app.config['tes']['url'],
+        cwl=form_data['workflow_url'],
+        params=workflow_params_json
+    )
+
+    # TODO: Return status
+    return
+
+
+@celery.task
+def __execute_bg_task(tes_server, cwl, params):
+
+    # Build command
     command = [
         "cwl-tes",
         "--tes",
@@ -132,11 +147,7 @@ def __run_workflow(form_data, run_dir):
     ]
 
     # Execute command
-    import subprocess
     subprocess.run(command)
-
-    # TODO: Return status
-    return
 
 
 def __cancel_run(run_id):
@@ -243,6 +254,7 @@ def run_workflow(form_data):
         try:
             # TODO: Think about permissions
             # TODO: Add this to document
+            # TODO: Add working directory (currently one has to run the app from the outermost dir)
             run_dir = os.path.join(cnx_app.app.config['storage']['tmp_dir'], document['run_id'])
             os.mkdir(run_dir)
 
@@ -259,7 +271,7 @@ def run_workflow(form_data):
 
             # And try to remove run directory created previously
             try:
-                rmdir(run_dir)
+                os.rmdir(run_dir)
             except OSError:
                 # TODO: Log warning (run directory that was just created is not empty anymore; or 
                 # other error)
