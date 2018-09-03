@@ -1,5 +1,7 @@
+import os
 import string
 
+from json import dump
 from pymongo.errors import DuplicateKeyError
 from random import choice
 
@@ -12,8 +14,8 @@ from wes_elixir.ga4gh.wes.utils_misc import immutable_multi_dict_to_nested_dict
 
 # SET PARAMETERS
 index_field = 'run_id'
-        
-        
+
+
 def __create_run_id():
     '''Create random run id'''
 
@@ -88,6 +90,12 @@ def __validate_run_request(form_data):
         raise BadRequest()
 
 
+def __check_service_info_compatibility(form_data):
+    '''Check compatibility with service info; raise bad request error'''
+    #TODO implement me
+    pass
+
+
 def __manage_workflow_attachments(form_data):
     '''Extract workflow attachments from form data'''
 
@@ -103,10 +111,31 @@ def __manage_workflow_attachments(form_data):
     return form_data
 
 
-def __run_workflow(document):
+def __run_workflow(form_data, run_dir):
     '''Helper function for `run_workflow()`'''
-    # TODO: implement logic & run in background
-    pass
+    # TODO: run in background
+
+    # Create workflow parameter file
+    # TODO Think about permissions
+    # TODO: Catch errors
+    workflow_params_json = os.path.join(run_dir, "workflow_params.json")
+    with open(workflow_params_json, 'w') as f:
+        dump(form_data["workflow_params"], f, ensure_ascii=False)
+
+    # Build command
+    command = [
+        "cwl-tes",
+        "--tes",
+        cnx_app.app.config['tes']['url'],
+        form_data['workflow_url'],
+        workflow_params_json
+    ]
+
+    # Execute command
+    subprocess.run(command)
+
+    # TODO: Return status
+    return
 
 
 def __cancel_run(run_id):
@@ -149,7 +178,7 @@ def get_run_log(run_id):
 def get_run_status(run_id):
     '''Get status information for specific run'''
 
-    # Get workflow run state        
+    # Get workflow run state
     state = db.find_one_field_by_index(db_runs, index_field, run_id, 'state')
 
     # Raise error if workflow run was not found
@@ -205,23 +234,43 @@ def run_workflow(form_data):
 
     # Keep on trying until a unique run id was found and inserted
     while True:
+
+        # Create unique run id and add to document
+        document['run_id'] = __create_run_id()
+
+        # Try to create workflow run directory
         try:
+            # TODO: Think about permissions
+            # TODO: Add this to document
+            run_dir = os.path.join(cnx_app.app.config['storage']['tmp_dir'], document['run_id']))
+            os.mkdir(run_dir)
 
-            # Create unique run id and add to document
-            document['run_id'] = __create_run_id()
-
-            # Try to insert
-            db_runs.insert(document)
-
-            # Execute workflow (unless debug)
-            # TODO: run in background
-            __run_workflow(document)
-
-            # Return run id
-            return document['run_id']
-
-        except DuplicateKeyError:
+        # Try new run id if directory already exists
+        except FileExistsError:
             continue
 
-    # Else return None
-    return None
+        # Try to insert document into database
+        try:
+            db_runs.insert(document)
+
+        # Try new run id if document already exists
+        except DuplicateKeyError:
+
+            # And try to remove run directory created previously
+            try:
+                rmdir(run_dir)
+            except OSError:
+                # TODO: Log warning (run directory that was just created is not empty anymore; or 
+                # other error)
+                continue
+
+            continue
+
+        # Exit loop
+        break
+
+    # Start workflow run in background
+    __run_workflow(form_data, run_dir)
+
+    # Return run id
+    return document['run_id']

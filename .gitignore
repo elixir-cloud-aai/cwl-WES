@@ -218,4 +218,7 @@ tags
 ########################
 
 # Add any custom additions below
+!.gitkeep
+cwl-tes/
 .vscode/
+tests/tmp/*

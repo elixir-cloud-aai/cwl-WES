@@ -15,6 +15,10 @@ database:
         length: 6
         charset: string.ascii_uppercase + string.digits
 
+# Storage
+storage:
+    tmp_dir: 'tmp'
+
 # Celery task queuer
 celery:
     result_backend: rpc://
@@ -46,7 +50,7 @@ service_info:
         - type: string
           default_value: "something_new"
     tags:
-        some_param_1: something
+        known_tes_endpoints: ["https://tes-dev.tsi.ebi.ac.uk/"]
         wes_elixir_version: 0.2.0
         some_param_3: another_thing
         some_param_4: yet_another_thing
@@ -55,3 +59,7 @@ service_info:
 # Endpoint parameters
 api_endpoints:
     default_page_size: 10
+
+# TES server
+tes:
+    url: https://tes-dev.tsi.ebi.ac.uk/
