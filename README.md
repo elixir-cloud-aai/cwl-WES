@@ -64,6 +64,11 @@ python setup.py install
 cd ..
 ```
 
+Start MongoDB daemon
+```bash
+sudo service mongod start
+```
+
 Install service
 ```bash
 python setup.py develop
@@ -72,11 +77,6 @@ python setup.py develop
 Set config file environment variable and optionally edit config file
 ```bash
 export WES_CONFIG="$PWD/wes_elixir/config.yaml"
-```
-
-Start MongoDB daemon
-```bash
-sudo service mongod start
 ```
 
 Start service
