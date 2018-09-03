@@ -25,10 +25,11 @@ Coming soon...
 ## Non-dockerized
 
 ### Requirements
+* curl
 * MongoDB
 * Python3
+* RabbitMQ
 * virtualenv
-* curl
 
 ### Instructions
 
@@ -53,38 +54,14 @@ Install required packages
 pip install -r requirements.txt
 ```
 
-Install additionally cwl-tes
-
-Clone the cwl-tes repo
+Clone CWL-TES repository, checkout specific version, patch & install
 ```bash
 git clone https://github.com/common-workflow-language/cwl-tes.git
-```
-
-Checkout a specific version
-```bash
 cd cwl-tes
 git checkout e94d2162b6f7c86bdb7a7c90b3362d6a5163200b
-```
-
-Apply patches
-```bash
-cd ../patches
-./apply_patches.sh
-```
-
-Go to the cloned cwl-tes directory
-```bash
-cd ../cwl-tes
-```
-
-Install cwl-tes
-```bash
+bash ../patches/apply_patches.sh
 python setup.py install
-```
-
-Now that you installed cwl-tes return to the WES-ELIXIR repository
-```bash
-cd ../
+cd ..
 ```
 
 Install service
@@ -94,12 +71,7 @@ python setup.py develop
 
 Set config file environment variable and optionally edit config file
 ```bash
-export WES_CONFIG="$PWD/app/config.yaml"
-```
-
-Set debug config file environment variable and optionally edit debug config file (only required if `server: debug` is set to `True` in `config.yaml`):
-```bash
-export WES_CONFIG_DEBUG="$PWD/app/config_debug.yaml"
+export WES_CONFIG="$PWD/wes_elixir/config.yaml"
 ```
 
 Start MongoDB daemon
@@ -109,10 +81,15 @@ sudo service mongod start
 
 Start service
 ```bash
-python app/app.py
+python wes_elixir/app.py
 ```
 
-Visit Swagger UI at <http://localhost:7777/ga4gh/wes/v1/ui>. If you have edited `$WES_CONFIG`, make sure host and port match the values specified in the file.
+Visit Swagger UI
+```
+<http://localhost:7777/ga4gh/wes/v1/ui>
+```
+Note: If you have edited `WES_CONFIG`, ensure that host and port match the values specified in the 
+config file.
 
 
 # Q&A

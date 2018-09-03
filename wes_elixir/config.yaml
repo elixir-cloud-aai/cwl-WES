@@ -1,8 +1,32 @@
-# General server settings
+# General server/service settings
 server:
     host: localhost
     port: 7777
     debug: True
+    env: development
+    testing: False
+
+# Database settings
+database:
+    host: 'localhost'
+    port: 27017
+    name: wes-elixir-db
+    run_id:
+        length: 6
+        charset: string.ascii_uppercase + string.digits
+
+# Storage
+storage:
+    tmp_dir: 'tmp'
+
+# Celery task queuer
+celery:
+    result_backend: rpc://
+    broker_url: pyamqp://localhost:5672//
+
+# OpenAPI specs
+openapi:
+    wes_yaml_specs: 'ga4gh/wes/ga4gh.wes.0_3_0.openapi.yaml'
 
 # WES service info settings
 service_info:
@@ -23,26 +47,14 @@ service_info:
           default_value: "abc"
         - type: int
           default_value: "5"
+        - type: string
+          default_value: "something_new"
     tags:
         known_tes_endpoints: ["https://tes-dev.tsi.ebi.ac.uk/"]
-        some_param_2: something_else
+        wes_elixir_version: 0.2.0
         some_param_3: another_thing
         some_param_4: yet_another_thing
         some_param_5: and_yet_another_thing
-
-# Location of OpenAPI specs
-openapi:
-    path: 'openapi'
-    yaml_specs: 'ga4gh.wes.0.3.0.openapi.yaml'
-
-# Database settings
-database:
-    host: 'localhost'
-    port: 27017
-    name: wes-elixir-db
-    run_id:
-        length: 6
-        charset: string.ascii_uppercase + string.digits
 
 # Endpoint parameters
 api_endpoints:
