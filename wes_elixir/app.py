@@ -63,8 +63,6 @@ def rewrite_bad_request(response):
     return response
 
 
-
-
 # Run server
 def main(cnx_app):
     '''Register APIs and run application'''

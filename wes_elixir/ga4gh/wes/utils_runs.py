@@ -124,7 +124,7 @@ def __run_workflow(form_data, run_dir):
         dump(form_data["workflow_params"], f, ensure_ascii=False)
 
     # Build command
-    __execute_bg_task.delay(
+    __start_run(
         tes_server=cnx_app.app.config['tes']['url'],
         cwl=form_data['workflow_url'],
         params=workflow_params_json
@@ -133,21 +133,24 @@ def __run_workflow(form_data, run_dir):
     # TODO: Return status
     return
 
-
-@celery.task
-def __execute_bg_task(tes_server, cwl, params):
+def __start_run(tes_server, cwl, params):
 
     # Build command
-    command = [
-        "cwl-tes",
-        "--tes",
-        cnx_app.app.config['tes']['url'],
-        form_data['workflow_url'],
-        workflow_params_json
-    ]
+    #command = [
+    #    "cwl-tes",
+    #    "--tes",
+    #    tes_server,
+    #    cwl,
+    #    params
+    #]
+
+    print("START")
+    import time
+    time.sleep(5)
+    print("END")
 
     # Execute command
-    subprocess.run(command)
+    #subprocess.run(command)
 
 
 def __cancel_run(run_id):
