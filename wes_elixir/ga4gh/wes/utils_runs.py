@@ -159,6 +159,26 @@ def __add_run_to_task_queue(tes, cwl, params):
     #subprocess.run(command)
 
 
+def __start_run(tes_server, cwl, params):
+
+    # Build command
+    #command = [
+    #    "cwl-tes",
+    #    "--tes",
+    #    tes_server,
+    #    cwl,
+    #    params
+    #]
+
+    print("START")
+    import time
+    time.sleep(5)
+    print("END")
+
+    # Execute command
+    #subprocess.run(command)
+
+
 def __cancel_run(run_id):
     '''Helper function for `cancel_run()`'''
     # TODO: implement logic
@@ -263,6 +283,7 @@ def run_workflow(form_data):
         try:
             # TODO: Think about permissions
             # TODO: Add this to document
+            # TODO: Add working directory (currently one has to run the app from the outermost dir)
             run_dir = os.path.join(cnx_app.app.config['storage']['tmp_dir'], document['run_id'])
             os.mkdir(run_dir)
 
@@ -279,7 +300,7 @@ def run_workflow(form_data):
 
             # And try to remove run directory created previously
             try:
-                rmdir(run_dir)
+                os.rmdir(run_dir)
             except OSError:
                 # TODO: Log warning (run directory that was just created is not empty anymore; or 
                 # other error)

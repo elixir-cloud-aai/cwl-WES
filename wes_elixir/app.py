@@ -67,9 +67,10 @@ def main(cnx_app):
     '''Register OpenAPI specs with connexion and start application'''
 
     # Register OpenAPIs
+    # IMPORTANT: connexion APIs have to be registered last in order to avoid circular imports
     cnx_app = register_openapis(cnx_app)
 
-    # Run appication
+    # Run application
     cnx_app.run()
 
 
