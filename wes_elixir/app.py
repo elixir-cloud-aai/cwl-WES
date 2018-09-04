@@ -34,9 +34,6 @@ def register_extensions(cnx_app):
     # Register CORS
     cnx_app.app = register_cors(cnx_app.app)
 
-    # Register OpenAPIs
-    cnx_app = register_openapis(cnx_app)
-
     # Register error handlers
     cnx_app = register_error_handlers(cnx_app)
 
@@ -47,11 +44,14 @@ def register_extensions(cnx_app):
 # Instantiate connexion app
 cnx_app = init_app()
 
+
 # Register database
 db, db_runs, db_service_info = register_mongodb(cnx_app.app)
 
+
 # Register task queue
-celery = register_celery(app=cnx_app.app)
+celery = register_celery(cnx_app=cnx_app)
+
 
 # Workaround for adding a custom handler for `connexion.problem` responses
 # Responses from request and paramater validators are not raised and cannot be intercepted by `add_error_handler`
@@ -63,9 +63,13 @@ def rewrite_bad_request(response):
     return response
 
 
-# Run server
 def main(cnx_app):
-    '''Run server'''
+    '''Register OpenAPI specs with connexion and start application'''
+
+    # Register OpenAPIs
+    cnx_app = register_openapis(cnx_app)
+
+    # Run appication
     cnx_app.run()
 
 

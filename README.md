@@ -35,7 +35,7 @@ Coming soon...
 
 Clone repository
 ```bash
-git clone https://github.com/elixir-europe/WES-ELIXIR.git
+git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git
 ```
 
 Traverse to project directory
@@ -84,12 +84,9 @@ Start service
 python wes_elixir/app.py
 ```
 
-Visit Swagger UI
-```
-<http://localhost:7777/ga4gh/wes/v1/ui>
-```
-Note: If you have edited `WES_CONFIG`, ensure that host and port match the values specified in the 
-config file.
+Visit Swagger UI: <http://localhost:7777/ga4gh/wes/v1/ui>
+
+Note: If you have edited `WES_CONFIG`, ensure that host and port match the values specified in the config file.
 
 
 # Q&A

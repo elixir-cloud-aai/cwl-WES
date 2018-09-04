@@ -1,5 +1,6 @@
 import os
 import string
+import subprocess
 
 from json import dump
 from pymongo.errors import DuplicateKeyError
@@ -8,7 +9,7 @@ from random import choice
 import wes_elixir.services.db as db
 
 from wes_elixir.services.errors import BadRequest, WorkflowNotFound
-from wes_elixir.app import cnx_app, db_runs, db_service_info
+from wes_elixir.app import celery, cnx_app, db_runs, db_service_info
 from wes_elixir.ga4gh.wes.utils_misc import immutable_multi_dict_to_nested_dict
 
 
@@ -116,27 +117,46 @@ def __run_workflow(form_data, run_dir):
     # TODO: run in background
 
     # Create workflow parameter file
-    # TODO Think about permissions
-    # TODO: Catch errors
+    # TODO: think about permissions
+    # TODO: catch errors
     workflow_params_json = os.path.join(run_dir, "workflow_params.json")
     with open(workflow_params_json, 'w') as f:
         dump(form_data["workflow_params"], f, ensure_ascii=False)
 
-    # Build command
-    command = [
-        "cwl-tes",
-        "--tes",
-        cnx_app.app.config['tes']['url'],
-        form_data['workflow_url'],
-        workflow_params_json
-    ]
+    # Add workflow run to task queue
+    __add_run_to_task_queue.delay(
+        tes=cnx_app.app.config['tes']['url'],
+        cwl=form_data['workflow_url'],
+        params=workflow_params_json
+    )
 
-    # Execute command
-    import subprocess
-    subprocess.run(command)
+    # TODO: Add reasonable return status
 
-    # TODO: Return status
-    return
+
+@celery.task
+def __add_run_to_task_queue(tes, cwl, params):
+    '''Adds workflow run to task queue'''
+
+    # TODO: Placeholder until TESK is fixed
+    print("STARTING BACKGROUND TASK")
+    print("Run directory:", run_dir)
+    import time
+    time.sleep(5)
+    print("FINISHED BACKGROUND TASK")
+
+    # TODO: Uncomment when TESK is back up again
+    ## Build command
+    #command = [
+    #    "cwl-tes",
+    #    "--tes",
+    #    tes,
+    #    cwl,
+    #    params
+    #]
+    #
+    ## Execute command
+    # TODO: Use Popen instead
+    #subprocess.run(command)
 
 
 def __cancel_run(run_id):
