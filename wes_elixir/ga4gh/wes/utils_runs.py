@@ -6,10 +6,11 @@ from json import dump
 from pymongo.errors import DuplicateKeyError
 from random import choice
 
-import wes_elixir.services.db as db
+import wes_elixir.database.utils as db_utils
 
-from wes_elixir.services.errors import BadRequest, WorkflowNotFound
-from wes_elixir.app import celery, cnx_app, db_runs, db_service_info
+from wes_elixir.errors.errors import BadRequest, WorkflowNotFound
+from wes_elixir.celery_worker import celery
+from wes_elixir.ga4gh.wes.utils_bg_tasks import add_run_to_task_queue
 from wes_elixir.ga4gh.wes.utils_misc import immutable_multi_dict_to_nested_dict
 
 
@@ -17,12 +18,12 @@ from wes_elixir.ga4gh.wes.utils_misc import immutable_multi_dict_to_nested_dict
 index_field = 'run_id'
 
 
-def __create_run_id():
+def __create_run_id(config):
     '''Create random run id'''
 
     # Get run id configuration options
-    charset = eval(cnx_app.app.config['database']['run_id']['charset'])
-    length = cnx_app.app.config['database']['run_id']['length']
+    charset = eval(config['database']['run_id']['charset'])
+    length = config['database']['run_id']['length']
 
     # Return run id
     return ''.join(choice(charset) for __ in range(length))
@@ -112,7 +113,7 @@ def __manage_workflow_attachments(form_data):
     return form_data
 
 
-def __run_workflow(form_data, run_dir):
+def __run_workflow(config, form_data, run_dir):
     '''Helper function for `run_workflow()`'''
     # TODO: run in background
 
@@ -124,39 +125,14 @@ def __run_workflow(form_data, run_dir):
         dump(form_data["workflow_params"], f, ensure_ascii=False)
 
     # Add workflow run to task queue
-    __add_run_to_task_queue.delay(
-        tes=cnx_app.app.config['tes']['url'],
+    add_run_to_task_queue.delay(
+        run_dir=run_dir,
+        tes=config['tes']['url'],
         cwl=form_data['workflow_url'],
         params=workflow_params_json
     )
 
     # TODO: Add reasonable return status
-
-
-@celery.task
-def __add_run_to_task_queue(tes, cwl, params):
-    '''Adds workflow run to task queue'''
-
-    # TODO: Placeholder until TESK is fixed
-    print("STARTING BACKGROUND TASK")
-    print("Run directory:", run_dir)
-    import time
-    time.sleep(5)
-    print("FINISHED BACKGROUND TASK")
-
-    # TODO: Uncomment when TESK is back up again
-    ## Build command
-    #command = [
-    #    "cwl-tes",
-    #    "--tes",
-    #    tes,
-    #    cwl,
-    #    params
-    #]
-    #
-    ## Execute command
-    # TODO: Use Popen instead
-    #subprocess.run(command)
 
 
 def __start_run(tes_server, cwl, params):
@@ -185,11 +161,11 @@ def __cancel_run(run_id):
     return run_id
 
 
-def cancel_run(run_id):
+def cancel_run(db_runs, run_id):
     '''Cancel running workflow'''
 
     # Get workflow run state
-    state = db.find_one_field_by_index(db_runs, index_field, run_id, 'state')
+    state = db_utils.find_one_field_by_index(db_runs, index_field, run_id, 'state')
 
     # Raise error if workflow run was not found
     if state is None:
@@ -199,14 +175,14 @@ def cancel_run(run_id):
     run_id = __cancel_run(run_id)
 
     # Return run_id
-    return run_id
+    return {"run_id": run_id}
 
 
-def get_run_log(run_id):
+def get_run_log(db_runs, run_id):
     '''Get detailed log information for specific run'''
 
     # Get worklow run log
-    response = db.find_one_by_index(db_runs, index_field, run_id)
+    response = db_utils.find_one_by_index(db_runs, index_field, run_id)
 
     # Raise error if workflow run was not found
     if response is None:
@@ -216,11 +192,11 @@ def get_run_log(run_id):
     return response
 
 
-def get_run_status(run_id):
+def get_run_status(db_runs, run_id):
     '''Get status information for specific run'''
 
     # Get workflow run state
-    state = db.find_one_field_by_index(db_runs, index_field, run_id, 'state')
+    state = db_utils.find_one_field_by_index(db_runs, index_field, run_id, 'state')
 
     # Raise error if workflow run was not found
     if state is None:
@@ -233,7 +209,7 @@ def get_run_status(run_id):
     }
 
 
-def list_runs(**kwargs):
+def list_runs(db_runs, **kwargs):
     '''Get status information for specific run'''
 
     # TODO: stable ordering (newest last?)
@@ -244,7 +220,7 @@ def list_runs(**kwargs):
     #page_size = kwargs['page_size'] if 'page_size' in kwargs else cnx_app.app.config['api_endpoints']['default_page_size']
 
     # Query database for workflow runs
-    cursor = db.find_fields(db_runs, ['run_id', 'state'])
+    cursor = db_utils.find_fields(db_runs, ['run_id', 'state'])
 
     # Iterate through list
     runs_list = list()
@@ -258,8 +234,12 @@ def list_runs(**kwargs):
     }
 
 
-def run_workflow(form_data):
+def run_workflow(config, form_data):
     '''Execute workflow and save info to database; returns unique run id'''
+
+    # Re-assign config values
+    db_runs = config['db_runs']
+    tmp_dir = config['storage']['tmp_dir']
 
     # Convert ImmutableMultiDict to nested dictionary
     form_data = immutable_multi_dict_to_nested_dict(form_data)
@@ -277,14 +257,14 @@ def run_workflow(form_data):
     while True:
 
         # Create unique run id and add to document
-        document['run_id'] = __create_run_id()
+        document['run_id'] = __create_run_id(config)
 
         # Try to create workflow run directory
         try:
             # TODO: Think about permissions
             # TODO: Add this to document
             # TODO: Add working directory (currently one has to run the app from the outermost dir)
-            run_dir = os.path.join(cnx_app.app.config['storage']['tmp_dir'], document['run_id'])
+            run_dir = os.path.join(tmp_dir, document['run_id'])
             os.mkdir(run_dir)
 
         # Try new run id if directory already exists
@@ -312,7 +292,7 @@ def run_workflow(form_data):
         break
 
     # Start workflow run in background
-    __run_workflow(form_data, run_dir)
+    __run_workflow(config, form_data, run_dir)
 
     # Return run id
-    return document['run_id']
+    return {"run_id": document['run_id']}

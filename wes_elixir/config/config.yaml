@@ -44,7 +44,7 @@ service_info:
         cwl-tes: 0.2.0
     default_workflow_engine_parameters:
         - type: string
-          default_value: "abc"
+          default_value: "abcdefg"
         - type: int
           default_value: "5"
         - type: string
