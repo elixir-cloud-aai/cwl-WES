@@ -1,6 +1,6 @@
 # Synopsis
 
-[Flask](http://flask.pocoo.org/) miscroservice implementing the [Global Alliance for Genomics and Health](https://www.ga4gh.org/) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
+[Flask](http://flask.pocoo.org/) microservice implementing the [Global Alliance for Genomics and Health](https://www.ga4gh.org/) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
 
 # Description
 
@@ -82,6 +82,13 @@ export WES_CONFIG="$PWD/wes_elixir/config.yaml"
 Start service
 ```bash
 python wes_elixir/app.py
+```
+
+In a different terminal, traverse to application directory and start Celery worker for executing background tasks
+```bash
+# Traverse to project directory first (same as above)
+cd wes_elixir
+celery worker -A celery_worker --loglevel=info
 ```
 
 Visit Swagger UI: <http://localhost:7777/ga4gh/wes/v1/ui>

@@ -8,7 +8,7 @@ import wes_elixir.ga4gh.wes.utils_service_info as service_info
 def CancelRun(run_id):
     '''Cancel unfinished workflow run'''
     return runs.cancel_run(
-        db_runs=current_app.config['db_runs'],
+        config=current_app.config,
         run_id=run_id
     )
 
@@ -16,7 +16,7 @@ def CancelRun(run_id):
 def GetRunLog(run_id):
     '''Return detailed run info'''
     return runs.get_run_log(
-        db_runs=current_app.config['db_runs'],
+        config=current_app.config,
         run_id=run_id
     )
 
@@ -24,7 +24,7 @@ def GetRunLog(run_id):
 def GetRunStatus(run_id):
     '''Return run status'''
     return runs.get_run_status(
-        db_runs=current_app.config['db_runs'],
+        config=current_app.config,
         run_id=run_id
     )
 
@@ -39,7 +39,7 @@ def GetServiceInfo():
 def ListRuns(**kwargs):
     '''List ids and status of all workflow runs'''
     return runs.list_runs(
-        db_runs=current_app.config['db_runs'],
+        config=current_app.config,
         **kwargs
     )
 

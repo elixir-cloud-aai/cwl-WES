@@ -11,12 +11,14 @@ database:
     host: 'localhost'
     port: 27017
     name: wes-elixir-db
+    runs_index_field: run_id
     run_id:
         length: 6
         charset: string.ascii_uppercase + string.digits
 
 # Storage
 storage:
+    permanent_dir: 'tests/output'
     tmp_dir: 'tests/tmp'
 
 # Celery task queuer
