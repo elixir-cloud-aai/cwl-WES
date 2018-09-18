@@ -7,10 +7,11 @@ import wes_elixir.database.utils as db_utils
 class TaskMonitor():
     '''Celery task monitor'''
 
-    def __init__(self, app, timeout=0.05):
+    def __init__(self, celery_app, connexion_app, timeout=0.05):
         '''Start celery task monitor daemon process'''
 
-        self.app = app
+        self.celery_app = celery_app
+        self.connexion_app = connexion_app
         self.timeout = timeout
 
         self.thread = Thread(target=self.run, args=())
@@ -25,9 +26,9 @@ class TaskMonitor():
 
             try:
 
-                with self.app.connection() as connection:
+                with self.celery_app.connection() as connection:
 
-                    recv = self.app.events.Receiver(connection, handlers={
+                    recv = self.celery_app.events.Receiver(connection, handlers={
                         #'*' : self.catchall
                         'task-failed'    : self.on_task_failed,
                         'task-received'  : self.on_task_received,
