@@ -1,8 +1,9 @@
 import os
+import shutil
 import string
 import subprocess
 
-from json import decoder, dump, loads
+from json import decoder, loads
 from pymongo.errors import DuplicateKeyError
 from random import choice
 
@@ -33,7 +34,7 @@ def cancel_run(config, run_id):
 
     # Cancel workflow run
     __cancel_run(run_id)
-    
+
     # Build formatted response object
     response = {"run_id": run_id}
 
@@ -44,7 +45,7 @@ def cancel_run(config, run_id):
 def __cancel_run(run_id):
     '''Helper function for `cancel_run()`'''
     # TODO: implement logic
-    
+
     # Nothing to return
     return None
 
@@ -94,7 +95,7 @@ def get_run_status(config, run_id):
         "run_id": run_id,
         "state": state
     }
-    
+
     # Return response object
     return response
 
@@ -150,9 +151,6 @@ def run_workflow(config, form_data):
     # Check compatibility with service info
     __check_service_info_compatibility(data=form_data)
 
-    # Handle workflow attachments
-    form_data = __process_workflow_attachments(data=form_data)
-
     # Initialize run document
     document = __init_run_document(data=form_data)
 
@@ -184,7 +182,7 @@ def __immutable_multi_dict_to_nested_dict(multi_dict):
         try:
             nested_dict[key] = loads(nested_dict[key])
 
-        except decoder.JSONDecodeError:
+        except: #decoder.JSONDecodeError:
             pass
 
     # Return formatted request dictionary
@@ -235,7 +233,7 @@ def __validate_run_workflow_request(data):
     # Raise error if any dict params are not of type dict
     if not all(isinstance(value, dict) for value in type_dict.values()):
         raise BadRequest()
-    
+
     # Nothing to return
     return None
 
@@ -246,50 +244,20 @@ def __check_service_info_compatibility(data):
     return None
 
 
-def __process_workflow_attachments(data):
-    '''Extract workflow attachments from form data'''
-
-    # Extract workflow attachments from form data dictionary
-    if 'workflow_attachment' in data:
-
-        # TODO: do something with data['workflow_attachment']
-
-        # Strip workflow attachments from data
-        del data['workflow_attachment']
-
-
-###################################################################################################################
-# WORK HERE
-
-    # Workaround until processing of workflow attachments is implemented
-    # The path to the (main) CWL workflow file is taken from 
-    # TODO: TEMPORARILY DO THIS (in __process_worklflow_attachments):
-    # TODO: Create workflow parameter file => document['internal']['yaml_path']
-    # TODO: Create (main) workflow file => use form_data['workflow_url'] (change to document['api']['workflow_url']) => document['internal']['yaml_path']
-#    workflow_params_json = os.path.join(run_dir, "workflow_params.json")
-#    with open(workflow_params_json, 'w') as f:
-#        dump(form_data["workflow_params"], f, ensure_ascii=False)
-#
-#    cwl_path = form_data['workflow_url']
-
-###################################################################################################################
-
-    # Return form data stripped of workflow attachments
-    return data
-
-
 def __init_run_document(data):
     '''Initialize workflow run document'''
 
     # Initialize document
     document = dict()
+    document['api'] = dict()
+    document['internal'] = dict()
 
     # Add required keys
-    document['request'] = data
-    document['state'] = "UNKNOWN"
-    document['run_log'] = dict()
-    document['task_logs'] = list()
-    document['outputs'] = dict()
+    document['api']['request'] = data
+    document['api']['state'] = "UNKNOWN"
+    document['api']['run_log'] = dict()
+    document['api']['task_logs'] = list()
+    document['api']['outputs'] = dict()
 
     # Return run document
     return document
@@ -304,10 +272,15 @@ def __create_run_environment(config, document):
     tmp_dir = config['storage']['tmp_dir']
 
     # Keep on trying until a unique run id was found and inserted
+    # TODO: If there are no more possible IDs this will be an endless loop; fix (raise customerror & 
+    # show 500 to user)
     while True:
 
         # Create unique run id and add to document
-        run_id = __create_run_id(config)
+        run_id = __create_run_id(
+            charset=eval(config['database']['run_id']['charset']),
+            length=config['database']['run_id']['length']
+        )
 
         # Try to create workflow run directory (temporary)
         try:
@@ -333,8 +306,17 @@ def __create_run_environment(config, document):
         except FileExistsError:
             continue
 
-        # TODO: add values to document: run_id, out_dir, tmp_dir...
+        # Add run identifier, temp and output directories to 
         document['run_id'] = run_id
+        document['internal']['tmp_dir'] = current_tmp_dir
+        document['internal']['out_dir'] = current_out_dir
+
+        # Process worflow attachments
+        document = __process_workflow_attachments(document)
+
+        ####################################
+        print(document)
+        ####################################
 
         # Try to insert document into database
         try:
@@ -343,18 +325,18 @@ def __create_run_environment(config, document):
         # Try new run id if document already exists
         except DuplicateKeyError:
 
-            # And try to remove run directory created previously
-            try:
-                os.rmdir(current_tmp_dir)
-                os.rmdir(current_out_dir)
-
-            # Handle race condition
-            except OSError:
-                # TODO: Log warning (run directory that was just created is not empty anymore; or 
-                # other error)
-                continue
+            # And remove run directories created previously
+            shutil.rmtree(current_tmp_dir, ignore_errors=True)
+            shutil.rmtree(current_out_dir, ignore_errors=True)
 
             continue
+
+        # Catch other database errors
+        # TODO: implement properly
+        except Error as e:
+            print("Database error")
+            print(e)
+            break
 
         # Exit loop
         break
@@ -363,15 +345,55 @@ def __create_run_environment(config, document):
     return document
 
 
-def __create_run_id(config):
+def __create_run_id(charset, length):
     '''Create random run id'''
-
-    # Re-assign config values
-    charset = eval(config['database']['run_id']['charset'])
-    length = config['database']['run_id']['length']
 
     # Return run id
     return ''.join(choice(charset) for __ in range(length))
+
+
+def __process_workflow_attachments(data):
+    '''Process workflow attachments'''
+    # TODO: implement properly
+    # Current workaround until processing of workflow attachments is implemented
+    # Use 'workflow_url' for path to (main) CWL workflow file on local file system)
+    # Use 'workflow_params' to generate YAML file
+
+    # Create directory for storing workflow files
+    workflow_dir = os.path.join(data['internal']['out_dir'], "workflow_files")
+    try:
+        os.mkdir(workflow_dir)
+
+    except OSError:
+        # TODO: Do something more reasonable here
+        pass
+
+    # Extract name and extensions of workflow
+    workflow_name_ext = os.path.splitext(os.path.basename(data['api']['request']['workflow_url']))
+
+    # Copy main CWL workflow file
+    from shutil import copyfile
+    data['internal']['cwl_path'] = os.path.join(workflow_dir, "".join(workflow_name_ext))
+    # TODO: What if there are multiple files and this is only the header
+    # TODO: What if relative path was given? Would depend on CWD
+    copyfile(data['api']['request']['workflow_url'], data['internal']['cwl_path'])
+
+    # Write out parameters to YAML workflow config gile
+    from json import dump
+    data['internal']['yaml_path'] = os.path.join(workflow_dir, ".".join([workflow_name_ext[0], "yml"]))
+    with open(data['internal']['yaml_path'], 'w') as yaml_file:
+        dump(data['api']['request']["workflow_params"], yaml_file, ensure_ascii=False)
+
+    # Extract workflow attachments from form data dictionary
+    if 'workflow_attachment' in data['api']['request']:
+
+#        # TODO: do something with data['workflow_attachment']
+
+        # Strip workflow attachments from data
+        del data['api']['request']['workflow_attachment']
+
+    # Return form data stripped of workflow attachments
+    return data
 
 
 def __run_workflow(config, document):
@@ -379,30 +401,41 @@ def __run_workflow(config, document):
 
     # Re-assign config values
     tes_url = config['tes']['url']
+    collection_runs = config['database']['collections']['runs']
 
     # Re-assign document values
     cwl_path = document['internal']['cwl_path']
     yaml_path = document['internal']['yaml_path']
     tmp_dir = document['internal']['tmp_dir']
     out_dir = document['internal']['out_dir']
+    run_id = document['run_id']
 
     # Build command
+    # TODO: uncomment cwl-tes command & uncomment dummy command for testing
+    #command_list = [
+    #    "cwl-tes",
+    #    "--tes",
+    #    tes_url,
+    #    cwl_path,
+    #    yaml_path
+    #]
     command_list = [
-        "cwl-tes",
-        "--tes",
-        tes_url,
-        cwl_path,
-        yaml_path
+        "sleep",
+        "5"
     ]
 
     # Add workflow run to task queue
-    # TODO: put in try block
-    add_run_to_task_queue.delay(
-        config=config,
-        command_list=command_list,
-        cwd=tmp_dir,
-        out_dir=out_dir
-    )
+    try:
+        #add_run_to_task_queue.delay(
+        add_run_to_task_queue(
+            config=config,
+            document=document,
+            command_list=command_list,
+            tmp_dir=tmp_dir
+        )
+    except Error as e:
+        # Update run state to SYSTEM_ERROR
+        document = db_utils.update_run_state(collection_runs, run_id, "SYSTEM_ERROR")
 
     # Nothing to return
     return None

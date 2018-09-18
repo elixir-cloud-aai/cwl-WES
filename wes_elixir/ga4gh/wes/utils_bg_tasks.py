@@ -1,35 +1,41 @@
+import wes_elixir.database.utils as db_utils
+
 from wes_elixir.celery_worker import celery
 
 
-@celery.task(bind=True)
-def sleep_a_bit(self, sec):
-    import time
-    time.sleep(sec)
-
-
-@celery.task(bind=True, track_started=True)
-def add_run_to_task_queue(self, config, command_list):
+#@celery.task(bind=True, track_started=True)
+#def add_run_to_task_queue(self, config, document, command_list, tmp_dir):
+def add_run_to_task_queue(config, document, command_list, tmp_dir):
     '''Adds workflow run to task queue'''
 
-    # TODO: Placeholder until TESK is fixed
+    print(document)
+
+    # Re-assign config values
+    collection_runs = config['database']['collections']['runs']
+
+    # Re-assign document values
+    run_id = document['run_id']
+
+    # Update run state to RUNNING
+    document = db_utils.update_run_state(collection_runs, run_id, "RUNNING")
+
+    print(document)
     print("STARTING BACKGROUND TASK")
-    #print("Run directory:", run_dir)
-    #import time
 
     import subprocess
 
-    bg_proc = subprocess.run(
+    #bg_proc = subprocess.run(
+    bg_proc = subprocess.Popen(
             command_list
-        )
+    )
+    bg_proc.wait()
 
-    print(vars(bg_proc))
+    if bg_proc.returncode == 0:
+        # Update run state to COMPLETE
+        document = db_utils.update_run_state(collection_runs, run_id, "COMPLETE")
+    else:
+        # Update run state to EXECUTOR_ERROR
+        document = db_utils.update_run_state(collection_runs, run_id, "EXECUTOR_ERROR")
 
     print("FINISHED BACKGROUND TASK")
-
-    # TODO: Uncomment when TESK is back up again
-    ## Build command
-    #
-    ## Execute command
-    # TODO: Use Popen instead
-    #subprocess.run(command)
-
+    print(document)

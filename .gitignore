@@ -223,3 +223,4 @@ celeryd.pid
 cwl-tes/
 .vscode/
 tests/tmp/*
+tests/output/*

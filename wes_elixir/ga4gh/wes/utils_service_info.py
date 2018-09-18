@@ -48,7 +48,7 @@ def __get_system_state_counts(collection_runs):
     for record in cursor:
 
         # Increase counter for state of current record
-        current_counts[record['state']] += 1
+        current_counts[record['api.state']] += 1
 
     # Return counts
     return(current_counts)

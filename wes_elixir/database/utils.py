@@ -1,4 +1,6 @@
 from bson.objectid import ObjectId
+from pymongo.collection import ReturnDocument
+
 
 
 def find_one_by_id(collection, object_id):
@@ -40,3 +42,12 @@ def find_id_latest(collection):
         return collection.find().sort([('_id', -1)]).limit(1).next()['_id']
     except StopIteration:
         return None
+
+
+def update_run_state(collection, run_id, state="UNKNOWN"):
+    '''Update state of workflow run'''
+    return collection.find_one_and_update(
+        {"run_id": run_id},
+        {"$set": {"api.state": state}},
+        return_document=ReturnDocument.AFTER
+    )

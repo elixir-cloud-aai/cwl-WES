@@ -22,7 +22,7 @@ def register_mongodb(app):
 
     # Add database collection for '/service-info'
     collection_service_info = mongo.db['service-info']
-    
+
     # Add database and collections to app config
     app.app.config['database']['database'] = db
     app.app.config['database']['collections'] = dict()
