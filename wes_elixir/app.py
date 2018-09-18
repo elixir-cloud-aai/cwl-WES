@@ -12,7 +12,7 @@ def main():
     connexion_app = register_mongodb(connexion_app)
     connexion_app = register_error_handlers(connexion_app)
     CORS(connexion_app.app)
-    connexion_app.run()
+    connexion_app.run(use_reloader=True)
 
 
 if __name__ == '__main__':

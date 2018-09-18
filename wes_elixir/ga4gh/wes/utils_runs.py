@@ -11,7 +11,7 @@ import wes_elixir.database.utils as db_utils
 
 from wes_elixir.errors.errors import BadRequest, WorkflowNotFound
 from wes_elixir.celery_worker import celery
-from wes_elixir.ga4gh.wes.utils_bg_tasks import add_run_to_task_queue
+from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
 
 
 #############################
@@ -182,7 +182,7 @@ def __immutable_multi_dict_to_nested_dict(multi_dict):
         try:
             nested_dict[key] = loads(nested_dict[key])
 
-        except: #decoder.JSONDecodeError:
+        except decoder.JSONDecodeError:
             pass
 
     # Return formatted request dictionary
@@ -272,8 +272,7 @@ def __create_run_environment(config, document):
     tmp_dir = config['storage']['tmp_dir']
 
     # Keep on trying until a unique run id was found and inserted
-    # TODO: If there are no more possible IDs this will be an endless loop; fix (raise customerror & 
-    # show 500 to user)
+    # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500 to user)
     while True:
 
         # Create unique run id and add to document
@@ -286,7 +285,7 @@ def __create_run_environment(config, document):
         try:
             # TODO: Think about permissions
             # TODO: Add this to document
-            # TODO: Add working directory (currently one has to run the app from the outermost dir)
+            # TODO: Add working dir (currently one has to run the app from the outermost dir)
             current_tmp_dir = os.path.join(tmp_dir, run_id)
             os.mkdir(current_tmp_dir)
 
@@ -298,7 +297,7 @@ def __create_run_environment(config, document):
         try:
             # TODO: Think about permissions
             # TODO: Add this to document
-            # TODO: Add working directory (currently one has to run the app from the outermost dir)
+            # TODO: Add working dir (currently one has to run the app from the outermost dir)
             current_out_dir = os.path.join(out_dir, run_id)
             os.mkdir(current_out_dir)
 
@@ -313,10 +312,6 @@ def __create_run_environment(config, document):
 
         # Process worflow attachments
         document = __process_workflow_attachments(document)
-
-        ####################################
-        print(document)
-        ####################################
 
         # Try to insert document into database
         try:
@@ -333,7 +328,7 @@ def __create_run_environment(config, document):
 
         # Catch other database errors
         # TODO: implement properly
-        except Error as e:
+        except Exception as e:
             print("Database error")
             print(e)
             break
@@ -426,14 +421,17 @@ def __run_workflow(config, document):
 
     # Add workflow run to task queue
     try:
-        #add_run_to_task_queue.delay(
-        add_run_to_task_queue(
-            config=config,
-            document=document,
+
+        # Execute command as background task
+        document['internal']['task_id'] = add_command_to_task_queue.delay(
             command_list=command_list,
             tmp_dir=tmp_dir
         )
-    except Error as e:
+
+        # TODO: in try block: update document (now containing task ID)
+
+    except Exception as e:
+
         # Update run state to SYSTEM_ERROR
         document = db_utils.update_run_state(collection_runs, run_id, "SYSTEM_ERROR")
 
