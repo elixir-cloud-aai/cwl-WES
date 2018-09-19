@@ -23,7 +23,7 @@ def create_connexion_app(add_api=True):
     # Responses from request and paramater validators are not raised and cannot be intercepted by `add_error_handler`
     # See here: https://github.com/zalando/connexion/issues/138
     @app.app.after_request
-    def rewrite_bad_request(response):
+    def _rewrite_bad_request(response):
         if response.status_code == 400 and response.data.decode('utf-8').find('"title":') != None:
             response = handle_bad_request(400)
         return response

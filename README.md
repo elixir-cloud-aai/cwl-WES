@@ -31,7 +31,7 @@ Coming soon...
 
 * curl
 * MongoDB
-* Python3
+* Python3 (>=3.5)
 * RabbitMQ
 * virtualenv
 
@@ -56,21 +56,21 @@ virtualenv -p `which python3` venv
 source venv/bin/activate
 ```
 
-Install required packages
-
-```bash
-pip install -r requirements.txt
-```
-
-Clone CWL-TES repository, checkout specific version, patch & install
+Clone CWL-TES repository, checkout specific version & install
 
 ```bash
 git clone https://github.com/common-workflow-language/cwl-tes.git
 cd cwl-tes
-git checkout e94d2162b6f7c86bdb7a7c90b3362d6a5163200b
-bash ../patches/apply_patches.sh
+git checkout ftp
+git checkout ab58d1822a027eff2a456db9d712f5295ac42eac
 python setup.py install
 cd ..
+```
+
+Install required packages
+
+```bash
+pip install -r requirements.txt
 ```
 
 Start MongoDB daemon
@@ -88,7 +88,14 @@ python setup.py develop
 Set config file environment variable and optionally edit config file
 
 ```bash
-export WES_CONFIG="$PWD/wes_elixir/config.yaml"
+export WES_CONFIG="$PWD/wes_elixir/config/config.yaml"
+```
+
+Set your .netrc file under your $HOME directory accordingly. The .netrc file should look like the following:
+```bash
+machine ftp-private.ebi.ac.uk
+login redacted_username
+password redacted_password
 ```
 
 Start service

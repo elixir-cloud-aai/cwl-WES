@@ -17,8 +17,9 @@ database:
 
 # Storage
 storage:
-    permanent_dir: 'tests/output'
-    tmp_dir: 'tests/tmp'
+    permanent_dir: "tests/output"
+    tmp_dir: "tests/tmp"
+    remote_storage_url: ftp://ftp-private.ebi.ac.uk/upload/foivos
 
 # Celery task queuer
 celery:
@@ -29,7 +30,7 @@ celery:
 
 # OpenAPI specs
 openapi:
-    wes_yaml_specs: 'ga4gh/wes/ga4gh.wes.0_3_0.openapi.yaml'
+    wes_yaml_specs: "ga4gh/wes/ga4gh.wes.0_3_0.openapi.yaml"
 
 # WES service info settings
 service_info:
@@ -47,17 +48,12 @@ service_info:
         cwl-tes: 0.2.0
     default_workflow_engine_parameters:
         - type: string
-          default_value: "abcdefg"
+          default_value: "some_string"
         - type: int
           default_value: "5"
-        - type: string
-          default_value: "something_new"
     tags:
         known_tes_endpoints: "https://tes-dev.tsi.ebi.ac.uk/"
-        wes_elixir_version: 0.3.0
-        some_param_3: another_thing
-        some_param_4: yet_another_thing
-        some_param_5: and_yet_another_thing
+        wes_elixir_version: 0.4.0
 
 # Endpoint parameters
 api_endpoints:
@@ -65,4 +61,4 @@ api_endpoints:
 
 # TES server
 tes:
-    url: https://tes-dev.tsi.ebi.ac.uk/
+    url: "https://tes-dev.tsi.ebi.ac.uk/"
