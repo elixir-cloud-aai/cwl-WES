@@ -1,7 +1,7 @@
 from copy import deepcopy
 from datetime import datetime, timezone
 
-import wes_elixir.database.utils as db_utils
+import wes_elixir.database.db_utils as db_utils
 
 
 #########################
@@ -42,13 +42,13 @@ def __get_system_state_counts(collection_runs):
     current_counts = __init_system_state_counts()
 
     # Query database for workflow run states
-    cursor = db_utils.find_fields(collection_runs, ['state'])
+    cursor = db_utils.find_fields(collection_runs, ['api.state'])
 
     # Iterate over states
     for record in cursor:
 
         # Increase counter for state of current record
-        current_counts[record['api.state']] += 1
+        current_counts[record['api']['state']] += 1
 
     # Return counts
     return(current_counts)

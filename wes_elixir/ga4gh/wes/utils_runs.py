@@ -3,14 +3,14 @@ import shutil
 import string
 import subprocess
 
+from celery import uuid
 from json import decoder, loads
 from pymongo.errors import DuplicateKeyError
 from random import choice
 
-import wes_elixir.database.utils as db_utils
+import wes_elixir.database.db_utils as db_utils
 
 from wes_elixir.errors.errors import BadRequest, WorkflowNotFound
-from wes_elixir.celery_worker import celery
 from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
 
 
@@ -18,36 +18,31 @@ from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
 ### DELETE /runs/<run_id> ###
 #############################
 
-def cancel_run(config, run_id):
+def cancel_run(config, celery_app, run_id):
     '''Cancel running workflow'''
 
     # Re-assign config values
     collection_runs = config['database']['collections']['runs']
-    index_field = config['runs_index_field']['run_id']
 
-    # Get workflow run state
-    state = db_utils.find_one_field_by_index(collection_runs, index_field, run_id, 'state')
-
-    # Raise error if workflow run was not found
-    if state is None:
-        raise WorkflowNotFound
+    # Get task ID from database
+    task_id = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'task_id')
 
     # Cancel workflow run
-    __cancel_run(run_id)
+    try:
+        # TODO: Implement this better; terminate=True should be last resort
+        # TODO: See here: https://stackoverflow.com/questions/8920643/cancel-an-already-executing-task-with-celery
+        celery_app.control.revoke(task_id, terminate=True, signal='SIGHUP')
+
+    # Raise error if workflow run was not found
+    except Exception as e:
+        print(e)
+        raise WorkflowNotFound
 
     # Build formatted response object
     response = {"run_id": run_id}
 
     # Return response object
     return response
-
-
-def __cancel_run(run_id):
-    '''Helper function for `cancel_run()`'''
-    # TODO: implement logic
-
-    # Nothing to return
-    return None
 
 
 ##########################
@@ -59,17 +54,16 @@ def get_run_log(config, run_id):
 
     # Re-assign config values
     collection_runs = config['database']['collections']['runs']
-    index_field = config['runs_index_field']['run_id']
 
-    # Get worklow run log
-    response = db_utils.find_one_by_index(collection_runs, index_field, run_id)
+    # Get document from database
+    document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
 
     # Raise error if workflow run was not found
-    if response is None:
+    if document is None:
         raise WorkflowNotFound
 
     # Return response
-    return response
+    return document
 
 
 #################################
@@ -81,10 +75,12 @@ def get_run_status(config, run_id):
 
     # Re-assign config values
     collection_runs = config['database']['collections']['runs']
-    index_field = config['runs_index_field']['run_id']
 
-    # Get workflow run state
-    state = db_utils.find_one_field_by_index(collection_runs, index_field, run_id, 'state')
+    # Get document from database
+    document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
+    
+    # Extract workflow run state
+    state = document['state']
 
     # Raise error if workflow run was not found
     if state is None:
@@ -275,11 +271,14 @@ def __create_run_environment(config, document):
     # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500 to user)
     while True:
 
-        # Create unique run id and add to document
+        # Create unique run id
         run_id = __create_run_id(
             charset=eval(config['database']['run_id']['charset']),
             length=config['database']['run_id']['length']
         )
+
+        # Create unique celery task id
+        task_id = uuid()
 
         # Try to create workflow run directory (temporary)
         try:
@@ -305,8 +304,9 @@ def __create_run_environment(config, document):
         except FileExistsError:
             continue
 
-        # Add run identifier, temp and output directories to 
+        # Add run/task identifier, temp/output directories to document
         document['run_id'] = run_id
+        document['task_id'] = task_id
         document['internal']['tmp_dir'] = current_tmp_dir
         document['internal']['out_dir'] = current_out_dir
 
@@ -395,15 +395,15 @@ def __run_workflow(config, document):
     '''Helper function for `run_workflow()`'''
 
     # Re-assign config values
-    tes_url = config['tes']['url']
-    collection_runs = config['database']['collections']['runs']
+    #tes_url = config['tes']['url']
 
     # Re-assign document values
-    cwl_path = document['internal']['cwl_path']
-    yaml_path = document['internal']['yaml_path']
+    task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
-    out_dir = document['internal']['out_dir']
-    run_id = document['run_id']
+    #cwl_path = document['internal']['cwl_path']
+    #yaml_path = document['internal']['yaml_path']
+    #out_dir = document['internal']['out_dir']
+    #run_id = document['run_id']
 
     # Build command
     # TODO: uncomment cwl-tes command & uncomment dummy command for testing
@@ -416,24 +416,17 @@ def __run_workflow(config, document):
     #]
     command_list = [
         "sleep",
-        "5"
+        "1i"
     ]
 
-    # Add workflow run to task queue
-    try:
-
-        # Execute command as background task
-        document['internal']['task_id'] = add_command_to_task_queue.delay(
-            command_list=command_list,
-            tmp_dir=tmp_dir
-        )
-
-        # TODO: in try block: update document (now containing task ID)
-
-    except Exception as e:
-
-        # Update run state to SYSTEM_ERROR
-        document = db_utils.update_run_state(collection_runs, run_id, "SYSTEM_ERROR")
+    # Execute command as background task
+    add_command_to_task_queue.apply_async(
+        None, {
+            'command_list': command_list,
+            'tmp_dir': tmp_dir
+        },
+        task_id=task_id
+    )
 
     # Nothing to return
     return None

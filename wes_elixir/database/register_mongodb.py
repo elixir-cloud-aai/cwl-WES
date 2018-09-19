@@ -18,7 +18,13 @@ def register_mongodb(app):
 
     # Add database collection for '/runs'
     collection_runs = mongo.db['runs']
-    collection_runs.create_index([('run_id', ASCENDING)], unique=True)
+    collection_runs.create_index([
+            ('run_id', ASCENDING),
+            ('task_id', ASCENDING)
+        ],
+        unique=True,
+        sparse=True
+    )
 
     # Add database collection for '/service-info'
     collection_service_info = mongo.db['service-info']

@@ -1,17 +1,18 @@
+from ast import literal_eval
 from threading import Thread
 from time import sleep
 
-import wes_elixir.database.utils as db_utils
+import wes_elixir.database.db_utils as db_utils
 
 
 class TaskMonitor():
     '''Celery task monitor'''
 
-    def __init__(self, celery_app, connexion_app, timeout=0.05):
+    def __init__(self, celery_app, collection, timeout=0):
         '''Start celery task monitor daemon process'''
 
         self.celery_app = celery_app
-        self.connexion_app = connexion_app
+        self.collection = collection
         self.timeout = timeout
 
         self.thread = Thread(target=self.run, args=())
@@ -28,21 +29,21 @@ class TaskMonitor():
 
                 with self.celery_app.connection() as connection:
 
-                    recv = self.celery_app.events.Receiver(connection, handlers={
-                        #'*' : self.catchall
+                    listener = self.celery_app.events.Receiver(connection, handlers={
                         'task-failed'    : self.on_task_failed,
                         'task-received'  : self.on_task_received,
                         'task-revoked'   : self.on_task_revoked,
                         'task-started'   : self.on_task_started,
                         'task-succeeded' : self.on_task_succeeded
                     })
-                    recv.capture(limit=None, timeout=None, wakeup=True)
+                    listener.capture(limit=None, timeout=None, wakeup=True)
 
             except (KeyboardInterrupt, SystemExit):
                 raise
 
             except Exception as e:
                 # TODO: implement better
+                print(e)
                 pass
 
             # Sleep for specified interval
@@ -50,44 +51,36 @@ class TaskMonitor():
 
 
     def on_task_failed(self, event):
-        '''Event handler for failed celery tasks'''
-        print("SAFASFDASFASF")
-        document = db_utils.update_run_state(collection_runs, run_id, "EXECUTOR_ERROR")
+        '''Event handler for failed (system error) celery tasks'''
         print("[TASK FAILED]", event)
-        print(document)
+        document = db_utils.update_run_state(self.collection, event['uuid'], 'SYSTEM_ERROR')
 
 
     def on_task_received(self, event):
-        print("SAFASFDASFASF")
         '''Event handler for received celery tasks'''
-        document = db_utils.update_run_state(collection_runs, run_id, "QUEUED")
         print("[TASK RECEIVED]", event)
-        print(document)
+        document = db_utils.update_run_state(self.collection, event['uuid'], 'QUEUED')
 
 
     def on_task_revoked(self, event):
-        print("SAFASFDASFASF")
         '''Event handler for revoked celery tasks'''
-        document = db_utils.update_run_state(collection_runs, run_id, "CANCELED")
         print("[TASK REVOKED]", event)
-        print(document)
+        document = db_utils.update_run_state(self.collection, event['uuid'], 'CANCELED')
 
 
     def on_task_started(self, event):
-        print("SAFASFDASFASF")
         '''Event handler for started celery tasks'''
-        document = db_utils.update_run_state(collection_runs, run_id, "RUNNING")
         print("[TASK STARTED]", event)
-        print(document)
+        document = db_utils.update_run_state(self.collection, event['uuid'], 'RUNNING')
 
 
     def on_task_succeeded(self, event):
-        print("SAFASFDASFASF")
-        '''Event handler for succeeded celery tasks'''
-        document = db_utils.update_run_state(collection_runs, run_id, "COMPLETE")
-        print("[TASK SUCCEEDED]", event)
+        '''Event handler for successful and failed (executor error) celery tasks'''
+        result = literal_eval(event['result'])
+        if result['returncode']:
+            print("[TASK FAILED]", event)
+            document = db_utils.update_run_state(self.collection, event['uuid'], 'EXECUTOR_ERROR')
+        else:
+            print("[TASK SUCCEEDED]", event)
+            document = db_utils.update_run_state(self.collection, event['uuid'], 'COMPLETE')
         print(document)
-
-    def catchall(self, event):
-        if event['type'] != 'worker-heartbeat':
-            print(event)

@@ -2,7 +2,6 @@ from bson.objectid import ObjectId
 from pymongo.collection import ReturnDocument
 
 
-
 def find_one_by_id(collection, object_id):
     '''Returns single object by object id, stripped of object id, or None if object not found'''
     return collection.find_one({'_id': ObjectId(object_id)}, {'_id': False})
@@ -44,10 +43,10 @@ def find_id_latest(collection):
         return None
 
 
-def update_run_state(collection, run_id, state="UNKNOWN"):
+def update_run_state(collection, task_id, state="UNKNOWN"):
     '''Update state of workflow run'''
     return collection.find_one_and_update(
-        {"run_id": run_id},
+        {"task_id": task_id},
         {"$set": {"api.state": state}},
         return_document=ReturnDocument.AFTER
     )

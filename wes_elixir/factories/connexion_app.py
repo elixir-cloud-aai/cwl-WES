@@ -1,7 +1,6 @@
 from connexion import App
 
 from wes_elixir.errors.errors import handle_bad_request
-from wes_elixir.factories.celery_app import create_celery_app
 
 
 def create_connexion_app(add_api=True):

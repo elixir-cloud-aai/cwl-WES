@@ -1,3 +1,4 @@
+from celery import current_app as celery_app
 from connexion import request
 from flask import current_app
 
@@ -9,6 +10,7 @@ def CancelRun(run_id):
     '''Cancel unfinished workflow run'''
     return runs.cancel_run(
         config=current_app.config,
+        celery_app=celery_app,
         run_id=run_id
     )
 
