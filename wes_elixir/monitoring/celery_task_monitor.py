@@ -53,34 +53,32 @@ class TaskMonitor():
     def on_task_failed(self, event):
         '''Event handler for failed (system error) celery tasks'''
         print("[TASK FAILED]", event)
-        document = db_utils.update_run_state(self.collection, event['uuid'], 'SYSTEM_ERROR')
+        db_utils.update_run_state(self.collection, event['uuid'], 'SYSTEM_ERROR')
 
 
     def on_task_received(self, event):
         '''Event handler for received celery tasks'''
         print("[TASK RECEIVED]", event)
-        document = db_utils.update_run_state(self.collection, event['uuid'], 'QUEUED')
+        db_utils.update_run_state(self.collection, event['uuid'], 'QUEUED')
 
 
     def on_task_revoked(self, event):
         '''Event handler for revoked celery tasks'''
         print("[TASK REVOKED]", event)
-        document = db_utils.update_run_state(self.collection, event['uuid'], 'CANCELED')
+        db_utils.update_run_state(self.collection, event['uuid'], 'CANCELED')
 
 
     def on_task_started(self, event):
         '''Event handler for started celery tasks'''
         print("[TASK STARTED]", event)
-        document = db_utils.update_run_state(self.collection, event['uuid'], 'RUNNING')
+        db_utils.update_run_state(self.collection, event['uuid'], 'RUNNING')
 
 
     def on_task_succeeded(self, event):
         '''Event handler for successful and failed (executor error) celery tasks'''
+        print("[TASK FINISHED]", event)
         result = literal_eval(event['result'])
         if result['returncode']:
-            print("[TASK FAILED]", event)
-            document = db_utils.update_run_state(self.collection, event['uuid'], 'EXECUTOR_ERROR')
+            db_utils.update_run_state(self.collection, event['uuid'], 'EXECUTOR_ERROR')
         else:
-            print("[TASK SUCCEEDED]", event)
-            document = db_utils.update_run_state(self.collection, event['uuid'], 'COMPLETE')
-        print(document)
+            db_utils.update_run_state(self.collection, event['uuid'], 'COMPLETE')

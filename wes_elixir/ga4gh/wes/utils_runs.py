@@ -7,6 +7,7 @@ from celery import uuid
 from json import decoder, loads
 from pymongo.errors import DuplicateKeyError
 from random import choice
+from yaml import dump
 
 import wes_elixir.database.db_utils as db_utils
 
@@ -355,7 +356,7 @@ def __process_workflow_attachments(data):
     # Use 'workflow_params' to generate YAML file
 
     # Create directory for storing workflow files
-    workflow_dir = os.path.join(data['internal']['out_dir'], "workflow_files")
+    workflow_dir = os.path.abspath(os.path.join(data['internal']['out_dir'], "workflow_files"))
     try:
         os.mkdir(workflow_dir)
 
@@ -363,21 +364,25 @@ def __process_workflow_attachments(data):
         # TODO: Do something more reasonable here
         pass
 
-    # Extract name and extensions of workflow
-    workflow_name_ext = os.path.splitext(os.path.basename(data['api']['request']['workflow_url']))
+    # Set main CWL workflow file path
+    data['internal']['cwl_path'] = os.path.abspath(data['api']['request']['workflow_url'])
 
-    # Copy main CWL workflow file
-    from shutil import copyfile
-    data['internal']['cwl_path'] = os.path.join(workflow_dir, "".join(workflow_name_ext))
-    # TODO: What if there are multiple files and this is only the header
-    # TODO: What if relative path was given? Would depend on CWD
-    copyfile(data['api']['request']['workflow_url'], data['internal']['cwl_path'])
+    # Extract name and extensions of workflow
+    workflow_name_ext = os.path.splitext(os.path.basename(data['internal']['cwl_path']))
+
+    ## Copy workflow files
+    #data['internal']['cwl_path'] = os.path.join(workflow_dir, "".join(workflow_name_ext))
+    #shutil.copyfile(data['api']['request']['workflow_url'], data['internal']['cwl_path'])
 
     # Write out parameters to YAML workflow config gile
-    from json import dump
     data['internal']['yaml_path'] = os.path.join(workflow_dir, ".".join([workflow_name_ext[0], "yml"]))
     with open(data['internal']['yaml_path'], 'w') as yaml_file:
-        dump(data['api']['request']["workflow_params"], yaml_file, ensure_ascii=False)
+        dump(
+            data['api']['request']["workflow_params"],
+            yaml_file,
+            allow_unicode=True,
+            default_flow_style=False
+        )
 
     # Extract workflow attachments from form data dictionary
     if 'workflow_attachment' in data['api']['request']:
@@ -401,18 +406,18 @@ def __run_workflow(config, document):
     # Re-assign document values
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
-    #cwl_path = document['internal']['cwl_path']
+    cwl_path = document['internal']['cwl_path']
     yaml_path = document['internal']['yaml_path']
 
     # Build command
     command_list = [
         "cwl-tes",
-        "--remote-storage-url", remote_storage_url,
-        "--tes", tes_url,
         "--leave-outputs",
         "--debug",
-        "/home/kanitz/Work/PROJECTS/WES-ELIXIR/cwl-tes/tests/hashsplitter-workflow.cwl",
-        "--input", yaml_path,
+        "--remote-storage-url", remote_storage_url,
+        "--tes", tes_url,
+        cwl_path,
+        yaml_path
     ]
 
     # Execute command as background task
