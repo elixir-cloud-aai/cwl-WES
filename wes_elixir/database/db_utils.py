@@ -1,32 +1,7 @@
 from bson.objectid import ObjectId
-from flask_pymongo import ASCENDING, PyMongo
+from pymongo.collection import ReturnDocument
 
 
-def register_mongodb(app):
-    '''Instantiate database and initialize collections'''
-
-    # Initialize PyMongo instance
-    mongo = PyMongo(app, uri="mongodb://{host}:{port}/{name}".format(
-        host=app.config['database']['host'],
-        port=app.config['database']['port'],
-        name=app.config['database']['name']
-    ))
-
-    # Add database
-    db = mongo.db[app.config['database']['name']]
-
-    # Add database collection for '/runs'
-    db_runs = mongo.db['runs']
-    db_runs.create_index([('run_id', ASCENDING)], unique=True)
-
-    # Add database collection for '/service-info'
-    db_service_info = mongo.db['service-info']
-
-    # Return database and collections
-    return db, db_runs, db_service_info
-
-
-# DATABASE CONVENIENCE FUNCTIONS
 def find_one_by_id(collection, object_id):
     '''Returns single object by object id, stripped of object id, or None if object not found'''
     return collection.find_one({'_id': ObjectId(object_id)}, {'_id': False})
@@ -66,3 +41,12 @@ def find_id_latest(collection):
         return collection.find().sort([('_id', -1)]).limit(1).next()['_id']
     except StopIteration:
         return None
+
+
+def update_run_state(collection, task_id, state="UNKNOWN"):
+    '''Update state of workflow run'''
+    return collection.find_one_and_update(
+        {"task_id": task_id},
+        {"$set": {"api.state": state}},
+        return_document=ReturnDocument.AFTER
+    )

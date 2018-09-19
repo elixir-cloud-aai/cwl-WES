@@ -17,12 +17,15 @@ database:
 
 # Storage
 storage:
+    permanent_dir: 'tests/output'
     tmp_dir: 'tests/tmp'
 
 # Celery task queuer
 celery:
     result_backend: rpc://
     broker_url: pyamqp://localhost:5672//
+    monitor:
+        timeout: 0.1
 
 # OpenAPI specs
 openapi:
@@ -44,14 +47,14 @@ service_info:
         cwl-tes: 0.2.0
     default_workflow_engine_parameters:
         - type: string
-          default_value: "abc"
+          default_value: "abcdefg"
         - type: int
           default_value: "5"
         - type: string
           default_value: "something_new"
     tags:
         known_tes_endpoints: "https://tes-dev.tsi.ebi.ac.uk/"
-        wes_elixir_version: 0.2.0
+        wes_elixir_version: 0.3.0
         some_param_3: another_thing
         some_param_4: yet_another_thing
         some_param_5: and_yet_another_thing

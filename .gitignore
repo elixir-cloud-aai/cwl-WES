@@ -219,6 +219,8 @@ tags
 
 # Add any custom additions below
 !.gitkeep
+celeryd.pid
 cwl-tes/
 .vscode/
 tests/tmp/*
+tests/output/*

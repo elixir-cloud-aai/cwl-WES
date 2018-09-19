@@ -4,7 +4,7 @@ import sys
 from configloader import ConfigLoader
 
 
-def register_config(cnx_app):
+def config_connexion_app(cnx_app):
     '''Parse configuration file and add to connexion app'''
 
     # Parse config file
