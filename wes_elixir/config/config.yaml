@@ -19,6 +19,7 @@ database:
 storage:
     permanent_dir: 'tests/output'
     tmp_dir: 'tests/tmp'
+    remote_storage_url: ftp://ftp-private.ebi.ac.uk/upload/foivos
 
 # Celery task queuer
 celery:

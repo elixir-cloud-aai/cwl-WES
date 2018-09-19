@@ -285,7 +285,7 @@ def __create_run_environment(config, document):
             # TODO: Think about permissions
             # TODO: Add this to document
             # TODO: Add working dir (currently one has to run the app from the outermost dir)
-            current_tmp_dir = os.path.join(tmp_dir, run_id)
+            current_tmp_dir = os.path.abspath(os.path.join(tmp_dir, run_id))
             os.mkdir(current_tmp_dir)
 
         # Try new run id if directory already exists
@@ -297,7 +297,7 @@ def __create_run_environment(config, document):
             # TODO: Think about permissions
             # TODO: Add this to document
             # TODO: Add working dir (currently one has to run the app from the outermost dir)
-            current_out_dir = os.path.join(out_dir, run_id)
+            current_out_dir = os.path.abspath(os.path.join(out_dir, run_id))
             os.mkdir(current_out_dir)
 
         # Try new run id if directory already exists
@@ -395,28 +395,24 @@ def __run_workflow(config, document):
     '''Helper function for `run_workflow()`'''
 
     # Re-assign config values
-    #tes_url = config['tes']['url']
+    tes_url = config['tes']['url']
+    remote_storage_url = config['storage']['remote_storage_url']
 
     # Re-assign document values
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
     #cwl_path = document['internal']['cwl_path']
-    #yaml_path = document['internal']['yaml_path']
-    #out_dir = document['internal']['out_dir']
-    #run_id = document['run_id']
+    yaml_path = document['internal']['yaml_path']
 
     # Build command
-    # TODO: uncomment cwl-tes command & uncomment dummy command for testing
-    #command_list = [
-    #    "cwl-tes",
-    #    "--tes",
-    #    tes_url,
-    #    cwl_path,
-    #    yaml_path
-    #]
     command_list = [
-        "sleep",
-        "10"
+        "cwl-tes",
+        "--remote-storage-url", remote_storage_url,
+        "--tes", tes_url,
+        "--leave-outputs",
+        "--debug",
+        "/home/kanitz/Work/PROJECTS/WES-ELIXIR/cwl-tes/tests/hashsplitter-workflow.cwl",
+        "--input", yaml_path,
     ]
 
     # Execute command as background task
