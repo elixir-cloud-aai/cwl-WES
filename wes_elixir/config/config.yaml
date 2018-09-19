@@ -1,0 +1,64 @@
+# General server/service settings
+server:
+    host: localhost
+    port: 7777
+    debug: True
+    env: development
+    testing: False
+
+# Database settings
+database:
+    host: 'localhost'
+    port: 27017
+    name: wes-elixir-db
+    run_id:
+        length: 6
+        charset: string.ascii_uppercase + string.digits
+
+# Storage
+storage:
+    permanent_dir: "tests/output"
+    tmp_dir: "tests/tmp"
+    remote_storage_url: ftp://ftp-private.ebi.ac.uk/upload/foivos
+
+# Celery task queuer
+celery:
+    result_backend: rpc://
+    broker_url: pyamqp://localhost:5672//
+    monitor:
+        timeout: 0.1
+
+# OpenAPI specs
+openapi:
+    wes_yaml_specs: "ga4gh/wes/ga4gh.wes.0_3_0.openapi.yaml"
+
+# WES service info settings
+service_info:
+    contact_info: https://github.com/elixir-europe/WES-ELIXIR
+    auth_instructions_url: https://www.elixir-europe.org/services/compute/aai
+    supported_file_system_protocols:
+        - http
+    supported_wes_versions:
+        - 0.3.0
+    workflow_type_versions:
+        CWL:
+            workflow_type_version:
+                - v1.0
+    workflow_engine_versions:
+        cwl-tes: 0.2.0
+    default_workflow_engine_parameters:
+        - type: string
+          default_value: "some_string"
+        - type: int
+          default_value: "5"
+    tags:
+        known_tes_endpoints: "https://tes-dev.tsi.ebi.ac.uk/"
+        wes_elixir_version: 0.4.0
+
+# Endpoint parameters
+api_endpoints:
+    default_page_size: 10
+
+# TES server
+tes:
+    url: "https://tes-dev.tsi.ebi.ac.uk/"
