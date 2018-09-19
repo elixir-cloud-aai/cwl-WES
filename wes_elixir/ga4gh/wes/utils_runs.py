@@ -416,7 +416,7 @@ def __run_workflow(config, document):
     #]
     command_list = [
         "sleep",
-        "1i"
+        "10"
     ]
 
     # Execute command as background task
