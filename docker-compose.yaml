@@ -1,0 +1,37 @@
+version: '3.6'
+services:
+  # nginx:
+  #   image: nginx:latest
+  #   restart: always
+  #   ports:
+  #     - "443:443"
+  #   links:
+  #     - wes-elixir
+  #   volumes:
+  #     - /docker/nginx/etc/ssl/:/etc/ssl/
+  #     - /docker/nginx/etc/nginx/conf.d/:/etc/nginx/conf.d
+
+  # wes-elixir:
+  #   # image: epiph-meteor:latest
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   restart: always
+  #   expose:
+  #     - "7777"
+  #   links:
+  #     - mongo
+  #   #environment:
+  #   #  - MONGO_URL # the value should be defined in the local environment or
+  #   #  # in the .env file located in the current working directory
+
+  mongo:
+    image: mongo:4.1.3
+    restart: always
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /Users/gypas-adm/Documents/mongo/data/db:/data/db
+    command: --auth
