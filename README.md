@@ -6,7 +6,7 @@
 
 ## Description
 
-This microservice uses [Flask](http://flask.pocoo.org/) and [connexion](https://github.com/zalando/connexion) to render the [GA4GH WES OpenAPI specification](https://github.com/ga4gh/workflow-execution-service-schemas). It allows users to send their workflows for execution, list current and previous workflow runs, and get the status and/or detailed information on individual workflow runs. It interprets workflows and breaks them down to individual tasks, for each task emitting a request that is compatible with the [GA4GH Task Execution Service](https://github.com/ga4gh/task-execution-schemas) (TES) OpenAPI specification. Thus, for end-to-end execution of workflows, a local or remote instance of a TES service such as [TESK](https://github.com/EMBL-EBI-TSI/TESK) or [funnel](https://ohsu-comp-bio.github.io/funnel/) is required.
+This microservice uses [Flask](http://flask.pocoo.org/) and [Connexion](https://github.com/zalando/connexion) to render the [GA4GH WES OpenAPI specification](https://github.com/ga4gh/workflow-execution-service-schemas). It allows users to send their workflows for execution, list current and previous workflow runs, and get the status and/or detailed information on individual workflow runs. It interprets workflows and breaks them down to individual tasks, for each task emitting a request that is compatible with the [GA4GH Task Execution Service](https://github.com/ga4gh/task-execution-schemas) (TES) OpenAPI specification. Thus, for end-to-end execution of workflows, a local or remote instance of a TES service such as [TESK](https://github.com/EMBL-EBI-TSI/TESK) or [funnel](https://ohsu-comp-bio.github.io/funnel/) is required.
 
 The service will be backed by a [MongoDB](https://www.mongodb.com/) database and will use [ELIXIR AAI](https://www.elixir-europe.org/services/compute/aai) authentication. It will provide an abstract middleware layer providing support for various workflow languages. Once implemented, support for individual languages can be added in the form of pluggable modules. Initially, we are planning to take advantage of [CWL-TES](https://github.com/common-workflow-language/cwl-tes) to provide support for the [Common Workflow Language](https://github.com/common-workflow-language/common-workflow-language) (CWL).
 
@@ -85,13 +85,14 @@ Install service
 python setup.py develop
 ```
 
-Set config file environment variable and optionally edit config file
+Optional: set config file environment variable and edit config file
 
 ```bash
-export WES_CONFIG="$PWD/wes_elixir/config/config.yaml"
+export WES_CONFIG="$PWD/wes_elixir/config/app_config.yaml"
 ```
 
 Set your .netrc file under your $HOME directory accordingly. The .netrc file should look like the following:
+
 ```bash
 machine ftp-private.ebi.ac.uk
 login redacted_username
