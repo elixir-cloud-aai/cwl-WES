@@ -1,0 +1,36 @@
+version: 1
+
+disable_existing_loggers: False
+
+formatters:
+    basic:
+        class: logging.Formatter
+        style: "{"
+        format: "{message}"
+
+    standard:
+        class: logging.Formatter
+        style: "{"
+        format: "[{asctime}] [{levelname:^8}] {message} ({name})"
+
+    compact:
+        class: logging.Formatter
+        style: "{"
+        format: "{asctime}-{levelno:^2}-{name}-{module}-{funcName}: {message}"
+        datefmt: "%y-%m-%d %H:%M:%S"
+
+    detailed:
+        class: logging.Formatter
+        style: "{"
+        format: "[{asctime}] [{levelname:^8}] [{name}] {message} ({pathname}:{funcName})"
+
+handlers:
+    console:
+        class: logging.StreamHandler
+        level: DEBUG
+        formatter: standard
+        stream: ext://sys.stderr
+
+root:
+    level: INFO
+    handlers: [console]
