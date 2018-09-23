@@ -1,14 +1,19 @@
 from copy import deepcopy
 from datetime import datetime, timezone
+import logging
 
 import wes_elixir.database.db_utils as db_utils
+
+
+# Get logger instance
+logger = logging.getLogger(__name__)
 
 
 #########################
 ### GET /service-info ###
 #########################
 
-def get_service_info(config, silent=False):
+def get_service_info(config, silent=False, *args, **kwargs):
     '''Returns readily formatted service info or None (in silent mode); creates service info database document if does not exist'''
 
     # Re-assign config values
@@ -19,6 +24,9 @@ def get_service_info(config, silent=False):
     # Write current service info to database if absent or different from latest
     if not service_info == db_utils.find_one_latest(collection_service_info):
         collection_service_info.insert(service_info)
+        logger.info("Updated service info: {service_info}".format(service_info=service_info))
+    else:
+        logger.debug("No change in service info. Not updated.")
 
     # Return None when called in silent mode:
     if silent:

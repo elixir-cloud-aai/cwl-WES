@@ -1,10 +1,16 @@
+import logging
 import subprocess
 
 from wes_elixir.celery_worker import celery
 
 
 @celery.task(bind=True, track_started=True)
-def add_command_to_task_queue(self, command_list, tmp_dir):
+def add_command_to_task_queue(
+    self,
+    command_list,
+    tmp_dir
+):
+
     '''Adds workflow run to task queue'''
 
     # Execute task in background

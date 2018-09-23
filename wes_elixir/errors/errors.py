@@ -1,3 +1,5 @@
+import logging
+
 from connexion import ProblemException
 from connexion.exceptions import ExtraParameterProblem, Forbidden, Unauthorized
 from flask import Response
@@ -5,24 +7,29 @@ from json import dumps
 from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 
 
-def register_error_handlers(cnx_app):
-    '''Add custom handlers for exceptions to connexion app instance'''
+# Get logger instance
+logger = logging.getLogger(__name__)
+
+
+def register_error_handlers(app):
+    '''Add custom handlers for exceptions to Connexion app instance'''
 
     # Add error handlers
-    cnx_app.add_error_handler(BadRequest, handle_bad_request)
-    cnx_app.add_error_handler(ExtraParameterProblem, handle_bad_request)
-    cnx_app.add_error_handler(Forbidden, __handle_forbidden)
-    cnx_app.add_error_handler(InternalServerError, __handle_internal_server_error)
-    cnx_app.add_error_handler(Unauthorized, __handle_unauthorized)
-    cnx_app.add_error_handler(WorkflowNotFound, __handle_workflow_not_found)
+    app.add_error_handler(BadRequest, handle_bad_request)
+    app.add_error_handler(ExtraParameterProblem, handle_bad_request)
+    app.add_error_handler(Forbidden, __handle_forbidden)
+    app.add_error_handler(InternalServerError, __handle_internal_server_error)
+    app.add_error_handler(Unauthorized, __handle_unauthorized)
+    app.add_error_handler(WorkflowNotFound, __handle_workflow_not_found)
+    logger.info("Registered custom error handlers with Connexion app.")
 
-    # Return connexion app instance
-    return cnx_app
+    # Return Connexion app instance
+    return app
 
 
 # CUSTOM ERRORS
 class WorkflowNotFound(ProblemException, NotFound):
-    '''WorkflowNotFound(404) error compatible with connexion'''
+    '''WorkflowNotFound(404) error compatible with Connexion'''
     def __init__(self, title=None, **kwargs):
         super(WorkflowNotFound, self).__init__(title=title, **kwargs)
 

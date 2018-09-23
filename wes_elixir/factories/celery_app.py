@@ -1,15 +1,36 @@
+from inspect import stack
+import logging
+
 from celery import Celery
+
+from wes_elixir.config.config_parser import get_conf, get_conf_type
+
+
+# Get logger instance
+logger = logging.getLogger(__name__)
 
 
 def create_celery_app(app):
+
+    # Re-assign config values
+    broker=get_conf(app.app.config, 'celery', 'broker_url')
+    backend=get_conf(app.app.config, 'celery', 'result_backend')
+    include=get_conf_type(app.app.config, 'celery', 'include', types=(list))
+
+    # Instantiate Celery app
     celery = Celery(
         app=__name__,
-        broker='pyamqp://localhost:5672//',
-        backend='rpc://',
-        include=['wes_elixir.ga4gh.wes.utils_bg_tasks']
+        broker=broker,
+        backend=backend,
+        include=include,
     )
+    logger.info("Celery app created from '{calling_module}'.".format(
+        calling_module=':'.join([stack()[1].filename, stack()[1].function])
+    ))
 
+    # Update Celery app configuration with Flask app configuration
     celery.conf.update(app.app.config)
+    logger.info("Celery app configured.")
 
     class ContextTask(celery.Task):
         def __call__(self, *args, **kwargs):
@@ -17,5 +38,6 @@ def create_celery_app(app):
                 return self.run(*args, **kwargs)
 
     celery.Task = ContextTask
+    logger.debug("App context added to celery.Task class.")
 
     return celery
