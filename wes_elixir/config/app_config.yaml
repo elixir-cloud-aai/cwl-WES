@@ -24,8 +24,10 @@ storage:
 
 # Celery task queuer
 celery:
-    result_backend: rpc://
     broker_url: pyamqp://localhost:5672//
+    result_backend: rpc://
+    include:
+        - wes_elixir.ga4gh.wes.utils_bg_tasks
     monitor:
         timeout: 0.1
 

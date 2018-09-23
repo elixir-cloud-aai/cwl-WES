@@ -2,8 +2,16 @@ import logging
 import os
 
 
-def register_openapi(app, specs, validate_responses=True):
-    '''Register OpenAPI specs with connexion app'''
+# Get logger instance
+logger = logging.getLogger(__name__)
+
+
+def register_openapi(
+    app=None,
+    specs=[]
+):
+
+    '''Register OpenAPI specs with Connexion app'''
 
     # Iterate over list of APIspecs
     for spec in specs:
@@ -18,14 +26,19 @@ def register_openapi(app, specs, validate_responses=True):
                 strict_validation=spec['strict_validation'],
                 validate_responses=spec['validate_responses'],
                 swagger_ui=spec['swagger_ui'],
-                swagger_json=spec['swagger_json']
+                swagger_json=spec['swagger_json'],
             )
 
             # Log info message
-            logging.info("API endpoints specified in '{path}' added.".format(path=path))
+            logger.info("API endpoints specified in '{path}' added.".format(path=path))
         
-        except FileNotFoundError as e:
-            logging.error("{e}".format(e=e))
+        except (FileNotFoundError, PermissionError) as e:
+            logger.critical("API specification file not found or accessible at '{path}'. Execution aborted. Original error message: {type}: {msg}".format(
+                path=path,
+                type=type(e).__name__,
+                msg=e,
+            ))
+            raise SystemExit(1)
 
-    # Return connexion app
+    # Return Connexion app
     return(app)

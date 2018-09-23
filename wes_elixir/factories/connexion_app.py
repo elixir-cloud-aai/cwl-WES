@@ -1,4 +1,4 @@
-import inspect
+from inspect import stack
 import logging
 
 from connexion import App
@@ -11,16 +11,14 @@ from wes_elixir.config.config_parser import get_conf
 logger = logging.getLogger(__name__)
 
 
-def create_connexion_app(
-    config=None
-):
+def create_connexion_app(config=None):
 
     '''Create and configure Connexion app'''
 
     # Instantiate Connexion app
     app = App(__name__)
     logger.info("Connexion app created from '{calling_module}'.".format(
-        calling_module=':'.join([inspect.stack()[1].filename, inspect.stack()[1].function])
+        calling_module=':'.join([stack()[1].filename, stack()[1].function])
     ))
 
     # Workaround for adding a custom handler for `connexion.problem` responses
@@ -38,7 +36,6 @@ def create_connexion_app(
             app=app,
             config=config,
         )
-        logger.info("Connexion app configured.")
 
     # Return Connexion app
     return app
@@ -46,7 +43,7 @@ def create_connexion_app(
 
 def __add_config_to_connexion_app(
     app,
-    config,
+    config
 ):
 
     '''Add configuration to Flask app and replace default Connexion and Flask settings'''
@@ -68,6 +65,9 @@ def __add_config_to_connexion_app(
 
     # Add user configuration to Flask app config
     app.app.config.update(config)
+
+    # Log info message
+    logger.info("Connexion app configured.")
 
     # Return Connexion app instance
     return app

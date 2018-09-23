@@ -11,10 +11,10 @@ logger = logging.getLogger(__name__)
 
 def parse_app_config(
     config_var=None,
-    default_path=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'app_config.yaml')),
+    default_path=os.path.abspath(os.path.join(os.path.dirname(os.path.realpath(__file__)), 'app_config.yaml'))
 ):
 
-    '''Parse configuration file and add to connexion app'''
+    '''Parse configuration file and add to Connexion app'''
 
     # Create parser instance
     config = YAMLConfigParser()
@@ -33,7 +33,7 @@ def parse_app_config(
 
     # Log info 
     else:
-        logger.info("App config file loaded from '{path}'.".format(path=path))
+        logger.info("App config loaded from '{path}'.".format(path=path))
     
     # Return config
     return config

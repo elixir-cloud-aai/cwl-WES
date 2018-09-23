@@ -1,3 +1,4 @@
+import logging
 import os
 import shutil
 import string
@@ -11,22 +12,32 @@ from yaml import dump
 
 import wes_elixir.database.db_utils as db_utils
 
+from wes_elixir.config.config_parser import get_conf
 from wes_elixir.errors.errors import BadRequest, WorkflowNotFound
 from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
+
+
+# Get logger instance
+logger = logging.getLogger(__name__)
 
 
 #############################
 ### DELETE /runs/<run_id> ###
 #############################
 
-def cancel_run(config, celery_app, run_id):
+def cancel_run(config, celery_app, run_id, *args, **kwargs):
     '''Cancel running workflow'''
 
     # Re-assign config values
-    collection_runs = config['database']['collections']['runs']
+    collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # Get task ID from database
     task_id = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'task_id')
+    
+    # Raise error if workflow run was not found
+    if task_id is None:
+        logger.error("Run '{run_id}' not found.".format(run_id=run_id))
+        raise WorkflowNotFound
 
     # Cancel workflow run
     try:
@@ -36,7 +47,12 @@ def cancel_run(config, celery_app, run_id):
 
     # Raise error if workflow run was not found
     except Exception as e:
-        print(e)
+        logger.error("Failed to revoked task {task_id} for run '{run_id}'. Possible the workflow is not running anymore. Original error message: {type}: {msg}".format(
+            task_id=task_id,
+            run_id=run_id,
+            type=type(e).__name__,
+            msg=e,
+        ))
         raise WorkflowNotFound
 
     # Build formatted response object
@@ -50,17 +66,18 @@ def cancel_run(config, celery_app, run_id):
 ### GET /runs/<run_id> ###
 ##########################
 
-def get_run_log(config, run_id):
+def get_run_log(config, run_id, *args, **kwargs):
     '''Get detailed log information for specific run'''
 
     # Re-assign config values
-    collection_runs = config['database']['collections']['runs']
+    collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # Get document from database
     document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
 
     # Raise error if workflow run was not found
     if document is None:
+        logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
 
     # Return response
@@ -71,21 +88,23 @@ def get_run_log(config, run_id):
 ### GET /runs/<run_id>/status ###
 #################################
 
-def get_run_status(config, run_id):
+def get_run_status(config, run_id, *args, **kwargs):
     '''Get status information for specific run'''
 
     # Re-assign config values
-    collection_runs = config['database']['collections']['runs']
+    collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # Get document from database
     document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
     
-    # Extract workflow run state
-    state = document['state']
-
     # Raise error if workflow run was not found
-    if state is None:
+    if document is None:
+        logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
+    
+    # Extract workflow run state
+    else:
+        state = document['state']
 
     # Build formatted response object
     response = {
@@ -101,11 +120,11 @@ def get_run_status(config, run_id):
 ### GET /runs ###
 #################
 
-def list_runs(config, **kwargs):
+def list_runs(config, *args, **kwargs):
     '''Get status information for specific run'''
 
     # Re-assign config values
-    collection_runs = config['database']['collections']['runs']
+    collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # TODO: stable ordering (newest last?)
     # TODO: implement next page token
@@ -136,7 +155,7 @@ def list_runs(config, **kwargs):
 ### POST /runs ###
 ##################
 
-def run_workflow(config, form_data):
+def run_workflow(config, form_data, *args, **kwargs):
     '''Execute workflow and save info to database; returns unique run id'''
 
     # Arrange form data in dictionary
@@ -221,14 +240,17 @@ def __validate_run_workflow_request(data):
 
     # Raise error if any required params are missing
     if not required <= set(data):
+        logger.error("POST request does not conform to schema.")
         raise BadRequest()
 
     # Raise error if any string params are not of type string
     if not all(isinstance(value, str) for value in type_str.values()):
+        logger.error("POST request does not conform to schema.")
         raise BadRequest()
 
     # Raise error if any dict params are not of type dict
     if not all(isinstance(value, dict) for value in type_dict.values()):
+        logger.error("POST request does not conform to schema.")
         raise BadRequest()
 
     # Nothing to return
@@ -264,9 +286,11 @@ def __create_run_environment(config, document):
     '''Create unique run identifier and permanent and temporary storage directories for current run'''
 
     # Re-assign config values
-    collection_runs = config['database']['collections']['runs']
-    out_dir = config['storage']['permanent_dir']
-    tmp_dir = config['storage']['tmp_dir']
+    collection_runs = get_conf(config, 'database', 'collections', 'runs')
+    out_dir = get_conf(config, 'storage', 'permanent_dir')
+    tmp_dir = get_conf(config, 'storage', 'tmp_dir')
+    run_id_charset = eval(get_conf(config, 'database', 'run_id', 'charset'))
+    run_id_length = get_conf(config, 'database', 'run_id', 'length')
 
     # Keep on trying until a unique run id was found and inserted
     # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500 to user)
@@ -274,11 +298,11 @@ def __create_run_environment(config, document):
 
         # Create unique run id
         run_id = __create_run_id(
-            charset=eval(config['database']['run_id']['charset']),
-            length=config['database']['run_id']['length']
+            charset=run_id_charset,
+            length=run_id_length,
         )
 
-        # Create unique celery task id
+        # Create unique Celery task id
         task_id = uuid()
 
         # Try to create workflow run directory (temporary)
@@ -400,10 +424,11 @@ def __run_workflow(config, document):
     '''Helper function for `run_workflow()`'''
 
     # Re-assign config values
-    tes_url = config['tes']['url']
-    remote_storage_url = config['storage']['remote_storage_url']
+    tes_url = get_conf(config, 'tes', 'url')
+    remote_storage_url = get_conf(config, 'storage', 'remote_storage_url')
 
     # Re-assign document values
+    run_id = document['run_id']
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
     cwl_path = document['internal']['cwl_path']
@@ -421,6 +446,11 @@ def __run_workflow(config, document):
     ]
 
     # Execute command as background task
+    logger.info("Starting execution of run '{run_id}' as task '{task_id}' in '{tmp_dir}'...".format(
+        run_id=run_id,
+        task_id=task_id,
+        tmp_dir=tmp_dir,
+    ))
     add_command_to_task_queue.apply_async(
         None, {
             'command_list': command_list,
