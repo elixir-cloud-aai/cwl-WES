@@ -85,10 +85,10 @@ Install service
 python setup.py develop
 ```
 
-Set config file environment variable and optionally edit config file
+Optional: set config file environment variable and edit config file
 
 ```bash
-export WES_CONFIG="$PWD/wes_elixir/config/config.yaml"
+export WES_CONFIG="$PWD/wes_elixir/config/app_config.yaml"
 ```
 
 Set your .netrc file under your $HOME directory accordingly. The .netrc file should look like the following:
