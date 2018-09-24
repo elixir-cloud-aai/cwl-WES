@@ -32,7 +32,7 @@ RUN wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz \
   && python -m pip install --upgrade pip setuptools wheel
 
 ## install WES-ELIXIR and cwl-tes
-RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git \
+RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
   && cd WES-ELIXIR \
   && git clone https://github.com/common-workflow-language/cwl-tes.git \
   && cd cwl-tes \
@@ -41,6 +41,7 @@ RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git \
   && python setup.py install \
   && cd .. \
   && pip install -r requirements.txt \
-  && python setup.py develop
+  && python setup.py develop \
+  && cd ../
 
-ENV WES_CONFIG="/Python-3.7.0/wes_elixir/config/config.yaml"
+ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/config.yaml"

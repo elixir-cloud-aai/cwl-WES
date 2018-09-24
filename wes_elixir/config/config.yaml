@@ -1,6 +1,6 @@
 # General server/service settings
 server:
-    host: localhost
+    host: 127.0.0.1
     port: 7777
     debug: True
     env: development
@@ -8,7 +8,7 @@ server:
 
 # Database settings
 database:
-    host: 'localhost'
+    host: 'mongo'
     port: 27017
     name: wes-elixir-db
     run_id:
@@ -24,7 +24,7 @@ storage:
 # Celery task queuer
 celery:
     result_backend: rpc://
-    broker_url: pyamqp://localhost:5672//
+    broker_url: pyamqp://rabbitmq:5672//
     monitor:
         timeout: 0.1
 
