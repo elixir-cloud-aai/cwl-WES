@@ -1,6 +1,6 @@
 # General server/service settings
 server:
-    host: localhost
+    host: 127.0.0.1
     port: 7777
     debug: True
     environment: development
@@ -9,7 +9,7 @@ server:
 
 # Database settings
 database:
-    host: 'localhost'
+    host: 'mongo'
     port: 27017
     name: wes-elixir-db
     run_id:
@@ -33,7 +33,7 @@ celery:
 
 # OpenAPI specs
 api:
-    specs: 
+    specs:
         - path: "ga4gh.wes.0_3_0.openapi.yaml"
           strict_validation: True
           validate_responses: True
