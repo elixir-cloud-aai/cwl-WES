@@ -19,7 +19,7 @@ LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 
 ## install dependencies
 RUN apt-get update \
-  && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl rabbitmq-server
+  && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl
 
 ## install python
 RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
@@ -36,9 +36,6 @@ COPY ./ $HOME/WES-ELIXIR/
 ## install WES-ELIXIR and cwl-tes
 #RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
 
-#&& virtualenv -p `which python3` venv \
-#&& /bin/bash -c "source venv/bin/activate" \
-
 RUN cd WES-ELIXIR \
   && git clone https://github.com/common-workflow-language/cwl-tes.git \
   && cd cwl-tes \
@@ -52,4 +49,4 @@ RUN cd WES-ELIXIR \
 
 ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/app_config.yaml"
 
-COPY .netrc $HOME/
+COPY .netrc /root
