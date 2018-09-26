@@ -19,7 +19,7 @@ LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 
 ## install dependencies
 RUN apt-get update \
-  && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl
+  && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl rabbitmq-server
 
 ## install python
 RUN wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz \
@@ -30,6 +30,7 @@ RUN wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz \
   && ln -s /Python-3.7.0/python /usr/local/bin \
   && cd ../ \
   && python -m pip install --upgrade pip setuptools wheel
+
 
 ## install WES-ELIXIR and cwl-tes
 RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
@@ -42,6 +43,11 @@ RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
   && cd .. \
   && pip install -r requirements.txt \
   && python setup.py develop \
-  && cd ../
+  && cd ../ \
+  && cd /WES-ELIXIR/wes_elixir
 
-ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/config.yaml"
+ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/app_config.yaml"
+
+#CMD python /WES-ELIXIR/wes_elixir/app.py
+
+#& celery worker -A celery_worker -E --loglevel=info &

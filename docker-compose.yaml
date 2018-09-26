@@ -11,46 +11,27 @@ services:
   #     - /docker/nginx/etc/ssl/:/etc/ssl/
   #     - /docker/nginx/etc/nginx/conf.d/:/etc/nginx/conf.d
 
-  # wes-elixir:
-  #   # image: epiph-meteor:latest
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile
-  #   restart: always
-  #   ports:
-  #     - "7777:7777"
-  #   # expose:
-  #   #   - "7777"
-  #   links:
-  #     - rabbitmq
-  #     - mongo
-  #   command: python /WES-ELIXIR/wes_elixir/app.py
-  #     # - cd /WES-ELIXIR/wes_elixir
-  #     # - celery worker -A celery_worker -E --loglevel=info
-  #   # environment:
-  #     # MONGO_URL=mongodb://mongo:27017/wes-elixir-db
-
-  rabbitmq:
-    image: "rabbitmq:3.7.8"
+  wes-elixir:
+    # image: epiph-meteor:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     restart: always
-    hostname: "rabbit1"
     ports:
-      - "15672:15672"
-    labels:
-      NAME: "rabbitmq1"
+      - "7777:7777"
+    # expose:
+    #   - "7777"
     links:
+      - rabbitmq
       - mongo
-    #volumes:
-    #  - "./enabled_plugins:/etc/rabbitmq/enabled_plugins"
+    command: bash -c "cd /WES-ELIXIR/wes_elixir; python app.py & celery worker -A celery_worker -E --loglevel=info"
 
   mongo:
     image: mongo:4.1.3
     restart: always
-    # ports:
-    #   - "27017:27017"
+    ports:
+      - "27017:27017"
     expose:
       - "27017"
     volumes:
       - /Users/gypas-adm/Documents/mongo/data/db:/data/db
-      # - /home/cloud-user/mongo/data/db/:/data/db
-    command: --auth
