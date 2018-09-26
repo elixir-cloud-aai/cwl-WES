@@ -22,7 +22,6 @@ services:
     # expose:
     #   - "7777"
     links:
-      - rabbitmq
       - mongo
     command: bash -c "cd /WES-ELIXIR/wes_elixir; python app.py & celery worker -A celery_worker -E --loglevel=info"
 
@@ -34,4 +33,4 @@ services:
     expose:
       - "27017"
     volumes:
-      - /Users/gypas-adm/Documents/mongo/data/db:/data/db
+      - /Users/foivosgypas/Documents/mongo/data/db:/data/db

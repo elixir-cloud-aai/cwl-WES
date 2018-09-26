@@ -31,10 +31,16 @@ RUN wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tar.xz \
   && cd ../ \
   && python -m pip install --upgrade pip setuptools wheel
 
+## install mongo
+RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
+RUN echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
+RUN apt-get update && apt-get install -y mongodb-org
+
+COPY ./ $HOME/WES-ELIXIR/
 
 ## install WES-ELIXIR and cwl-tes
-RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
-  && cd WES-ELIXIR \
+#RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
+RUN cd WES-ELIXIR \
   && git clone https://github.com/common-workflow-language/cwl-tes.git \
   && cd cwl-tes \
   && git checkout ftp \
@@ -43,11 +49,12 @@ RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
   && cd .. \
   && pip install -r requirements.txt \
   && python setup.py develop \
-  && cd ../ \
-  && cd /WES-ELIXIR/wes_elixir
+  && cd ../
 
 ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/app_config.yaml"
 
-#CMD python /WES-ELIXIR/wes_elixir/app.py
-
-#& celery worker -A celery_worker -E --loglevel=info &
+#CMD
+# mongod
+# rabbitmq-server
+# python /WES-ELIXIR/wes_elixir/app.py
+# celery worker -A celery_worker -E --loglevel=info

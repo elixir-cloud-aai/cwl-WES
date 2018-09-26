@@ -9,7 +9,7 @@ server:
 
 # Database settings
 database:
-    host: 'mongo'
+    host: '0.0.0.0'
     port: 27017
     name: wes-elixir-db
     run_id:
