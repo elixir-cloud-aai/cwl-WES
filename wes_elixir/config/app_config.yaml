@@ -9,7 +9,7 @@ server:
 
 # Database settings
 database:
-    host: '0.0.0.0'
+    host: 'localhost'
     port: 27017
     name: wes-elixir-db
     run_id:
