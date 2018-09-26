@@ -61,7 +61,7 @@ service_info:
           default_value: "5"
     tags:
         known_tes_endpoints: "https://tes-dev.tsi.ebi.ac.uk/"
-        wes_elixir_version: 0.5.0
+        wes_elixir_version: 0.6.0
 
 # Endpoint parameters
 api_endpoints:
