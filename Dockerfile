@@ -31,11 +31,6 @@ RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
   && cd ../ \
   && python -m pip install --upgrade pip setuptools wheel virtualenv
 
-## install mongo
-RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv EA312927
-RUN echo "deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-3.2.list
-RUN apt-get update && apt-get install -y mongodb-org
-
 COPY ./ $HOME/WES-ELIXIR/
 
 ## install WES-ELIXIR and cwl-tes
@@ -57,9 +52,4 @@ RUN cd WES-ELIXIR \
 
 ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/app_config.yaml"
 
-#CMD
-# mongod
-# rabbitmq-server -detached
-# cd /WES-ELIXIR
-# python wes_elixir/app.py &
-# celery worker -A celery_worker -E --loglevel=info
+COPY .netrc $HOME/

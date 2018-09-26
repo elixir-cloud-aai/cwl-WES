@@ -33,7 +33,7 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
 
     # Get task ID from database
     task_id = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'task_id')
-    
+
     # Raise error if workflow run was not found
     if task_id is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
@@ -96,12 +96,12 @@ def get_run_status(config, run_id, *args, **kwargs):
 
     # Get document from database
     document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
-    
+
     # Raise error if workflow run was not found
     if document is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    
+
     # Extract workflow run state
     else:
         state = document['state']
@@ -179,7 +179,7 @@ def run_workflow(config, form_data, *args, **kwargs):
     __run_workflow(config=config, document=document)
 
     # Build formatted response object
-    response = {"run_id": document['run_id']} 
+    response = {"run_id": document['run_id']}
 
     # Return response object
     return response
@@ -227,7 +227,7 @@ def __validate_run_workflow_request(data):
     #   required = False
     # workflow_url:
     #   type = str
-    #   required = True 
+    #   required = True
     # workflow_attachment:
     #   type = [str]
     #   required = False

@@ -11,8 +11,22 @@ services:
   #     - /docker/nginx/etc/ssl/:/etc/ssl/
   #     - /docker/nginx/etc/nginx/conf.d/:/etc/nginx/conf.d
 
+
+  wes-elixir-celery:
+    image: wes-elixir:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    links:
+      - rabbit1
+    command: bash -c "cd /WES-ELIXIR/wes_elixir; celery worker -A celery_worker -E --loglevel=info"
+    volumes:
+      - ./data/tests:/WES-ELIXIR/tests
+
+
   wes-elixir:
-    # image: epiph-meteor:latest
+    image: wes-elixir:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -23,14 +37,30 @@ services:
     #   - "7777"
     links:
       - mongo
-    command: bash -c "cd /WES-ELIXIR/wes_elixir; python app.py & celery worker -A celery_worker -E --loglevel=info"
+    command: bash -c "cd /WES-ELIXIR/; python wes_elixir/app.py"
+    volumes:
+      - ./data/tests:/WES-ELIXIR/tests
+
+  rabbit1:
+    image: "rabbitmq:3-management"
+    hostname: "rabbit1"
+    # environment:
+    #   RABBITMQ_ERLANG_COOKIE: "SWQOKODSQALRPCLNMEQG"
+    #   RABBITMQ_DEFAULT_USER: "rabbitmq"
+    #   RABBITMQ_DEFAULT_PASS: "rabbitmq"
+    #   RABBITMQ_DEFAULT_VHOST: "/"
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    links:
+      - mongo
 
   mongo:
-    image: mongo:4.1.3
+    image: mongo:3.2
     restart: always
     ports:
       - "27017:27017"
     expose:
       - "27017"
     volumes:
-      - /Users/foivosgypas/Documents/mongo/data/db:/data/db
+      - ./data/db:/data/db
