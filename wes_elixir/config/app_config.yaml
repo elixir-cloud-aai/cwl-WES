@@ -5,7 +5,7 @@ server:
     debug: True
     environment: development
     testing: False
-    use_reloader: False
+    use_reloader: True
 
 # Database settings
 database:
