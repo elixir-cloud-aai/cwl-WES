@@ -224,3 +224,4 @@ cwl-tes/
 .vscode/
 tests/tmp/*
 tests/output/*
+.netrc

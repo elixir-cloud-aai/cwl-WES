@@ -28,6 +28,11 @@ def create_celery_app(app):
         calling_module=':'.join([stack()[1].filename, stack()[1].function])
     ))
 
+    # Set Celery options
+    # TODO: Hotfix to get around message truncation problem when processing STDOUT/STDERR
+    # TODO: Solve this differently (via result backend) as this is not very robust & may slow down system
+    celery.Task.resultrepr_maxsize = 200000
+
     # Update Celery app configuration with Flask app configuration
     celery.conf.update(app.app.config)
     logger.info("Celery app configured.")

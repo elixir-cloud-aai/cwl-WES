@@ -33,7 +33,7 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
 
     # Get task ID from database
     task_id = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'task_id')
-    
+
     # Raise error if workflow run was not found
     if task_id is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
@@ -96,12 +96,12 @@ def get_run_status(config, run_id, *args, **kwargs):
 
     # Get document from database
     document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
-    
+
     # Raise error if workflow run was not found
     if document is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    
+
     # Extract workflow run state
     else:
         state = document['state']
@@ -179,7 +179,7 @@ def run_workflow(config, form_data, *args, **kwargs):
     __run_workflow(config=config, document=document)
 
     # Build formatted response object
-    response = {"run_id": document['run_id']} 
+    response = {"run_id": document['run_id']}
 
     # Return response object
     return response
@@ -227,7 +227,7 @@ def __validate_run_workflow_request(data):
     #   required = False
     # workflow_url:
     #   type = str
-    #   required = True 
+    #   required = True
     # workflow_attachment:
     #   type = [str]
     #   required = False
@@ -438,12 +438,29 @@ def __run_workflow(config, document):
     command_list = [
         "cwl-tes",
         "--leave-outputs",
-        "--debug",
         "--remote-storage-url", remote_storage_url,
         "--tes", tes_url,
         cwl_path,
         yaml_path
     ]
+
+    ## TEST CASE FOR SYSTEM ERROR
+    #command_list = [
+    #    "/path/to/non_existing/script"
+    #]
+    ## TEST CASE FOR EXECUTOR ERROR
+    #command_list = [
+    #    "/bin/false"
+    #]
+    ## TEST CASE FOR FAST COMPLETION WITH STDOUT
+    #command_list = [
+    #    "/home/kanitz/Work/PROJECTS/SANDBOX/subprocess_parsing/test_script.sh"
+    #]
+    ## TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
+    #command_list = [
+    #    "sleep",
+    #    "30"
+    #]
 
     # Execute command as background task
     logger.info("Starting execution of run '{run_id}' as task '{task_id}' in '{tmp_dir}'...".format(
