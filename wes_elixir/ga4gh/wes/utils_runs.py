@@ -438,7 +438,6 @@ def __run_workflow(config, document):
     command_list = [
         "cwl-tes",
         "--leave-outputs",
-        "--debug",
         "--remote-storage-url", remote_storage_url,
         "--tes", tes_url,
         cwl_path,

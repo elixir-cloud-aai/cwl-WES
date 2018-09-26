@@ -226,6 +226,8 @@ class TaskMonitor():
         '''Event handler for successful and failed (executor error) Celery tasks'''
 
         # Parse subprocess results
+        # TODO: Solve this via results backend
+        # TODO: See 'wes_elixir.factories.celery_app.py' for current hotfix
         result = literal_eval(event['result'])
 
         # Create dictionary for internal parameters
