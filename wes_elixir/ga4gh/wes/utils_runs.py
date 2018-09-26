@@ -445,6 +445,24 @@ def __run_workflow(config, document):
         yaml_path
     ]
 
+    ## TEST CASE FOR SYSTEM ERROR
+    #command_list = [
+    #    "/path/to/non_existing/script"
+    #]
+    ## TEST CASE FOR EXECUTOR ERROR
+    #command_list = [
+    #    "/bin/false"
+    #]
+    ## TEST CASE FOR FAST COMPLETION WITH STDOUT
+    #command_list = [
+    #    "/home/kanitz/Work/PROJECTS/SANDBOX/subprocess_parsing/test_script.sh"
+    #]
+    ## TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
+    #command_list = [
+    #    "sleep",
+    #    "30"
+    #]
+
     # Execute command as background task
     logger.info("Starting execution of run '{run_id}' as task '{task_id}' in '{tmp_dir}'...".format(
         run_id=run_id,

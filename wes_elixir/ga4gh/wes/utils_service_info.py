@@ -36,8 +36,8 @@ def get_service_info(config, silent=False, *args, **kwargs):
     service_info['system_state_counts'] = __get_system_state_counts(collection_runs)
 
     # Add timestamps
-    service_info['tags']['timestamp_last_service_info_update'] = db_utils.find_id_latest(collection_service_info).generation_time.replace(tzinfo=timezone.utc).astimezone(tz=None)
-    service_info['tags']['timestamp_current'] = datetime.now().isoformat()
+    service_info['tags']['timestamp_last_service_info_update'] = db_utils.find_id_latest(collection_service_info).generation_time
+    service_info['tags']['timestamp_current'] = datetime.utcnow().isoformat()
 
     # Return service info
     return service_info
