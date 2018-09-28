@@ -3,7 +3,7 @@ import logging
 
 from celery import Celery
 
-from wes_elixir.config.config_parser import get_conf, get_conf_type
+from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 
 
 # Get logger instance

@@ -6,6 +6,7 @@ from flask import current_app
 
 import wes_elixir.ga4gh.wes.utils_runs as runs
 import wes_elixir.ga4gh.wes.utils_service_info as service_info
+from wes_elixir.security.decorators import auth_token_optional
 
 
 # Get logger instance
@@ -17,6 +18,7 @@ logger = logging.getLogger(__name__)
 ####################################
 
 ### DELETE /runs/<run_id> ###
+@auth_token_optional
 def CancelRun(run_id, *args, **kwargs):
     '''Cancel unfinished workflow run'''
     response = runs.cancel_run(
@@ -37,6 +39,7 @@ def CancelRun(run_id, *args, **kwargs):
 
 
 ### GET /runs/<run_id> ###
+@auth_token_optional
 def GetRunLog(run_id, *args, **kwargs):
     '''Return detailed run info'''
     response = runs.get_run_log(
@@ -56,6 +59,7 @@ def GetRunLog(run_id, *args, **kwargs):
 
 
 ### GET /runs/<run_id>/status ###
+@auth_token_optional
 def GetRunStatus(run_id, *args, **kwargs):
     '''Return run status'''
     response = runs.get_run_status(
@@ -75,6 +79,7 @@ def GetRunStatus(run_id, *args, **kwargs):
 
 
 ### GET /service-info ###
+@auth_token_optional
 def GetServiceInfo(*args, **kwargs):
     '''Return service info'''
     response = service_info.get_service_info(
@@ -93,6 +98,7 @@ def GetServiceInfo(*args, **kwargs):
 
 
 ### GET /runs ###
+@auth_token_optional
 def ListRuns(*args, **kwargs):
     '''List ids and status of all workflow runs'''
     response = runs.list_runs(
@@ -111,6 +117,7 @@ def ListRuns(*args, **kwargs):
 
 
 ### POST /runs ###
+@auth_token_optional
 def RunWorkflow(*args, **kwargs):
     '''Execute workflow'''
     response = runs.run_workflow(

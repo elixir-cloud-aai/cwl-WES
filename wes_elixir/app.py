@@ -1,6 +1,6 @@
 from wes_elixir.api.register_openapi import register_openapi
 from wes_elixir.config.app_config import parse_app_config
-from wes_elixir.config.config_parser import get_conf, get_conf_type
+from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 from wes_elixir.config.log_config import configure_logging
 from wes_elixir.database.register_mongodb import register_mongodb
 from wes_elixir.errors.errors import register_error_handlers
@@ -32,7 +32,8 @@ def main():
     # Register OpenAPI specs
     connexion_app = register_openapi(
         app=connexion_app,
-        specs=get_conf_type(config, 'api', 'specs', types=(list))
+        specs=get_conf_type(config, 'api', 'specs', types=(list)),
+        add_security_definitions=get_conf(config, 'security', 'enable_authentication')
     )
 
     # Enable cross-origin resource sharing

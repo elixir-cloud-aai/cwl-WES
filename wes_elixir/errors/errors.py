@@ -1,10 +1,10 @@
 import logging
 
 from connexion import ProblemException
-from connexion.exceptions import ExtraParameterProblem, Forbidden, Unauthorized
+from connexion.exceptions import (ExtraParameterProblem, Forbidden, Unauthorized)
 from flask import Response
 from json import dumps
-from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
+from werkzeug.exceptions import (BadRequest, InternalServerError, NotFound)
 
 
 # Get logger instance

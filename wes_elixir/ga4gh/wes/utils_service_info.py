@@ -1,5 +1,5 @@
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import datetime
 import logging
 
 import wes_elixir.database.db_utils as db_utils

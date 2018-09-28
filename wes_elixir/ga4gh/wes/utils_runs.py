@@ -5,7 +5,7 @@ import string
 import subprocess
 
 from celery import uuid
-from json import decoder, loads
+from json import (decoder, loads)
 from pymongo.errors import DuplicateKeyError
 from random import choice
 from yaml import dump
@@ -13,7 +13,7 @@ from yaml import dump
 import wes_elixir.database.db_utils as db_utils
 
 from wes_elixir.config.config_parser import get_conf
-from wes_elixir.errors.errors import BadRequest, WorkflowNotFound
+from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
 from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
 
 
