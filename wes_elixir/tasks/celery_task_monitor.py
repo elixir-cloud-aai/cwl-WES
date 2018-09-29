@@ -160,8 +160,8 @@ class TaskMonitor():
 
         # Parse subprocess inputs
         # TODO: string too long when passing key and token; command not added
-        #kwargs = literal_eval(event['kwargs'])
-        #command = ' '.join([quote(item) for item in kwargs['command_list']])
+        kwargs = literal_eval(event['kwargs'])
+        command = ' '.join([quote(item) for item in kwargs['command_list']])
 
         # Create dictionary for internal parameters
         internal = dict()
@@ -175,7 +175,7 @@ class TaskMonitor():
             state='QUEUED',
             internal=internal,
             task_received=datetime.utcfromtimestamp(event['timestamp']).strftime("%Y-%m-%d %H:%M:%S.%f"),
-            # command=command,  # TODO: see above
+            command=command,
             utc_offset=event['utcoffset'],
             max_retries=event['retries'],
             expires=event['expires'],
