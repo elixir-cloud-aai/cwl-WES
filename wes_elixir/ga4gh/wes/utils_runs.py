@@ -231,7 +231,7 @@ def run_workflow(config, form_data, *args, **kwargs):
     document = __create_run_environment(config=config, document=document, **kwargs)
 
     # Start workflow run in background
-    __run_workflow(config=config, document=document)
+    __run_workflow(config=config, document=document, **kwargs)
 
     # Build formatted response object
     response = {"run_id": document['run_id']} 
@@ -468,7 +468,7 @@ def __process_workflow_attachments(data):
     return data
 
 
-def __run_workflow(config, document):
+def __run_workflow(config, document, **kwargs):
     '''Helper function for `run_workflow()`'''
 
     # Re-assign config values
@@ -483,6 +483,12 @@ def __run_workflow(config, document):
     yaml_path = document['internal']['yaml_path']
 
     # Build command
+    auth_params = []
+    if 'token' in kwargs:
+        auth_params = [
+            "--token-public-key", get_conf(config, 'security', 'jwt', 'public_key').encode('unicode_escape').decode('utf-8'),
+            "--token", kwargs['token'],
+        ]
     command_list = [
         "cwl-tes",
         "--leave-outputs",
@@ -491,6 +497,7 @@ def __run_workflow(config, document):
         cwl_path,
         yaml_path
     ]
+    command_list[2:2] = auth_params
 
     ## TEST CASE FOR SYSTEM ERROR
     #command_list = [
