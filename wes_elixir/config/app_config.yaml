@@ -7,6 +7,25 @@ server:
     testing: False
     use_reloader: True
 
+# Security settings
+security:
+    authorization_required: True
+    jwt:
+        algorithm: RS256
+        public_key: |-
+            -----BEGIN PUBLIC KEY-----
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA33TqqLR3eeUmDtHS89qF
+            3p4MP7Wfqt2Zjj3lZjLjjCGDvwr9cJNlNDiuKboODgUiT4ZdPWbOiMAfDcDzlOxA
+            04DDnEFGAf+kDQiNSe2ZtqC7bnIc8+KSG/qOGQIVaay4Ucr6ovDkykO5Hxn7OU7s
+            Jp9TP9H0JH8zMQA6YzijYH9LsupTerrY3U6zyihVEDXXOv08vBHk50BMFJbE9iwF
+            wnxCsU5+UZUZYw87Uu0n4LPFS9BT8tUIvAfnRXIEWCha3KbFWmdZQZlyrFw0buUE
+            f0YN3/Q0auBkdbDR/ES2PbgKTJdkjc/rEeM0TxvOUf7HuUNOhrtAVEN1D5uuxE1W
+            SwIDAQAB
+            -----END PUBLIC KEY-----
+        header_name: Authorization
+        token_prefix: Bearer
+        identity_claim: sub
+
 # Database settings
 database:
     host: 'mongo'
@@ -18,14 +37,14 @@ database:
 
 # Storage
 storage:
-    permanent_dir: "tests/output"
-    tmp_dir: "tests/tmp"
-    remote_storage_url: ftp://ftp-private.ebi.ac.uk/upload/foivos
+    permanent_dir: 'tests/output'
+    tmp_dir: 'tests/tmp'
+    remote_storage_url: 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
 
 # Celery task queuer
 celery:
-    broker_url: pyamqp://rabbit1:5672//
-    result_backend: rpc://
+    broker_url: 'pyamqp://localhost:5672//'
+    result_backend: 'rpc://'
     include:
         - wes_elixir.ga4gh.wes.utils_bg_tasks
     monitor:
@@ -33,8 +52,8 @@ celery:
 
 # OpenAPI specs
 api:
-    specs:
-        - path: "ga4gh.wes.0_3_0.openapi.yaml"
+    specs: 
+        - path: '20180830.74fd916da3.workflow_execution_service.swagger.yaml'
           strict_validation: True
           validate_responses: True
           swagger_ui: True
@@ -42,8 +61,8 @@ api:
 
 # WES service info settings
 service_info:
-    contact_info: https://github.com/elixir-europe/WES-ELIXIR
-    auth_instructions_url: https://www.elixir-europe.org/services/compute/aai
+    contact_info: 'https://github.com/elixir-europe/WES-ELIXIR'
+    auth_instructions_url: 'https://www.elixir-europe.org/services/compute/aai'
     supported_file_system_protocols:
         - http
     supported_wes_versions:
@@ -56,12 +75,12 @@ service_info:
         cwl-tes: 0.2.0
     default_workflow_engine_parameters:
         - type: string
-          default_value: "some_string"
+          default_value: some_string
         - type: int
-          default_value: "5"
+          default_value: '5'
     tags:
-        known_tes_endpoints: "https://tes-dev.tsi.ebi.ac.uk/"
-        wes_elixir_version: 0.6.0
+        known_tes_endpoints: 'https://tes-dev.tsi.ebi.ac.uk/'
+        wes_elixir_version: 0.7.0
 
 # Endpoint parameters
 api_endpoints:
@@ -69,4 +88,4 @@ api_endpoints:
 
 # TES server
 tes:
-    url: "https://tes-dev.tsi.ebi.ac.uk/"
+    url: 'https://tes-dev.tsi.ebi.ac.uk/'

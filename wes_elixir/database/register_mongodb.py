@@ -53,5 +53,5 @@ def register_mongodb(app):
     logger.debug("Initializing service info...")
     get_service_info(app.app.config, silent=True)
 
-    # Return database and collections
+    # Return app
     return app

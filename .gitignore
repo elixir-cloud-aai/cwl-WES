@@ -224,4 +224,5 @@ cwl-tes/
 .vscode/
 tests/tmp/*
 tests/output/*
+*.modified.yaml
 .netrc

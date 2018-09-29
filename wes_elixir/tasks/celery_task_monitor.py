@@ -159,8 +159,9 @@ class TaskMonitor():
         '''Event handler for received Celery tasks'''
 
         # Parse subprocess inputs
-        kwargs = literal_eval(event['kwargs'])
-        command = ' '.join([quote(item) for item in kwargs['command_list']])
+        # TODO: string too long when passing key and token; command not added
+        #kwargs = literal_eval(event['kwargs'])
+        #command = ' '.join([quote(item) for item in kwargs['command_list']])
 
         # Create dictionary for internal parameters
         internal = dict()
@@ -174,7 +175,7 @@ class TaskMonitor():
             state='QUEUED',
             internal=internal,
             task_received=datetime.utcfromtimestamp(event['timestamp']).strftime("%Y-%m-%d %H:%M:%S.%f"),
-            command=command,
+            # command=command,  # TODO: see above
             utc_offset=event['utcoffset'],
             max_retries=event['retries'],
             expires=event['expires'],
