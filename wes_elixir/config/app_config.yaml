@@ -25,9 +25,6 @@ security:
         header_name: Authorization
         token_prefix: Bearer
         identity_claim: sub
-        user_claims:
-            type: access
-            fresh: non-fresh
 
 # Database settings
 database:
