@@ -1,6 +1,6 @@
 # General server/service settings
 server:
-    host: localhost
+    host: '0.0.0.0'
     port: 7777
     debug: True
     environment: development
@@ -28,7 +28,7 @@ security:
 
 # Database settings
 database:
-    host: 'localhost'
+    host: 'mongo'
     port: 27017
     name: wes-elixir-db
     run_id:

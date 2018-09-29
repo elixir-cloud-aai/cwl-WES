@@ -128,6 +128,7 @@ def get_run_status(config, run_id, *args, **kwargs):
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # Get document from database
+
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={
@@ -234,7 +235,7 @@ def run_workflow(config, form_data, *args, **kwargs):
     __run_workflow(config=config, document=document, **kwargs)
 
     # Build formatted response object
-    response = {"run_id": document['run_id']} 
+    response = {"run_id": document['run_id']}
 
     # Return response object
     return response
@@ -282,7 +283,7 @@ def __validate_run_workflow_request(data):
     #   required = False
     # workflow_url:
     #   type = str
-    #   required = True 
+    #   required = True
     # workflow_attachment:
     #   type = [str]
     #   required = False
