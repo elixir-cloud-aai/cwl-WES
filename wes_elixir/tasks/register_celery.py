@@ -22,7 +22,13 @@ def register_task_service(app):
         TaskMonitor(
             celery_app=celery_app,
             collection=app.app.config['database']['collections']['runs'],
-            timeout=app.app.config['celery']['monitor']['timeout']
+            timeout=app.app.config['celery']['monitor']['timeout'],
+            authorization=app.app.config['security']['authorization_required'],
+            tes={
+                'url': app.app.config['tes']['url'],
+                'logs_endpoint_root': app.app.config['tes']['get_logs']['url_root'],
+                'logs_endpoint_query_params': app.app.config['tes']['get_logs']['query_params'],
+            },
         )
         logger.info("Celery task monitor registered.")
 

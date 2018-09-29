@@ -16,6 +16,7 @@ def create_celery_app(app):
     broker=get_conf(app.app.config, 'celery', 'broker_url')
     backend=get_conf(app.app.config, 'celery', 'result_backend')
     include=get_conf_type(app.app.config, 'celery', 'include', types=(list))
+    maxsize=get_conf(app.app.config, 'celery', 'message_maxsize')
 
     # Instantiate Celery app
     celery = Celery(
@@ -29,9 +30,11 @@ def create_celery_app(app):
     ))
 
     # Set Celery options
-    # TODO: Hotfix to get around message truncation problem when processing STDOUT/STDERR
-    # TODO: Solve this differently (via result backend) as this is not very robust & may slow down system
-    celery.Task.resultrepr_maxsize = 200000
+    # TODO: Fix to get around message truncation problem
+    # TODO: Possibly try to solve this differently (via result backend?) as this may not very robust
+    celery.Task.resultrepr_maxsize = maxsize
+    celery.amqp.argsrepr_maxsize = maxsize
+    celery.amqp.kwargsrepr_maxsize = maxsize
 
     # Update Celery app configuration with Flask app configuration
     celery.conf.update(app.app.config)

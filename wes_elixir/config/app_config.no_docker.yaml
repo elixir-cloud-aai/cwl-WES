@@ -28,7 +28,7 @@ security:
 
 # Database settings
 database:
-    host: 'mongo'
+    host: 'localhost'
     port: 27017
     name: wes-elixir-db
     run_id:
