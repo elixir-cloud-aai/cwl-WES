@@ -1,3 +1,4 @@
+from connexion.exceptions import Forbidden
 import logging
 import os
 import shutil
@@ -10,9 +11,7 @@ from pymongo.errors import DuplicateKeyError
 from random import choice
 from yaml import dump
 
-import wes_elixir.database.db_utils as db_utils
-
-from wes_elixir.config.config_parser import get_conf
+from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
 from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
 
@@ -31,13 +30,30 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
     # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
-    # Get task ID from database
-    task_id = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'task_id')
-    
-    # Raise error if workflow run was not found
-    if task_id is None:
+    # Get document from database
+    document = collection_runs.find_one(
+        filter={'run_id': run_id},
+        projection={
+            'user_id': True,
+            'task_id': True,
+            '_id': False,
+        }
+    )
+
+    # Raise error if workflow run was not found or has no task ID
+    if document is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
+    else:
+        task_id = document['task_id']
+    
+    # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
+    if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
+        logger.error("User '{user_id}' is not allowed to access workflow run {run_id}.".format(
+            user_id=kwargs['user_id'],
+            run_id=run_id,
+        ))
+        raise Forbidden
 
     # Cancel workflow run
     try:
@@ -73,15 +89,32 @@ def get_run_log(config, run_id, *args, **kwargs):
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # Get document from database
-    document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
+    document = collection_runs.find_one(
+        filter={'run_id': run_id},
+        projection={
+            'user_id': True,
+            'api': True,
+            '_id': False,
+        }
+    )
 
-    # Raise error if workflow run was not found
+    # Raise error if workflow run was not found or has no task ID
     if document is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
+    else:
+        run_log = document['api']
+    
+    # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
+    if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
+        logger.error("User '{user_id}' is not allowed to access workflow run {run_id}.".format(
+            user_id=kwargs['user_id'],
+            run_id=run_id,
+        ))
+        raise Forbidden
 
     # Return response
-    return document
+    return run_log
 
 
 #################################
@@ -95,16 +128,29 @@ def get_run_status(config, run_id, *args, **kwargs):
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # Get document from database
-    document = db_utils.find_one_field_by_index(collection_runs, 'run_id', run_id, 'api')
-    
-    # Raise error if workflow run was not found
+    document = collection_runs.find_one(
+        filter={'run_id': run_id},
+        projection={
+            'user_id': True,
+            'api.state': True,
+            '_id': False,
+        }
+    )
+
+    # Raise error if workflow run was not found or has no task ID
     if document is None:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    
-    # Extract workflow run state
     else:
-        state = document['state']
+        state = document['api']['state']
+    
+    # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
+    if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
+        logger.error("User '{user_id}' is not allowed to access workflow run {run_id}.".format(
+            user_id=kwargs['user_id'],
+            run_id=run_id,
+        ))
+        raise Forbidden
 
     # Build formatted response object
     response = {
@@ -134,7 +180,18 @@ def list_runs(config, *args, **kwargs):
     #page_size = kwargs['page_size'] if 'page_size' in kwargs else cnx_app.app.config['api_endpoints']['default_page_size']
 
     # Query database for workflow runs
-    cursor = db_utils.find_fields(collection_runs, ['run_id', 'state'])
+    if 'user_id' in kwargs:
+        filter_dict = {'user_id': kwargs['user_id']}
+    else:
+        filter_dict = {}
+    cursor = collection_runs.find(
+        filter=filter_dict,
+        projection={
+            'run_id': True,
+            'state': True,
+            '_id': False,
+        }
+    )
 
     # Iterate through list
     runs_list = list()
@@ -171,11 +228,9 @@ def run_workflow(config, form_data, *args, **kwargs):
     document = __init_run_document(data=form_data)
 
     # Create run environment
-    document = __create_run_environment(config=config, document=document)
+    document = __create_run_environment(config=config, document=document, **kwargs)
 
     # Start workflow run in background
-    # tmp_dir and out_dir need to go in document
-    # tes_url c
     __run_workflow(config=config, document=document)
 
     # Build formatted response object
@@ -282,7 +337,7 @@ def __init_run_document(data):
     return document
 
 
-def __create_run_environment(config, document):
+def __create_run_environment(config, document, **kwargs):
     '''Create unique run identifier and permanent and temporary storage directories for current run'''
 
     # Re-assign config values
@@ -296,42 +351,35 @@ def __create_run_environment(config, document):
     # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500 to user)
     while True:
 
-        # Create unique run id
+        # Create unique run and task ids
         run_id = __create_run_id(
             charset=run_id_charset,
             length=run_id_length,
         )
-
-        # Create unique Celery task id
         task_id = uuid()
+
+        # Set temporary and output directories
+        current_tmp_dir = os.path.abspath(os.path.join(tmp_dir, run_id))
+        current_out_dir = os.path.abspath(os.path.join(out_dir, run_id))
 
         # Try to create workflow run directory (temporary)
         try:
             # TODO: Think about permissions
-            # TODO: Add this to document
             # TODO: Add working dir (currently one has to run the app from the outermost dir)
-            current_tmp_dir = os.path.abspath(os.path.join(tmp_dir, run_id))
             os.mkdir(current_tmp_dir)
-
-        # Try new run id if directory already exists
-        except FileExistsError:
-            continue
-
-        # Try to create output directory (permanent)
-        try:
-            # TODO: Think about permissions
-            # TODO: Add this to document
-            # TODO: Add working dir (currently one has to run the app from the outermost dir)
-            current_out_dir = os.path.abspath(os.path.join(out_dir, run_id))
             os.mkdir(current_out_dir)
 
         # Try new run id if directory already exists
         except FileExistsError:
             continue
 
-        # Add run/task identifier, temp/output directories to document
+        # Add run/task/user identifier, temp/output directories to document
         document['run_id'] = run_id
         document['task_id'] = task_id
+        if 'user_id' in kwargs:
+            document['user_id'] = kwargs['user_id']
+        else:
+            document['user_id'] = None
         document['internal']['tmp_dir'] = current_tmp_dir
         document['internal']['out_dir'] = current_out_dir
 

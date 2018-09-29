@@ -9,7 +9,7 @@ server:
 
 # Security settings
 security:
-    enable_authentication: True
+    authorization_required: True
     jwt:
         algorithm: RS256
         public_key: |-
@@ -80,7 +80,7 @@ service_info:
         - type: string
           default_value: some_string
         - type: int
-          default_value: 5
+          default_value: '5'
     tags:
         known_tes_endpoints: 'https://tes-dev.tsi.ebi.ac.uk/'
         wes_elixir_version: 0.7.0
