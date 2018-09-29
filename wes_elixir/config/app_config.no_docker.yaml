@@ -90,3 +90,6 @@ api_endpoints:
 # TES server
 tes:
     url: 'https://tes-dev.tsi.ebi.ac.uk/'
+    get_logs:
+        url_root: 'v1/tasks/'
+        query_params: '?view=FULL'

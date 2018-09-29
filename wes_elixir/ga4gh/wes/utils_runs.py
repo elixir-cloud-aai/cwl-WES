@@ -41,11 +41,11 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
     )
 
     # Raise error if workflow run was not found or has no task ID
-    if document is None:
+    if document:
+        task_id = document['task_id']
+    else:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    else:
-        task_id = document['task_id']
     
     # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
     if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
@@ -99,11 +99,11 @@ def get_run_log(config, run_id, *args, **kwargs):
     )
 
     # Raise error if workflow run was not found or has no task ID
-    if document is None:
+    if document:
+        run_log = document['api']
+    else:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    else:
-        run_log = document['api']
     
     # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
     if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
@@ -139,11 +139,11 @@ def get_run_status(config, run_id, *args, **kwargs):
     )
 
     # Raise error if workflow run was not found or has no task ID
-    if document is None:
+    if document:
+        state = document['api']['state']
+    else:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    else:
-        state = document['api']['state']
     
     # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
     if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
@@ -484,12 +484,7 @@ def __run_workflow(config, document, **kwargs):
     yaml_path = document['internal']['yaml_path']
 
     # Build command
-    auth_params = []
-    if 'token' in kwargs:
-        auth_params = [
-            "--token-public-key", get_conf(config, 'security', 'jwt', 'public_key').encode('unicode_escape').decode('utf-8'),
-            "--token", kwargs['token'],
-        ]
+    # NOTE: '--debug' option is not supported
     command_list = [
         "cwl-tes",
         "--leave-outputs",
@@ -498,7 +493,14 @@ def __run_workflow(config, document, **kwargs):
         cwl_path,
         yaml_path
     ]
-    command_list[2:2] = auth_params
+
+    # Add authorization parameters
+    if 'token' in kwargs:
+        auth_params = [
+            "--token-public-key", get_conf(config, 'security', 'jwt', 'public_key').encode('unicode_escape').decode('utf-8'),
+            "--token", kwargs['token'],
+        ]
+        command_list[2:2] = auth_params
 
     ## TEST CASE FOR SYSTEM ERROR
     #command_list = [
