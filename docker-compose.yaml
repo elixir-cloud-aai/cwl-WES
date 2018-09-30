@@ -20,9 +20,9 @@ services:
     restart: always
     links:
       - rabbit1
-    command: bash -c "cd /WES-ELIXIR/wes_elixir; celery worker -A celery_worker -E --loglevel=info"
+    command: bash -c "cd /app/wes_elixir; celery worker -A celery_worker -E --loglevel=info"
     volumes:
-      - ../data/tests:/WES-ELIXIR/tests
+      - ../data/tests:/app/tests
 
 
   wes-elixir:
@@ -35,9 +35,9 @@ services:
       - "7777:7777"
     links:
       - mongo
-    command: bash -c "cd /WES-ELIXIR/; python wes_elixir/app.py"
+    command: bash -c "cd /app/; python wes_elixir/app.py"
     volumes:
-      - ../data/tests:/WES-ELIXIR/tests
+      - ../data/tests:/app/tests
 
   rabbit1:
     image: "rabbitmq:3-management"
