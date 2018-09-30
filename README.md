@@ -37,6 +37,25 @@ Coming soon...
 
 #### Instructions (non-dockerized)
 
+##### Pre-requisites
+
+Start MongoDB daemon
+
+```bash
+sudo service mongod start
+```
+
+Set your .netrc file under your $HOME directory accordingly. The .netrc file should look like the 
+following:
+
+```bash
+machine ftp-private.ebi.ac.uk
+login redacted_username
+password redacted_password
+```
+
+##### Install app
+
 Clone repository
 
 ```bash
@@ -56,47 +75,30 @@ virtualenv -p `which python3` venv
 source venv/bin/activate
 ```
 
-Clone CWL-TES repository, checkout specific version & install
-
-```bash
-git clone https://github.com/common-workflow-language/cwl-tes.git
-cd cwl-tes
-git checkout ftp
-git checkout ab58d1822a027eff2a456db9d712f5295ac42eac
-python setup.py install
-cd ..
-```
-
 Install required packages
 
 ```bash
 pip install -r requirements.txt
 ```
 
-Start MongoDB daemon
+Install editable packages
 
 ```bash
-sudo service mongod start
+python venv/src/cwl-tes/setup.py develop
+python venv/src/cwltoos/setup.py develop
+python venv/src/py-tes/setup.py develop
 ```
 
-Install service
+Install app
 
 ```bash
 python setup.py develop
 ```
 
-Optional: set config file environment variable and edit config file
+Set config file environment variable and, optionally, edit config file
 
 ```bash
-export WES_CONFIG="$PWD/wes_elixir/config/app_config.yaml"
-```
-
-Set your .netrc file under your $HOME directory accordingly. The .netrc file should look like the following:
-
-```bash
-machine ftp-private.ebi.ac.uk
-login redacted_username
-password redacted_password
+export WES_CONFIG="$PWD/wes_elixir/config/app_config.no_docker.yaml"
 ```
 
 Start service
@@ -105,15 +107,19 @@ Start service
 python wes_elixir/app.py
 ```
 
-In a different terminal, traverse to application directory and start Celery worker for executing background tasks
+In a different terminal, start Celery worker for executing background tasks
 
 ```bash
-# Traverse to project directory first (same as above)
+# Traverse to project directory ("WES_ELIXIR") first
 cd wes_elixir
 celery worker -A celery_worker -E --loglevel=info
 ```
 
-Visit Swagger UI: <http://localhost:7777/ga4gh/wes/v1/ui>
+Visit Swagger UI
+
+```
+firefox http://localhost:7777/ga4gh/wes/v1/ui
+```
 
 Note: If you have edited `WES_CONFIG`, ensure that host and port match the values specified in the config file.
 
