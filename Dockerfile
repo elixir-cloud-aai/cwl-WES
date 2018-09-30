@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 
 ##### METADATA #####
 LABEL base.image="ubuntu:16.04"
-LABEL version="1"
+LABEL version="1.1"
 LABEL software="WES-ELIXIR"
 LABEL software.version="1.0"
 LABEL software.description="Flask microservice implementing the Global Alliance for Genomics and Health (GA4GH) Workflow Execution Service (WES) API specification."
@@ -34,19 +34,18 @@ RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
 COPY ./ $HOME/WES-ELIXIR/
 
 ## install WES-ELIXIR and cwl-tes
-#RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
-
-RUN cd WES-ELIXIR \
-  && git clone https://github.com/common-workflow-language/cwl-tes.git \
-  && cd cwl-tes \
-  && git checkout ftp \
-  && git checkout ab58d1822a027eff2a456db9d712f5295ac42eac \
-  && python setup.py install \
-  && cd .. \
+RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
+  && cd app \
   && pip install -r requirements.txt \
   && python setup.py develop \
-  && cd ../
+  && cd venv/src/cwl-tes/ \
+  && python setup.py develop
+  && cd ../cwltool/ \
+  && python setup.py develop
+  && cd ../py-tes/ \
+  && python setup.py develop
+  && cd ../../../../
 
-ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/app_config.yaml"
+ENV WES_CONFIG="/app/wes_elixir/config/app_config.yaml"
 
 COPY .netrc /root
