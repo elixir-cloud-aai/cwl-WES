@@ -1,29 +1,17 @@
 version: '3.6'
 services:
 
-  # nginx:
-  #   image: nginx:latest
-  #   restart: always
-  #   ports:
-  #     - "443:443"
-  #   links:
-  #     - wes-elixir
-  #   volumes:
-  #     - /docker/nginx/etc/ssl/:/etc/ssl/
-  #     - /docker/nginx/etc/nginx/conf.d/:/etc/nginx/conf.d
-
-  wes-elixir-celery:
+  celery-worker:
     image: wes-elixir:latest
     build:
       context: .
       dockerfile: Dockerfile
     restart: always
     links:
-      - rabbit1
+      - rabbit
     command: bash -c "cd /app/wes_elixir; celery worker -A celery_worker -E --loglevel=info"
     volumes:
       - ../data:/data
-
 
   wes-elixir:
     image: wes-elixir:latest
@@ -39,9 +27,9 @@ services:
     volumes:
       - ../data:/data
 
-  rabbit1:
+  rabbit:
     image: "rabbitmq:3-management"
-    hostname: "rabbit1"
+    hostname: "rabbit"
     ports:
       - "15672:15672"
       - "5672:5672"

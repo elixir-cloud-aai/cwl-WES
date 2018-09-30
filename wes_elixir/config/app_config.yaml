@@ -43,7 +43,7 @@ storage:
 
 # Celery task queuer
 celery:
-    broker_url: 'pyamqp://localhost:5672//'
+    broker_url: 'pyamqp://rabbit:5672//'
     result_backend: 'rpc://'
     include:
         - wes_elixir.ga4gh.wes.utils_bg_tasks
