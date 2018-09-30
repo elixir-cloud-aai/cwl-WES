@@ -66,6 +66,7 @@ Traverse to project directory
 
 ```bash
 cd WES-ELIXIR
+project_dir="$PWD"
 ```
 
 Create and activate virtual environment
@@ -84,9 +85,13 @@ pip install -r requirements.txt
 Install editable packages
 
 ```bash
-python venv/src/cwl-tes/setup.py develop
-python venv/src/cwltoos/setup.py develop
-python venv/src/py-tes/setup.py develop
+cd "${project_dir}/venv/src/cwl-tes"
+python setup.py develop
+cd "${project_dir}/venv/src/cwltool"
+python setup.py develop
+cd "${project_dir}/venv/src/py-tes"
+python setup.py develop
+cd "$project_dir"
 ```
 
 Install app
@@ -107,10 +112,11 @@ Start service
 python wes_elixir/app.py
 ```
 
-In a different terminal, start Celery worker for executing background tasks
+In another terminal, load virtual environment & start Celery worker for executing background tasks
 
 ```bash
 # Traverse to project directory ("WES_ELIXIR") first
+source venv/bin/activate
 cd wes_elixir
 celery worker -A celery_worker -E --loglevel=info
 ```
