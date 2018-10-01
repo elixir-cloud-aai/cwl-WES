@@ -47,5 +47,5 @@ RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
   && python setup.py develop \
   && cd /
 
-# Copy FTP server credentials
+## Copy FTP server credentials
 COPY .netrc /root
