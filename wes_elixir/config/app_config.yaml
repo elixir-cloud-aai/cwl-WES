@@ -11,6 +11,7 @@ server:
 security:
     authorization_required: True
     jwt:
+        name: "ELIXIR AAI"
         algorithm: RS256
         public_key: |-
             -----BEGIN PUBLIC KEY-----
@@ -80,7 +81,11 @@ service_info:
         - type: int
           default_value: '5'
     tags:
-        known_tes_endpoints: 'https://tes-dev.tsi.ebi.ac.uk/'
+        known_tes_endpoints:
+            - 'https://tes-dev.tsi.ebi.ac.uk/'
+            - 'https://tes.tsi.ebi.ac.uk/'
+            - 'https://tesk.c01.k8s-popup.csc.fi/'
+            - 'https://csc-tesk.c03.k8s-popup.csc.fi/swagger-ui.html/'
         wes_elixir_version: 0.8.0
 
 # Endpoint parameters
@@ -89,7 +94,7 @@ api_endpoints:
 
 # TES server
 tes:
-    url: 'https://tes-dev.tsi.ebi.ac.uk/'
+    url: 'https://tesk.c01.k8s-popup.csc.fi/'
     get_logs:
         url_root: 'v1/tasks/'
         query_params: '?view=FULL'
