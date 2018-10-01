@@ -54,7 +54,7 @@ celery:
 
 # OpenAPI specs
 api:
-    specs: 
+    specs:
         - path: '20180830.74fd916da3.workflow_execution_service.swagger.yaml'
           strict_validation: True
           validate_responses: True
@@ -81,11 +81,7 @@ service_info:
         - type: int
           default_value: '5'
     tags:
-        known_tes_endpoints:
-            - 'https://tes-dev.tsi.ebi.ac.uk/'
-            - 'https://tes.tsi.ebi.ac.uk/'
-            - 'https://tesk.c01.k8s-popup.csc.fi/'
-            - 'https://csc-tesk.c03.k8s-popup.csc.fi/swagger-ui.html/'
+        known_tes_endpoints: 'https://tesk.c01.k8s-popup.csc.fi/'
         wes_elixir_version: 0.8.0
 
 # Endpoint parameters
