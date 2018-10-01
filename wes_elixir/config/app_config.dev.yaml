@@ -90,7 +90,7 @@ api_endpoints:
 
 # TES server
 tes:
-    url: 'https://tes.tsi.ebi.ac.uk/'
+    url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
     get_logs:
         url_root: 'v1/tasks/'
         query_params: '?view=FULL'
