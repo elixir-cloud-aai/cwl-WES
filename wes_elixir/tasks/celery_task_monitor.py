@@ -1,5 +1,6 @@
 from ast import literal_eval
 from datetime import datetime
+import json
 import logging
 import os
 import re
@@ -94,7 +95,7 @@ class TaskMonitor():
             task_finished=datetime.utcfromtimestamp(event['timestamp']).strftime("%Y-%m-%d %H:%M:%S.%f"),
             exception=event['exception'],
         )
-        
+
 
     ### STATE: QUEUED ###
     def on_task_received(self, event):
@@ -105,8 +106,8 @@ class TaskMonitor():
         try:
             kwargs = literal_eval(event['kwargs'])
         except Exception:
-            logger.exception("Field 'kwargs' in event message malformed. Execution aborted. Contents of field: {results}. Original error message:")
-            raise
+            logger.exception("Field 'kwargs' in event message malformed. Execution aborted. Original error message:")
+            raise SystemExit
 
         # Build command
         if 'command_list' in kwargs:
@@ -147,7 +148,7 @@ class TaskMonitor():
     def on_task_revoked(self, event):
 
         '''Event handler for revoked Celery tasks'''
-        
+
         # Create dictionary for internal parameters
         internal = dict()
         internal['task_finished'] = datetime.utcfromtimestamp(event['timestamp'])
@@ -204,27 +205,31 @@ class TaskMonitor():
         '''Event handler for successful and failed (executor error) Celery tasks'''
 
         # Parse subprocess results
+        # NOTE: Hack to get around serialization/deserialization problem
         try:
-            result = literal_eval(event['result'])
+            (returncode, stdout, stderr) = event['result'].strip('\'').split('<<<newfield>>>')
+            returncode = int(returncode.strip('\''))
+            stdout = stdout.strip('\'').split('<<<newline>>>')
+            stderr = stderr.strip('\'').split('<<<newline>>>')
         except Exception:
-            logger.exception("Field 'result' in event message malformed. Execution aborted. Contents of field: {results}. Original error message:")
-            raise
+            logger.exception("Field 'result' in event message malformed. Execution aborted. Original error message:")
+            raise SystemExit
 
         # Create dictionary for internal parameters
         internal = dict()
         internal['task_finished'] = datetime.utcfromtimestamp(event['timestamp'])
 
         # Set state depending on return code
-        if result['returncode']:
+        if returncode:
             state='EXECUTOR_ERROR'
         else:
             state='COMPLETE'
 
         # Extract run outputs
-        outputs = self.__cwl_tes_outputs_parser(result['stderr'])
+        outputs = self.__cwl_tes_outputs_parser(stdout)
 
         # Get task logs
-        task_logs = self.__get_task_logs(result['stderr'])
+        task_logs = self.__get_task_logs(stderr)
 
         # Update run document in database
         try:
@@ -235,9 +240,9 @@ class TaskMonitor():
                 outputs=outputs,
                 task_logs=task_logs,
                 task_finished=datetime.utcfromtimestamp(event['timestamp']).strftime("%Y-%m-%d %H:%M:%S.%f"),
-                return_code=result['returncode'],
-                stdout=os.linesep.join(result['stdout']),
-                stderr=os.linesep.join(result['stderr']),
+                return_code=returncode,
+                stdout=os.linesep.join(stdout),
+                stderr=os.linesep.join(stderr),
             )
         except Exception as e:
             logger.error("Database error. Could not update log information for task {task}. Original error message: {type}: {msg}".format(
@@ -259,7 +264,7 @@ class TaskMonitor():
     ):
 
         '''Update state, internal and run log parameters'''
-        
+
         # TODO: Minimize db ops; try to compile entire object & update once
 
         # Update internal parameters
@@ -347,46 +352,8 @@ class TaskMonitor():
 
         '''Parse outputs from CWL-TES log'''
 
-        # Set regular expressions
-        re_open = re.compile(r"^\{\'output\':\s({.*)$")
-        re_close = re.compile(r'\}\}')
-
-        # Set parameters
-        collect = False
-        block = list()
-        outputs = dict()
-
-        # Iterate over lines
-        for line in lines:
-
-            # Collect when output description starts
-            if re_open.match(line):
-                collect = True
-
-            # Add line to block
-            if collect:
-                block.append(line)
-
-            # Stop collecting when output description ends
-            if re_close.search(line):
-                collect = False
-
-                # Convert block to dictionary
-                d = literal_eval('\n'.join(block))['output']
-
-                # Reset block
-                block = list()
-
-                # Set name
-                name = d['basename']
-                if d['nameext']:
-                    name = '.'.join([name, d['nameext']])
-
-                # Add to results dictionary
-                outputs[name] = d
-
-        # Return dictionary
-        return outputs
+        # Convert block to dictionary
+        return literal_eval('\n'.join(lines))
 
 
     def __get_task_logs(

@@ -9,7 +9,7 @@ server:
 
 # Security settings
 security:
-    authorization_required: True
+    authorization_required: False
     jwt:
         algorithm: RS256
         public_key: |-
@@ -28,28 +28,28 @@ security:
 
 # Database settings
 database:
-    host: 'localhost'
-    port: 27017
-    name: wes-elixir-db
+    host: 'mongo'
+    port: 27018
+    name: wes-elixir-db-dev
     run_id:
         length: 6
         charset: string.ascii_uppercase + string.digits
 
 # Storage
 storage:
-    permanent_dir: 'tests/output'
-    tmp_dir: 'tests/tmp'
+    permanent_dir: '/data/output'
+    tmp_dir: '/data/tmp'
     remote_storage_url: 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
 
 # Celery task queuer
 celery:
-    broker_url: 'pyamqp://localhost:5672//'
+    broker_url: 'pyamqp://rabbit:5673//'
     result_backend: 'rpc://'
     include:
         - wes_elixir.ga4gh.wes.utils_bg_tasks
     monitor:
         timeout: 0.1
-    message_maxsize: 262144
+    message_maxsize: 16777216
 
 # OpenAPI specs
 api:

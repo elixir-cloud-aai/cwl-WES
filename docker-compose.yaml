@@ -19,8 +19,6 @@ services:
       context: .
       dockerfile: Dockerfile
     restart: always
-    ports:
-      - "7777:7777"
     links:
       - mongo
     command: bash -c "cd /app/; python wes_elixir/app.py"
@@ -30,18 +28,11 @@ services:
   rabbit:
     image: "rabbitmq:3-management"
     hostname: "rabbit"
-    ports:
-      - "15672:15672"
-      - "5672:5672"
     links:
       - mongo
 
   mongo:
     image: mongo:3.2
     restart: always
-    ports:
-      - "27017:27017"
-    expose:
-      - "27017"
     volumes:
       - ../data/db:/data/db

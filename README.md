@@ -103,7 +103,7 @@ python setup.py develop
 Set config file environment variable and, optionally, edit config file
 
 ```bash
-export WES_CONFIG="$PWD/wes_elixir/config/app_config.no_docker.yaml"
+export WES_CONFIG="$PWD/wes_elixir/config/app_config.yaml"
 ```
 
 Start service

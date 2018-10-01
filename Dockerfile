@@ -32,10 +32,11 @@ RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
   && python -m pip install --upgrade pip setuptools wheel virtualenv
 
 ## Install app & dependencies
-#RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
-#  && cd /app \
-COPY ./ /app
-RUN cd /app \
+## NOTE: Uncomment COPY and replace RUN directive for local debugging on remote machine
+## COPY ./ /app
+## RUN cd /app \
+RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
+  && cd /app \
   && pip install -r requirements.txt \
   && python setup.py develop \
   && cd /app/src/cwl-tes/ \
@@ -45,9 +46,6 @@ RUN cd /app \
   && cd /app/src/py-tes/ \
   && python setup.py develop \
   && cd /
-
-# Set environment variable pointing to app config
-ENV WES_CONFIG="/app/wes_elixir/config/app_config.yaml"
 
 # Copy FTP server credentials
 COPY .netrc /root

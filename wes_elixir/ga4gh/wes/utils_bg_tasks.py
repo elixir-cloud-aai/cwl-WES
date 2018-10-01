@@ -1,4 +1,4 @@
-import logging
+import json
 import subprocess
 
 from wes_elixir.celery_worker import celery
@@ -24,9 +24,11 @@ def add_command_to_task_queue(
         #capture_output=True
     )
 
-    # Convert STDOUT and STDERR to lists of lines
-    bg_proc.stdout = bg_proc.stdout.splitlines()
-    bg_proc.stderr = bg_proc.stderr.splitlines()
+    # Squash relevant results into single string
+    # NOTE: Hack to get around serialization/deserialization problem
+    stdout = '<<<newline>>>'.join(bg_proc.stdout.splitlines())
+    stderr = '<<<newline>>>'.join(bg_proc.stderr.splitlines())
+    result = '<<<newfield>>>'.join([str(bg_proc.returncode), stdout, stderr])
 
-    # Return returncode, stdout, stderr and command args as dictionary
-    return vars(bg_proc)
+    # Return result
+    return result
