@@ -6,7 +6,7 @@ avro-cwl==1.8.4
 bagit==1.7.0
 billiard==3.5.0.4
 CacheControl==0.11.7
-celery==4.2.1
+celery==4.1.1
 certifi==2018.8.24
 cffi==1.11.5
 chardet==3.0.4
@@ -14,6 +14,8 @@ click==6.7
 clickclick==1.2.2
 connexion==1.5.2
 cryptography==2.3.1
+-e git+https://github.com/uniqueg/cwl-tes-temp.git@b46755b410fae8770ee54ddb0eb8e30f7ac075d7#egg=cwl-tes
+-e git+https://github.com/common-workflow-language/cwltool.git@91e9e9f655fb149a2d3344a69883e147e94b2f50#egg=cwltool
 decorator==4.3.0
 Flask==1.0.2
 Flask-Cors==3.0.6
@@ -37,7 +39,7 @@ mypy-extensions==0.4.1
 networkx==2.2
 prov==1.5.1
 psutil==5.4.7
-py-tes==0.2.1
+-e git+https://github.com/ohsu-comp-bio/py-tes.git@199604418f06d72fd5fd200ed67f3cc223d4544a#egg=py-tes
 pycparser==2.19
 PyJWT==1.6.4
 pylint==2.1.1
@@ -49,7 +51,7 @@ PyYAML==3.13
 rdflib==4.2.2
 rdflib-jsonld==0.4.0
 requests==2.19.1
-ruamel.yaml==0.15.66
+ruamel.yaml==0.15.51
 scandir==1.9.0
 schema-salad==2.7.20180905124720
 shellescape==3.4.1

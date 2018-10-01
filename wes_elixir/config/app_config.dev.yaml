@@ -1,7 +1,7 @@
 # General server/service settings
 server:
     host: '0.0.0.0'
-    port: 8888
+    port: 7777
     debug: True
     environment: development
     testing: False
@@ -11,17 +11,17 @@ server:
 security:
     authorization_required: True
     jwt:
-        name: "default PKCS#8 public key"
+        name: "ELIXIR AAI"
         algorithm: RS256
         public_key: |-
             -----BEGIN PUBLIC KEY-----
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA33TqqLR3eeUmDtHS89qF
-            3p4MP7Wfqt2Zjj3lZjLjjCGDvwr9cJNlNDiuKboODgUiT4ZdPWbOiMAfDcDzlOxA
-            04DDnEFGAf+kDQiNSe2ZtqC7bnIc8+KSG/qOGQIVaay4Ucr6ovDkykO5Hxn7OU7s
-            Jp9TP9H0JH8zMQA6YzijYH9LsupTerrY3U6zyihVEDXXOv08vBHk50BMFJbE9iwF
-            wnxCsU5+UZUZYw87Uu0n4LPFS9BT8tUIvAfnRXIEWCha3KbFWmdZQZlyrFw0buUE
-            f0YN3/Q0auBkdbDR/ES2PbgKTJdkjc/rEeM0TxvOUf7HuUNOhrtAVEN1D5uuxE1W
-            SwIDAQAB
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyUt09EkKGW30jpggX1PY
+            qrxuUw4Fo7a/uMiNvmy8CwBLfo+BgaI35Qi+ke/Dz9784CmNXjlIzNPFq+DUi+8p
+            BDGAJ5hznfEoQI2TDzdiG7uIART4AEpLo9xCKrL1al37jrDmvgk98gbumnHsWKQb
+            7KFRKHpIBvNVQ6v+z3nOQZ+fl1552S750ZSIfTXWXqlZohLVE9K8JwsM9i9z7h5E
+            BU2cJkxPbFoZEs6zGMFEOohiAA99Nm7cW/3m3dCn+Nm5TJadEt/xR08b2GXhcg+t
+            AC7qoBthpDFnUOrLbwvNWQIyE+Mch+z4+5LVTfElOGRem2tZaqYcMG/mY6EBra8p
+            UwIDAQAB
             -----END PUBLIC KEY-----
         header_name: Authorization
         token_prefix: Bearer
@@ -29,22 +29,22 @@ security:
 
 # Database settings
 database:
-    host: 'localhost'
+    host: 'mongo'
     port: 27017
-    name: wes-elixir-db
+    name: wes-elixir-db-dev
     run_id:
         length: 6
         charset: string.ascii_uppercase + string.digits
 
 # Storage
 storage:
-    permanent_dir: 'tests/output'
-    tmp_dir: 'tests/tmp'
+    permanent_dir: '/data/output'
+    tmp_dir: '/data/tmp'
     remote_storage_url: 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
 
 # Celery task queuer
 celery:
-    broker_url: 'pyamqp://localhost:5672//'
+    broker_url: 'pyamqp://rabbit:5672//'
     result_backend: 'rpc://'
     include:
         - wes_elixir.ga4gh.wes.utils_bg_tasks
@@ -90,7 +90,7 @@ api_endpoints:
 
 # TES server
 tes:
-    url: 'https://tesk.c01.k8s-popup.csc.fi/'
+    url: 'https://tes-dev.tsi.ebi.ac.uk/'
     get_logs:
         url_root: 'v1/tasks/'
         query_params: '?view=FULL'

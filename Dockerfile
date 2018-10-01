@@ -3,7 +3,7 @@ FROM ubuntu:16.04
 
 ##### METADATA #####
 LABEL base.image="ubuntu:16.04"
-LABEL version="1"
+LABEL version="1.1"
 LABEL software="WES-ELIXIR"
 LABEL software.version="1.0"
 LABEL software.description="Flask microservice implementing the Global Alliance for Genomics and Health (GA4GH) Workflow Execution Service (WES) API specification."
@@ -17,36 +17,34 @@ LABEL maintainer.location="Klingelbergstrasse 50/70, CH-4056 Basel, Switzerland"
 LABEL maintainer.lab="Zavolan Lab"
 LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 
-## install dependencies
+## Install system resources & dependencies
 RUN apt-get update \
   && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl
 
-## install python
+## Install Python
 RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
   && tar xJf Python-3.6.0.tar.xz \
   && cd Python-3.6.0 \
   && ./configure \
   && make altinstall \
   && ln -s /Python-3.6.0/python /usr/local/bin \
-  && cd ../ \
+  && cd .. \
   && python -m pip install --upgrade pip setuptools wheel virtualenv
 
-COPY ./ $HOME/WES-ELIXIR/
+## Copy app files
+COPY ./ /app
 
-## install WES-ELIXIR and cwl-tes
-#RUN git clone -b dockerize_app https://github.com/elixir-europe/WES-ELIXIR.git \
-
-RUN cd WES-ELIXIR \
-  && git clone https://github.com/common-workflow-language/cwl-tes.git \
-  && cd cwl-tes \
-  && git checkout ftp \
-  && git checkout ab58d1822a027eff2a456db9d712f5295ac42eac \
-  && python setup.py install \
-  && cd .. \
+## Install dependencies
+RUN cd /app \
   && pip install -r requirements.txt \
   && python setup.py develop \
-  && cd ../
+  && cd /app/src/cwl-tes \
+  && python setup.py develop \
+  && cd /app/src/cwltool \
+  && python setup.py develop \
+  && cd /app/src/py-tes \
+  && python setup.py develop \
+  && cd /
 
-ENV WES_CONFIG="/WES-ELIXIR/wes_elixir/config/app_config.yaml"
-
+## Copy FTP server credentials
 COPY .netrc /root
