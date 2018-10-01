@@ -28,22 +28,21 @@ RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
   && ./configure \
   && make altinstall \
   && ln -s /Python-3.6.0/python /usr/local/bin \
-  && cd ../ \
+  && cd .. \
   && python -m pip install --upgrade pip setuptools wheel virtualenv
 
-## Install app & dependencies
-## NOTE: Uncomment COPY and replace RUN directive for local debugging on remote machine
-## COPY ./ /app
-## RUN cd /app \
-RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
-  && cd /app \
+## Copy app files
+COPY ./ /app
+
+## Install dependencies
+RUN cd /app \
   && pip install -r requirements.txt \
   && python setup.py develop \
-  && cd /app/src/cwl-tes/ \
+  && cd /app/src/cwl-tes \
   && python setup.py develop \
-  && cd /app/src/cwltool/ \
+  && cd /app/src/cwltool \
   && python setup.py develop \
-  && cd /app/src/py-tes/ \
+  && cd /app/src/py-tes \
   && python setup.py develop \
   && cd /
 

@@ -2,15 +2,45 @@
 
 ## Synopsis
 
-[Flask](http://flask.pocoo.org/) microservice implementing the [Global Alliance for Genomics and Health](https://www.ga4gh.org/) (GA4GH) [Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas) (WES) API specification.
+[Flask](http://flask.pocoo.org/) microservice implementing the
+[Global Alliance for Genomics and Health](https://www.ga4gh.org/) (GA4GH)
+[Workflow Execution Service](https://github.com/ga4gh/workflow-execution-service-schemas)
+(WES) API specification.
 
 ## Description
 
-This microservice uses [Flask](http://flask.pocoo.org/) and [Connexion](https://github.com/zalando/connexion) to render the [GA4GH WES OpenAPI specification](https://github.com/ga4gh/workflow-execution-service-schemas). It allows users to send their workflows for execution, list current and previous workflow runs, and get the status and/or detailed information on individual workflow runs. It interprets workflows and breaks them down to individual tasks, for each task emitting a request that is compatible with the [GA4GH Task Execution Service](https://github.com/ga4gh/task-execution-schemas) (TES) OpenAPI specification. Thus, for end-to-end execution of workflows, a local or remote instance of a TES service such as [TESK](https://github.com/EMBL-EBI-TSI/TESK) or [funnel](https://ohsu-comp-bio.github.io/funnel/) is required.
+WES-ELIXIR is an implementation of the
+[GA4GH WES OpenAPI specification](https://github.com/ga4gh/workflow-execution-service-schemas)
+based on [Flask](http://flask.pocoo.org/) and [Connexion](https://github.com/zalando/connexion).
+It allows clients/users to send workflows for execution, list current and previous workflow runs,
+and get the status and/or detailed information on individual workflow runs. It interprets
+workflows and breaks them down into individual tasks, for each task emitting a request that
+is compatible with the [GA4GH Task Execution Service](https://github.com/ga4gh/task-execution-schemas)
+(TES) OpenAPI specification. Thus, for end-to-end execution of workflows, a local or remote
+instance of a TES service such as [TESK](https://github.com/EMBL-EBI-TSI/TESK) or
+[funnel](https://ohsu-comp-bio.github.io/funnel/) is required.
 
-The service will be backed by a [MongoDB](https://www.mongodb.com/) database and will use [ELIXIR AAI](https://www.elixir-europe.org/services/compute/aai) authentication. It will provide an abstract middleware layer providing support for various workflow languages. Once implemented, support for individual languages can be added in the form of pluggable modules. Initially, we are planning to take advantage of [CWL-TES](https://github.com/common-workflow-language/cwl-tes) to provide support for the [Common Workflow Language](https://github.com/common-workflow-language/common-workflow-language) (CWL).
+The service is backed by a [MongoDB](https://www.mongodb.com/) database and optionally uses
+[JWT](https://jwt.io/introduction/) token-based authorization, e.g. through
+[ELIXIR AAI](https://www.elixir-europe.org/services/compute/aai). While currently only workflows
+written in the [Common Workflow Language](https://www.commonwl.org/) are supported (leveraged
+by [CWL-TES](https://github.com/common-workflow-language/cwl-tes), we are planning to abstract
+workflow interpretation away from API business logic on the one hand and task execution on the
+other, thus hoping to provide an abstract middleware layer that can be interfaced by any workflow
+language interpreter in a pluggable manner.
 
-Note that this project is a work in progress. **The release of a functional prototype is planned for the first week of October 2018.** See [here](https://git.scicore.unibas.ch/krini/krini-cwl/tree/dev) for a rudimentary, yet functional TES-independent WES implementation leveraging [Toil](https://github.com/DataBiosphere/toil).
+Note that the project is currently still under active development.
+Nevertheless, a largely [**FUNCTIONAL PROTOTYPE**](http://193.167.189.73:7777/ga4gh/wes/v1/ui/)
+is available as of October 2018, hosted at the [CSC](https://www.csc.fi/home) in Helsinki.
+
+WES-ELIXIR is part of [ELIXIR](https://www.elixir-europe.org/), a multinational effort at
+establishing and implementing FAIR data sharing and promoting reproducible data analyses and
+responsible data handling in the Life Sciences. Infrastructure and IT support are provided by
+ELIXIR Finland at the [CSC](https://www.csc.fi/home), the [TESK](https://github.com/EMBL-EBI-TSI/TESK)
+service is being developed and maintained by ELIXIR UK at the [EBI](https://www.ebi.ac.uk/) in
+Hinxton, and WES-ELIXIR itself is being developed by ELIXIR Switzerland at the
+[Biozentrum](https://www.biozentrum.unibas.ch/) in Basel and the
+[Swiss Institute of Bioinformatics](https://www.sib.swiss/).
 
 ## Installation
 
@@ -18,54 +48,119 @@ Note that this project is a work in progress. **The release of a functional prot
 
 #### Requirements (Docker)
 
-* Docker
-* docker-compose
+Ensure you have the following software installed:
+
+* Docker (18.06.1-ce, build e68fc7a)
+* docker-compose (1.22.0, build f46880fe)
+* Git (1.8.3.1)
+
+Note: These are the versions used for development/testing. Other versions may or may not work.
 
 #### Instructions (Docker)
 
-Coming soon...
+Create data directory and required subdiretories
+
+```bash
+mkdir -p data/db data/output data/tmp
+```
+
+Clone repository
+
+```bash
+git clone https://github.com/elixir-europe/WES-ELIXIR.git app
+```
+
+Traverse to app directory
+
+```bash
+cd app
+```
+
+Place a `.netrc` file for access to a FTP server in app directory.
+Don't forget to replace `<USERNAME>` and `<PASSWORD>` with real values.
+
+```bash
+cat << EOF > .netrc
+machine ftp-private.ebi.ac.uk
+login <USERNAME>
+password <PASSWORD>
+EOF
+```
+
+Optional: edit app config
+
+```bash
+vi wes_elixir/config/app_config.dev.yaml
+```
+
+Build container image
+
+```bash
+docker-compose build
+```
+
+Run docker-compose services in detached/daemonized mode
+
+```bash
+docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+```
+
+Visit Swagger UI
+
+```bash
+firefox http://localhost:7777/ga4gh/wes/v1/ui
+```
 
 ### Non-dockerized
 
 #### Requirements (non-dockerized)
 
-* curl
-* MongoDB
-* Python3 (>=3.5)
-* RabbitMQ
-* virtualenv
+Ensure you have the following software installed:
+
+* curl (7.47.0)
+* Git (2.7.4)
+* MongoDB (4.0.1)
+* Python3 (3.5.2)
+* RabbitMQ (3.5.7)
+* virtualenv (16.0.0)
+
+Note: These are the versions used for development/testing. Other versions may or may not work.
 
 #### Instructions (non-dockerized)
 
-##### Pre-requisites
+Ensure RabbitMQ is running (actual command is [OS-dependent](https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq))
 
-Start MongoDB daemon
+```bash
+sudo service rabbitmq-server status
+```
+
+Start MongoDB daemon (actual command is [OS-dependent](https://docs.mongodb.com/manual/administration/install-community/))
 
 ```bash
 sudo service mongod start
 ```
 
-Set your .netrc file under your $HOME directory accordingly. The .netrc file should look like the 
-following:
+Place a `.netrc` file for access to a FTP server in your `$HOME` directory.
+Don't forget to replace `<USERNAME>` and `<PASSWORD>` with real values.
 
 ```bash
+cat << EOF > "${HOME}/.netrc"
 machine ftp-private.ebi.ac.uk
-login redacted_username
-password redacted_password
+login <USERNAME>
+password <PASSWORD>
+EOF
 ```
-
-##### Install app
 
 Clone repository
 
 ```bash
-git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git
+git clone https://github.com/elixir-europe/WES-ELIXIR.git app
 ```
 
 Traverse to project directory
 
 ```bash
-cd WES-ELIXIR
+cd app
 project_dir="$PWD"
 ```
 
@@ -123,8 +218,8 @@ celery worker -A celery_worker -E --loglevel=info
 
 Visit Swagger UI
 
-```
-firefox http://localhost:7777/ga4gh/wes/v1/ui
+```bash
+firefox http://localhost:8888/ga4gh/wes/v1/ui
 ```
 
 Note: If you have edited `WES_CONFIG`, ensure that host and port match the values specified in the config file.
@@ -144,11 +239,16 @@ conduct](CODE_OF_CONDUCT.md) for all interactions with the community.
 
 ## Versioning
 
-Coming soon...
+Development of the app is currently still in alpha stage, and current "versions" are for internal
+use only. We are aiming to have a fully spec-compliant ("feature complete") version of the app
+available by the end of 2018. The plan is to then adopt a [semantic versioning](https://semver.org/)
+scheme in which we would shadow WES spec versioning for major and minor versions, and release
+patched versions intermittently.
 
 ## License
 
-This project is covered by the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) also [shipped with this repository](LICENSE).
+This project is covered by the [Apache License 2.0](https://www.apache.org/licenses/LICENSE-2.0) also
+[shipped with this repository](LICENSE).
 
 ## Contact
 
@@ -164,3 +264,7 @@ sections.
 * <https://www.elixir-europe.org/>
 * <https://www.ga4gh.org/>
 * <https://github.com/ga4gh/workflow-execution-service-schemas>
+
+See also [krini-cwl](https://git.scicore.unibas.ch/krini/krini-cwl/tree/dev) for an older,
+more rudimentary, yet functional TES-independent WES implementation that is part of the Krini
+project and leverages [Toil](https://github.com/DataBiosphere/toil).
