@@ -32,8 +32,10 @@ RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
   && python -m pip install --upgrade pip setuptools wheel virtualenv
 
 ## Install app & dependencies
-RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
-  && cd /app \
+#RUN git clone -b dev https://github.com/elixir-europe/WES-ELIXIR.git app \
+#  && cd /app \
+COPY ./ /app
+RUN cd /app \
   && pip install -r requirements.txt \
   && python setup.py develop \
   && cd /app/src/cwl-tes/ \

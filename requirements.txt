@@ -6,7 +6,7 @@ avro-cwl==1.8.4
 bagit==1.7.0
 billiard==3.5.0.4
 CacheControl==0.11.7
-celery==4.2.1
+celery==4.1.1
 certifi==2018.8.24
 cffi==1.11.5
 chardet==3.0.4
