@@ -23,7 +23,7 @@ security:
             AC7qoBthpDFnUOrLbwvNWQIyE+Mch+z4+5LVTfElOGRem2tZaqYcMG/mY6EBra8p
             UwIDAQAB
             -----END PUBLIC KEY-----
-        header_name: authorization
+        header_name: Authorization
         token_prefix: Bearer
         identity_claim: sub
 
