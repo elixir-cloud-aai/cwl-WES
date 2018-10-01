@@ -11,7 +11,7 @@ server:
 security:
     authorization_required: False
     jwt:
-        name: "default PKCS#8 public key"
+        name: "ELIXIR AAI"
         algorithm: RS256
         public_key: |-
             -----BEGIN PUBLIC KEY-----

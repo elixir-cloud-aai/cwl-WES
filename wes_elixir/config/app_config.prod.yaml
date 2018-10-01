@@ -9,7 +9,7 @@ server:
 
 # Security settings
 security:
-    authorization_required: False
+    authorization_required: True
     jwt:
         name: "ELIXIR AAI"
         algorithm: RS256
