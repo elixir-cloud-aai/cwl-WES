@@ -487,13 +487,16 @@ def __process_workflow_attachments(data):
                 'git',
                 '--git-dir',
                 os.path.join(workflow_dir, 'repo', '.git'),
+                '--work-tree',
+                os.path.join(workflow_dir, 'repo'),
                 'checkout',
                 branch_commit
-            ]
+            ],
+            check=True
         ):
             logger.error("Could not checkout repository commit/branch. Check value of 'workflow_url' in run request.")
             raise BadRequest
-        
+
         # Set CWL path
         data['internal']['cwl_path'] = os.path.join(workflow_dir, 'repo', cwl_path)
 
