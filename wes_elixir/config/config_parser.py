@@ -1,61 +1,72 @@
 from functools import wraps
+from itertools import chain
 import logging
 import os
+
 import yaml
+
+from addict import Dict
 
 
 # Get logger instance
 logger = logging.getLogger(__name__)
 
 
-class YAMLConfigParser(dict):
+class YAMLConfigParser(Dict):
 
-    '''TODO'''
+    '''
+    Config parser for YAML files. Allows sequential updating of configs via file paths and
+    environment variables. Makes use of the `addict` package for updating config dictionaries.
+    '''
 
-    def update_from_file_or_env(
+    #def __init__(self, config=None):
+    #    self.config = Dict(config)
+
+
+    def update_from_yaml(
         self,
-        config_var=None,
-        config_path=None
+        config_paths=[],
+        config_vars=[],
     ):
 
         '''
-        Update dict from a YAML file path or environment variable pointing to a YAML file.
-        If both an environment variable and a file path are specified, the variable takes
-        precendence, and the file path is used as a fallback.
+        Update config dictionary from file paths or environment variables pointing to one or more
+        YAML files. Multiple file paths and environment variables are accepted. Moreover, a given
+        environment variable may point to several files, with paths separated by colons. All
+        available file paths/pointers are used to update the dictionary in a sequential order, with
+        nested dictionary entries being successively and recursively overridden. In other words: if
+        a given nested dictionary key occurs in multiple YAML files, its last value will be
+        retained. File paths in the `config_paths` list are used first (lowest precedence), from
+        the first to the last item/path, followed by file paths pointed to by the environment
+        variables in `config_vars` (hightest precedence), form the first to the last item/variable.
+        If a given variable points to multiple file paths, these will be used for updating from
+        the first to the last path. 
 
-        :param config_var: Environment variable pointing to YAML file
-        :param config_path: YAML file path
+        :param config_paths: List of YAML file paths
+        :param config_vars: List of environment variables, each pointing to one or more YAML files,
+                           separated by colons; unset variables are ignored
         '''
-        # If defined, get config from environment variable
-        try:
-            self.__update_from_path(os.environ[config_var])
-            return os.environ[config_var]
 
-        except KeyError:
-            pass
+        # Get ordered list of file paths
+        paths = config_paths + [os.environ.get(var) for var in config_vars]
+        paths = list(filter(None, paths))
+        paths = [item.split(':') for item in paths]
+        paths = list(chain.from_iterable(paths))
+        logger.warning("PATHS: {}".format(paths))
 
-        except FileNotFoundError:
-            logger.warning("Environment variable '{config_var}' set but no file found at '{path}'.\n\tFalling back to default path '{default_path}'.".format(
-                config_var=config_var,
-                path=os.getenv(config_var),
-                default_path=config_path,
-            ))
+        # Iterate over file paths
+        for path in paths:
 
-        except PermissionError:
-            logger.warning("Environment variable '{config_var}' set but file '{path}' is not readable.\n\tFalling back to default path '{default_path}'.".format(
-                config_var=config_var,
-                path=os.getenv(config_var),
-                default_path=config_path,
-            ))
+            # Otherwise, get config from file path
+            try:
+                self.__update_from_path(path)
 
-        # Otherwise, get config from file path
-        try:
-            self.__update_from_path(config_path)
-            return config_path
+            except (FileNotFoundError, PermissionError):
+                raise
 
-        except (FileNotFoundError, PermissionError):
-            raise
-
+        # Return paths that were used to update the dictionary
+        return ':'.join(paths)
+    
 
     def __update_from_path(self, path):
         with open(path) as f:
@@ -107,7 +118,7 @@ def get_conf_type(
     except (AttributeError, KeyError, TypeError, ValueError) as e:
 
         if touchy:
-            logger.critical("Config file corrupt. Execution aborted. Original error message: {type}: {msg}".format(
+            logger.exception("Config file corrupt. Execution aborted. Original error message: {type}: {msg}".format(
                 type=type(e).__name__,
                 msg=e,
             ))

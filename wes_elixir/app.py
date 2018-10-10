@@ -41,7 +41,6 @@ def main():
 
     # Run app
     connexion_app.run(
-        host='0.0.0.0',
         use_reloader=get_conf(config, 'server', 'use_reloader')
     )
 
