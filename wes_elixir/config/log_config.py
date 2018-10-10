@@ -22,14 +22,17 @@ def configure_logging(
 
     # Parse config
     try:
-        path = config.update_from_file_or_env(config_var=config_var, config_path=default_path)
+        paths = config.update_from_yaml(
+            config_paths=[default_path],
+            config_vars=[config_var],
+        )
         dictConfig(config)
 
-    # Abort if no config file was found/accessible 
+    # Fall back to default if no log config file was found/accessible 
     except (FileNotFoundError, PermissionError):
-        logger.info("No custom logging config found. Falling back to default config.")
+        logger.warning("No custom logging config found. Falling back to default config.")
         logging.basicConfig(level=fallback_level)
-
+    
     # Log info 
     else:
-        logger.info("Logging config loaded from '{path}'.".format(path=path))
+        logger.info("Logging config loaded from '{paths}'.".format(paths=paths))

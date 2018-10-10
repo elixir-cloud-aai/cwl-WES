@@ -1,0 +1,27 @@
+# General server/service settings
+server:
+    port: 7777
+
+# Security settings
+security:
+    authorization_required: True
+
+# Database settings
+database:
+    host: 'mongo'
+    name: wes-elixir-db-dev
+
+# Storage
+storage:
+    permanent_dir: '/data/output'
+    tmp_dir: '/data/tmp'
+
+# Celery task queue
+celery:
+    broker_url: 'pyamqp://rabbit:5672//'
+
+# OpenAPI specs
+
+# WES service info settings
+
+# TES server
