@@ -1,6 +1,7 @@
 from connexion.exceptions import Forbidden
 import logging
 import os
+import re
 import shutil
 import string
 import subprocess
@@ -13,7 +14,7 @@ from yaml import dump
 
 from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
-from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
+from wes_elixir.ga4gh.wes.utils_bg_tasks import task__run_workflow
 
 
 # Get logger instance
@@ -178,7 +179,7 @@ def list_runs(config, *args, **kwargs):
 
     # Fall back to default page size if not provided by user
     # TODO: uncomment when implementing pagination
-    #page_size = kwargs['page_size'] if 'page_size' in kwargs else cnx_app.app.config['api_endpoints']['default_page_size']
+    #page_size = kwargs['page_size'] if 'page_size' in kwargs else cnx_app.app.config['api']['endpoint_params']['default_page_size']
 
     # Query database for workflow runs
     if 'user_id' in kwargs:
@@ -291,23 +292,26 @@ def __validate_run_workflow_request(data):
     # Set required parameters
     required = {'workflow_params', 'workflow_type', 'workflow_type_version', 'workflow_url'}
     type_str = dict((key, data[key]) for key in ['workflow_type', 'workflow_type_version', 'workflow_url'] if key in data)
+    # TODO: temporarily removed 'workflow_params' from required parameters as we can now supply
+    #       a file with these params (see __process_workflow_attachments())
+    #type_dict = dict((key, data[key]) for key in ['workflow_params', 'workflow_engine_parameters', 'tags'] if key in data)
     type_dict = dict((key, data[key]) for key in ['workflow_params', 'workflow_engine_parameters', 'tags'] if key in data)
     # TODO: implement type casting/checking for workflow attachment
 
     # Raise error if any required params are missing
     if not required <= set(data):
         logger.error("POST request does not conform to schema.")
-        raise BadRequest()
+        raise BadRequest
 
     # Raise error if any string params are not of type string
     if not all(isinstance(value, str) for value in type_str.values()):
         logger.error("POST request does not conform to schema.")
-        raise BadRequest()
+        raise BadRequest
 
     # Raise error if any dict params are not of type dict
     if not all(isinstance(value, dict) for value in type_dict.values()):
         logger.error("POST request does not conform to schema.")
-        raise BadRequest()
+        raise BadRequest
 
     # Nothing to return
     return None
@@ -423,10 +427,26 @@ def __create_run_id(charset, length):
 
 def __process_workflow_attachments(data):
     '''Process workflow attachments'''
+
     # TODO: implement properly
     # Current workaround until processing of workflow attachments is implemented
-    # Use 'workflow_url' for path to (main) CWL workflow file on local file system)
-    # Use 'workflow_params' to generate YAML file
+    # Use 'workflow_url' for path to (main) CWL workflow file on local file system or in Git repo
+    # Use 'workflow_params' or file in Git repo to generate YAML file
+
+    # Set regular expression for finding workflow files on git repositories
+    # Assumptions:
+    # - A URL needs to consist of a root, a "separator" keyword, a branch/commit, and a "file path", separated by slashes
+    # - The root is the part of the URL up to the separator and is assumed to represent the "git clone URL" when '.git' is appended
+    # - Accepted separator keywords are 'blob', 'src' and 'tree'
+    # - The value branch/commit is used to checkout the repo to that state before obtaining the file
+    # - The "file path" segment represents the relative path to the CWL workflow file when inside the repo
+    # All of the above assumptions should be met when copying the links of files in most repos on GitHub, GitLab or Bitbucket
+    # Note that the "file path" portion (see above) of a CWL *parameter file* can be *optionally* appended to the URL
+    # The following additional rules apply for workflow and/or parameter files: 
+    # - CWL workflow files *must* end in .cwl, .yml, .yaml or .json
+    # - Parameter files *must* end in '.yml', '.yaml' or '.json'
+    # - Accepted delimiters for separating workflow and parameter file, if specified, are: ',', ';', ':', '|'
+    re_git_file = re.compile(r'^(https?:.*)\/(blob|src|tree)\/(.*?)\/(.*?\.(cwl|yml|yaml|json))[,:;|]?(.*\.(yml|yaml|json))?')
 
     # Create directory for storing workflow files
     workflow_dir = os.path.abspath(os.path.join(data['internal']['out_dir'], "workflow_files"))
@@ -437,25 +457,89 @@ def __process_workflow_attachments(data):
         # TODO: Do something more reasonable here
         pass
 
-    # Set main CWL workflow file path
-    data['internal']['cwl_path'] = os.path.abspath(data['api']['request']['workflow_url'])
+    # Get main workflow file
+    user_string = data['api']['request']['workflow_url']
+    m = re_git_file.match(user_string)
 
-    # Extract name and extensions of workflow
+    # Get workflow from Git repo if regex matches
+    if m:
+        
+        repo_url = '.'.join([m.group(1), 'git'])
+        branch_commit = m.group(3)
+        cwl_path = m.group(4)
+
+        # Try to clone repo
+        if not subprocess.run(
+            [
+                'git',
+                'clone',
+                repo_url,
+                os.path.join(workflow_dir, 'repo')
+            ],
+            check=True
+        ):
+            logger.error("Could not clone Git repository. Check value of 'workflow_url' in run request.")
+            raise BadRequest
+
+        # Try to checkout branch/commit
+        if not subprocess.run(
+            [
+                'git',
+                '--git-dir',
+                os.path.join(workflow_dir, 'repo', '.git'),
+                '--work-tree',
+                os.path.join(workflow_dir, 'repo'),
+                'checkout',
+                branch_commit
+            ],
+            check=True
+        ):
+            logger.error("Could not checkout repository commit/branch. Check value of 'workflow_url' in run request.")
+            raise BadRequest
+
+        # Set CWL path
+        data['internal']['cwl_path'] = os.path.join(workflow_dir, 'repo', cwl_path)
+
+    # Else assume value of 'workflow_url' represents file on local file system
+    else:
+
+        # Set main CWL workflow file path
+        data['internal']['cwl_path'] = os.path.abspath(data['api']['request']['workflow_url'])
+
+        # Extract name and extensions of workflow
+        workflow_name_ext = os.path.splitext(os.path.basename(data['internal']['cwl_path']))
+
+    # Get parameter file 
     workflow_name_ext = os.path.splitext(os.path.basename(data['internal']['cwl_path']))
 
-    ## Copy workflow files
-    #data['internal']['cwl_path'] = os.path.join(workflow_dir, "".join(workflow_name_ext))
-    #shutil.copyfile(data['api']['request']['workflow_url'], data['internal']['cwl_path'])
+    # Try to get parameters from 'workflow_params' field
+    if data['api']['request']['workflow_params']:
+        data['internal']['param_file_path'] = os.path.join(workflow_dir, '.'.join([workflow_name_ext[0], 'yml']))
+        with open(data['internal']['param_file_path'], 'w') as yaml_file:
+            dump(
+                data['api']['request']["workflow_params"],
+                yaml_file,
+                allow_unicode=True,
+                default_flow_style=False
+            )
 
-    # Write out parameters to YAML workflow config gile
-    data['internal']['yaml_path'] = os.path.join(workflow_dir, ".".join([workflow_name_ext[0], "yml"]))
-    with open(data['internal']['yaml_path'], 'w') as yaml_file:
-        dump(
-            data['api']['request']["workflow_params"],
-            yaml_file,
-            allow_unicode=True,
-            default_flow_style=False
-        )
+    # Or from provided relative file path in repo
+    elif m and m.group(6):
+        param_path = m.group(6)
+        data['internal']['param_file_path'] = os.path.join(workflow_dir, 'repo', param_path)
+
+    # Else try to see if there is a 'yml', 'yaml' or 'json' file with exactly the same basename as CWL in same dir
+    else:
+        param_file_extensions = ['yml', 'yaml', 'json']
+        for ext in param_file_extensions:
+            possible_param_file = os.path.join(workflow_dir, 'repo', '.'.join([workflow_name_ext[0], ext]))
+            if os.path.isfile(possible_param_file):
+                data['internal']['param_file_path'] = possible_param_file
+                break
+
+    # Raise BadRequest if not parameter file was found
+    if not 'param_file_path' in data['internal']:
+        raise BadRequest
 
     # Extract workflow attachments from form data dictionary
     if 'workflow_attachment' in data['api']['request']:
@@ -481,17 +565,17 @@ def __run_workflow(config, document, **kwargs):
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
     cwl_path = document['internal']['cwl_path']
-    yaml_path = document['internal']['yaml_path']
+    param_file_path = document['internal']['param_file_path']
 
     # Build command
-    # NOTE: '--debug' option is not supported
     command_list = [
         "cwl-tes",
+        "--debug",
         "--leave-outputs",
         "--remote-storage-url", remote_storage_url,
         "--tes", tes_url,
         cwl_path,
-        yaml_path
+        param_file_path
     ]
 
     # Add authorization parameters
@@ -510,10 +594,6 @@ def __run_workflow(config, document, **kwargs):
     #command_list = [
     #    "/bin/false"
     #]
-    ## TEST CASE FOR FAST COMPLETION WITH STDOUT
-    #command_list = [
-    #    "/home/kanitz/Work/PROJECTS/SANDBOX/subprocess_parsing/test_script.sh"
-    #]
     ## TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
     #command_list = [
     #    "sleep",
@@ -526,7 +606,7 @@ def __run_workflow(config, document, **kwargs):
         task_id=task_id,
         tmp_dir=tmp_dir,
     ))
-    add_command_to_task_queue.apply_async(
+    task__run_workflow.apply_async(
         None, {
             'command_list': command_list,
             'tmp_dir': tmp_dir

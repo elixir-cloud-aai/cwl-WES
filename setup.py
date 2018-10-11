@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='wes-elixir',
-    version='0.2.0',
+    version='0.11.0',
     author='Elixir Europe',
     author_email='alexander.kanitz@alumni.ethz.ch',
     description='Flask- and MongoDB-powered GA4GH WES server',
@@ -21,8 +21,6 @@ setup(
         'Intended Audience :: Science/Research',
         'Topic :: Scientific/Engineering :: Bio-Informatics',
         'Natural Language :: English',
-        'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
     ],

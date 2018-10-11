@@ -21,19 +21,24 @@ def parse_app_config(
 
     # Parse config
     try:
-        path = config.update_from_file_or_env(config_var=config_var, config_path=default_path)
+        paths = config.update_from_yaml(
+            config_paths=[default_path],
+            config_vars=[config_var],
+        )
 
-    # Abort if no config file was found/accessible 
-    except (FileNotFoundError, PermissionError):
-        logger.critical("No config file found. A config file needs to be available at '{default_path}'. Alternatively, point the environment variable '{config_var}' to its location. Execution aborted.".format(
-                default_path=default_path,
-                config_var=config_var,
+    # Abort if a config file was not found/accessible 
+    except (FileNotFoundError, PermissionError) as e:
+        logger.exception("Config file not found. Ensure that default config file is available and accessible at '{default_path}'. If '{config_var}' is set, further ensure that the file or files it points are available and accessible. Execution aborted. Original error message: {type}: {msg}".format(
+            default_path=default_path,
+            config_var=config_var,
+            type=type(e).__name__,
+            msg=e,
         ))
         raise SystemExit(1)
 
     # Log info 
     else:
-        logger.info("App config loaded from '{path}'.".format(path=path))
+        logger.info("App config loaded from '{paths}'.".format(paths=paths))
     
     # Return config
     return config

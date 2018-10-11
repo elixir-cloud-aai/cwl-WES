@@ -87,10 +87,12 @@ password <PASSWORD>
 EOF
 ```
 
-Optional: edit app config
+Optional: edit default and override app config
 
 ```bash
-vi wes_elixir/config/app_config.dev.yaml
+vi wes_elixir/config/app_config.yaml
+vi wes_elixir/config/override/app_config.dev.yaml  # for development service
+vi wes_elixir/config/override/app_config.prod.yaml  # for production server
 ```
 
 Build container image
@@ -102,7 +104,8 @@ docker-compose build
 Run docker-compose services in detached/daemonized mode
 
 ```bash
-docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d
+docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d  # for development service
+docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d  # for production service
 ```
 
 Visit Swagger UI
@@ -195,10 +198,11 @@ Install app
 python setup.py develop
 ```
 
-Set config file environment variable and, optionally, edit config file
+Optionally, override default config by setting environment variable and pointing it to a YAML config 
+file. Ensure the file is accessible.
 
 ```bash
-export WES_CONFIG="$PWD/wes_elixir/config/app_config.yaml"
+export WES_CONFIG=<path/to/override/config/file.yaml>
 ```
 
 Start service
@@ -210,7 +214,7 @@ python wes_elixir/app.py
 In another terminal, load virtual environment & start Celery worker for executing background tasks
 
 ```bash
-# Traverse to project directory ("WES_ELIXIR") first
+# Traverse to project directory ("app") first
 source venv/bin/activate
 cd wes_elixir
 celery worker -A celery_worker -E --loglevel=info

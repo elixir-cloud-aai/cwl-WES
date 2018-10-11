@@ -43,3 +43,34 @@ def upsert_fields_in_root_object(
         {"$set": {".".join([root, key]):value for (key,value) in kwargs.items()}},
         return_document=ReturnDocument.AFTER
     )
+
+
+def update_tes_task_state(
+    collection,
+    task_id,
+    tes_id,
+    state
+):
+    
+    '''Update 'state' field in TES task log'''
+
+    return collection.find_one_and_update(
+        {"task_id": task_id, "api.task_logs": {"$elemMatch": {"id": tes_id}}},
+        {"$set" : {"api.task_logs.$.state" : state}},
+        return_document=ReturnDocument.AFTER
+    )
+
+
+def append_to_tes_task_logs(
+    collection,
+    task_id,
+    tes_log
+):
+
+    '''Append task log to TES task logs'''
+
+    return collection.find_one_and_update(
+        {"task_id": task_id},
+        {'$push': {'api.task_logs': tes_log}},
+        return_document=ReturnDocument.AFTER
+    )

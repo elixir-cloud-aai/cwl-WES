@@ -9,19 +9,19 @@ server:
 
 # Security settings
 security:
-    authorization_required: True
+    authorization_required: False
     jwt:
-        name: "default PKCS#8 public key"
+        name: "ELIXIR AAI"
         algorithm: RS256
         public_key: |-
             -----BEGIN PUBLIC KEY-----
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA33TqqLR3eeUmDtHS89qF
-            3p4MP7Wfqt2Zjj3lZjLjjCGDvwr9cJNlNDiuKboODgUiT4ZdPWbOiMAfDcDzlOxA
-            04DDnEFGAf+kDQiNSe2ZtqC7bnIc8+KSG/qOGQIVaay4Ucr6ovDkykO5Hxn7OU7s
-            Jp9TP9H0JH8zMQA6YzijYH9LsupTerrY3U6zyihVEDXXOv08vBHk50BMFJbE9iwF
-            wnxCsU5+UZUZYw87Uu0n4LPFS9BT8tUIvAfnRXIEWCha3KbFWmdZQZlyrFw0buUE
-            f0YN3/Q0auBkdbDR/ES2PbgKTJdkjc/rEeM0TxvOUf7HuUNOhrtAVEN1D5uuxE1W
-            SwIDAQAB
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyUt09EkKGW30jpggX1PY
+            qrxuUw4Fo7a/uMiNvmy8CwBLfo+BgaI35Qi+ke/Dz9784CmNXjlIzNPFq+DUi+8p
+            BDGAJ5hznfEoQI2TDzdiG7uIART4AEpLo9xCKrL1al37jrDmvgk98gbumnHsWKQb
+            7KFRKHpIBvNVQ6v+z3nOQZ+fl1552S750ZSIfTXWXqlZohLVE9K8JwsM9i9z7h5E
+            BU2cJkxPbFoZEs6zGMFEOohiAA99Nm7cW/3m3dCn+Nm5TJadEt/xR08b2GXhcg+t
+            AC7qoBthpDFnUOrLbwvNWQIyE+Mch+z4+5LVTfElOGRem2tZaqYcMG/mY6EBra8p
+            UwIDAQAB
             -----END PUBLIC KEY-----
         header_name: Authorization
         token_prefix: Bearer
@@ -42,7 +42,7 @@ storage:
     tmp_dir: 'tests/tmp'
     remote_storage_url: 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
 
-# Celery task queuer
+# Celery task queue
 celery:
     broker_url: 'pyamqp://localhost:5672//'
     result_backend: 'rpc://'
@@ -55,11 +55,13 @@ celery:
 # OpenAPI specs
 api:
     specs:
-        - path: '20180830.74fd916da3.workflow_execution_service.swagger.yaml'
+        - path: '20181010.be85140.workflow_execution_service.swagger.yaml'
           strict_validation: True
           validate_responses: True
           swagger_ui: True
           swagger_json: True
+    endpoint_params:
+        default_page_size: 10
 
 # WES service info settings
 service_info:
@@ -81,16 +83,12 @@ service_info:
         - type: int
           default_value: '5'
     tags:
-        known_tes_endpoints: 'https://tesk.c01.k8s-popup.csc.fi/'
-        wes_elixir_version: 0.9.0
-
-# Endpoint parameters
-api_endpoints:
-    default_page_size: 10
+        known_tes_endpoints: 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
+        wes_elixir_version: 0.11.0
 
 # TES server
 tes:
-    url: 'https://tesk.c01.k8s-popup.csc.fi/'
+    url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
     get_logs:
         url_root: 'v1/tasks/'
         query_params: '?view=FULL'
