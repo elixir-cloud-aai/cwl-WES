@@ -54,11 +54,12 @@ class TaskMonitor():
                 with self.celery_app.connection() as connection:
 
                     listener = self.celery_app.events.Receiver(connection, handlers={
-                        'task-failed'    : self.on_task_failed,
-                        'task-received'  : self.on_task_received,
-                        'task-revoked'   : self.on_task_revoked,
-                        'task-started'   : self.on_task_started,
-                        'task-succeeded' : self.on_task_succeeded
+                        'task-failed'          : self.on_task_failed,
+                        'task-received'        : self.on_task_received,
+                        'task-revoked'         : self.on_task_revoked,
+                        'task-started'         : self.on_task_started,
+                        'task-succeeded'       : self.on_task_succeeded,
+                        'task-tes-task-update' : self.on_task_tes_task_update,
                     })
                     listener.capture(limit=None, timeout=None, wakeup=True)
 
@@ -77,7 +78,7 @@ class TaskMonitor():
             sleep(self.timeout)
 
 
-    ### STATE: SYSTEM_ERROR ###
+    ### TASK: FAILED ###
     def on_task_failed(self, event):
 
         '''Event handler for failed (system error) Celery tasks'''
@@ -97,7 +98,7 @@ class TaskMonitor():
         )
 
 
-    ### STATE: QUEUED ###
+    ### TASK: RECEIVED ###
     def on_task_received(self, event):
 
         '''Event handler for received Celery tasks'''
@@ -136,7 +137,7 @@ class TaskMonitor():
                 expires=event['expires'],
             )
         except Exception as e:
-            logger.error("Database error. Could not update log information for task {task}. Original error message: {type}: {msg}".format(
+            logger.exception("Database error. Could not update log information for task '{task}'. Original error message: {type}: {msg}".format(
                 task=event['uuid'],
                 type=type(e).__name__,
                 msg=e,
@@ -144,7 +145,7 @@ class TaskMonitor():
             pass
 
 
-    ### STATE: CANCELED ###
+    ### TASK: REVOKED ###
     def on_task_revoked(self, event):
 
         '''Event handler for revoked Celery tasks'''
@@ -165,7 +166,7 @@ class TaskMonitor():
                 expired=event['expired'],
             )
         except Exception as e:
-            logger.error("Database error. Could not update log information for task {task}. Original error message: {type}: {msg}".format(
+            logger.exception("Database error. Could not update log information for task '{task}'. Original error message: {type}: {msg}".format(
                 task=event['uuid'],
                 type=type(e).__name__,
                 msg=e,
@@ -173,7 +174,7 @@ class TaskMonitor():
             pass
 
 
-    ### STATE: RUNNING ###
+    ### TASK: STARTED ###
     def on_task_started(self, event):
 
         '''Event handler for started Celery tasks'''
@@ -191,7 +192,7 @@ class TaskMonitor():
                 task_started=datetime.utcfromtimestamp(event['timestamp']).strftime("%Y-%m-%d %H:%M:%S.%f"),
             )
         except Exception as e:
-            logger.error("Database error. Could not update log information for task {task}. Original error message: {type}: {msg}".format(
+            logger.exception("Database error. Could not update log information for task '{task}'. Original error message: {type}: {msg}".format(
                 task=event['uuid'],
                 type=type(e).__name__,
                 msg=e,
@@ -199,18 +200,15 @@ class TaskMonitor():
             pass
 
 
-    ### STATE: EXECUTOR_ERROR / COMPLETE ###
+    ### TASK: SUCCEEDED ###
     def on_task_succeeded(self, event):
 
         '''Event handler for successful and failed (executor error) Celery tasks'''
 
         # Parse subprocess results
-        # NOTE: Hack to get around serialization/deserialization problem
         try:
-            (returncode, stdout, stderr) = event['result'].strip('\'').split('<<<newfield>>>')
-            returncode = int(returncode.strip('\''))
-            stdout = stdout.strip('\'').split('<<<newline>>>')
-            stderr = stderr.strip('\'').split('<<<newline>>>')
+            (returncode, log, tes_ids) = literal_eval(event['result'])
+            log = os.linesep.join(log)
         except Exception:
             logger.exception("Field 'result' in event message malformed. Execution aborted. Original error message:")
             raise SystemExit
@@ -226,10 +224,13 @@ class TaskMonitor():
             state='COMPLETE'
 
         # Extract run outputs
-        outputs = self.__cwl_tes_outputs_parser(stdout)
+        import pickle
+        with open('/home/kanitz/log.pkl', 'wb') as output:
+            pickle.dump(log, output, pickle.HIGHEST_PROTOCOL)
+        outputs = self.__cwl_tes_outputs_parser(log)
 
         # Get task logs
-        task_logs = self.__get_task_logs(stderr)
+        task_logs = self.__get_tes_task_logs(tes_ids=tes_ids)
 
         # Update run document in database
         try:
@@ -241,11 +242,11 @@ class TaskMonitor():
                 task_logs=task_logs,
                 task_finished=datetime.utcfromtimestamp(event['timestamp']).strftime("%Y-%m-%d %H:%M:%S.%f"),
                 return_code=returncode,
-                stdout=os.linesep.join(stdout),
-                stderr=os.linesep.join(stderr),
+                stdout=log,
+                stderr='',
             )
         except Exception as e:
-            logger.error("Database error. Could not update log information for task {task}. Original error message: {type}: {msg}".format(
+            logger.exception("Database error. Could not update log information for task '{task}'. Original error message: {type}: {msg}".format(
                 task=event['uuid'],
                 type=type(e).__name__,
                 msg=e,
@@ -253,10 +254,48 @@ class TaskMonitor():
             pass
 
 
+    ### TES TASK: STATE UPDATE ###
+    def on_task_tes_task_update(self, event):
+
+        # If TES task is new, add task log to database
+        if not event['tes_state']:
+            try:
+                tes_log = self.__get_tes_task_log(tes_id=event['tes_id'])
+                db_utils.append_to_tes_task_logs(
+                    collection=self.collection,
+                    task_id=event['uuid'],
+                    tes_log=tes_log,
+                )
+            except Exception as e:
+                logger.exception("Database error. Could not update log information for task '{task}'. Original error message: {type}: {msg}".format(
+                    task=event['uuid'],
+                    type=type(e).__name__,
+                    msg=e,
+                ))
+                pass
+        
+        # Otherwise only update state
+        else:
+            try:
+                db_utils.update_tes_task_state(
+                    collection=self.collection,
+                    task_id=event['uuid'],
+                    tes_id=event['tes_id'],
+                    state=event['tes_state'],
+                )
+            except Exception as e:
+                logger.exception("Database error. Could not update log information for task '{task}'. Original error message: {type}: {msg}".format(
+                    task=event['uuid'],
+                    type=type(e).__name__,
+                    msg=e,
+                ))
+                pass
+
+
     def update_run_document(
         self,
         event,
-        state='UNKNOWN',
+        state=None,
         internal=None,
         outputs=None,
         task_logs=None,
@@ -330,14 +369,15 @@ class TaskMonitor():
                 )
 
         # Update state
-        try:
-            document = db_utils.update_run_state(
-                collection=self.collection,
-                task_id=event['uuid'],
-                state=state,
-            )
-        except Exception:
-            raise
+        if state:
+            try:
+                document = db_utils.update_run_state(
+                    collection=self.collection,
+                    task_id=event['uuid'],
+                    state=state,
+                )
+            except Exception:
+                raise
 
         # Log info message
         logger.info("State of run '{run_id}' (task id: {task_id}) changed to '{state}'".format(
@@ -348,50 +388,54 @@ class TaskMonitor():
 
 
     @staticmethod
-    def __cwl_tes_outputs_parser(lines):
+    def __cwl_tes_outputs_parser(log):
 
-        '''Parse outputs from CWL-TES log'''
+        '''Parse outputs from cwl-tes log'''
 
-        # Convert block to dictionary
-        return literal_eval('\n'.join(lines))
+        # Find outputs object in log string
+        re_outputs = re.compile(r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)', re.MULTILINE)
+        m = re_outputs.search(log)
+        if m:
+            return literal_eval(m.group(1))
+        else:
+            return dict()
 
 
-    def __get_task_logs(
+    def __get_tes_task_logs(
         self,
-        lines=None
+        tes_ids=list()
     ):
 
-        '''Parse task IDs from CWL-TES log and get logs from TES instance'''
+        '''Get multiple task logs from TES instance'''
 
-        # Set regular expressions
-        re_task = re.compile(r"^\[job\s\w*?\]\stask\sid:\s(\S*)\s*$")
-
-        # Set parameters
-        tasks = list()
+        # Initialize container for task logs
         task_logs = list()
 
-        # Iterate over lines
-        for line in lines:
-
-            # Extract task ID when regex matches
-            m = re_task.match(line)
-            if m:
-                tasks.append(m.group(1))
-
         # Iterate over task IDs
-        for task_id in tasks:
-
-            # Build URL
-            base = self.tes['url']
-            root = self.tes['logs_endpoint_root']
-            suffix = self.tes['logs_endpoint_query_params']
-            url = ''.join([base, root, task_id, suffix])
-
-            # Send GET request to URL
-            r = requests.get(url)
+        for tes_id in tes_ids:
 
             # Add log to container
-            task_logs.append(r.json())
+            task_logs.append(self.__get_tes_task_log(tes_id))
 
         # Return task logs container
         return task_logs
+
+
+    def __get_tes_task_log(
+        self,
+        tes_id
+    ):
+
+        '''Get task log from TES instance'''
+
+        # Build URL
+        base = self.tes['url']
+        root = self.tes['logs_endpoint_root']
+        suffix = ''.join([tes_id, self.tes['logs_endpoint_query_params']])
+        url = '/'.join(frag.strip('/') for frag in [base, root, suffix])
+
+        # Send GET request to URL to obtain task log
+        task_log = requests.get(url).json()
+
+        # Return log
+        return task_log

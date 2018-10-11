@@ -14,7 +14,7 @@ from yaml import dump
 
 from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
-from wes_elixir.ga4gh.wes.utils_bg_tasks import add_command_to_task_queue
+from wes_elixir.ga4gh.wes.utils_bg_tasks import task__run_workflow
 
 
 # Get logger instance
@@ -568,9 +568,9 @@ def __run_workflow(config, document, **kwargs):
     param_file_path = document['internal']['param_file_path']
 
     # Build command
-    # NOTE: '--debug' option is not supported
     command_list = [
         "cwl-tes",
+        "--debug",
         "--leave-outputs",
         "--remote-storage-url", remote_storage_url,
         "--tes", tes_url,
@@ -606,7 +606,7 @@ def __run_workflow(config, document, **kwargs):
         task_id=task_id,
         tmp_dir=tmp_dir,
     ))
-    add_command_to_task_queue.apply_async(
+    task__run_workflow.apply_async(
         None, {
             'command_list': command_list,
             'tmp_dir': tmp_dir
