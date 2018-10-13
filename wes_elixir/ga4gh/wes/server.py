@@ -13,11 +13,32 @@ from wes_elixir.security.decorators import auth_token_optional
 logger = logging.getLogger(__name__)
 
 
-####################################
-### WES API ENDPOINT CONTROLLERS ###
-####################################
+# GET /runs/<run_id>
+@auth_token_optional
+def GetRunLog(run_id, *args, **kwargs):
+    '''Return detailed run info'''
+    response = runs.get_run_log(
+        config=current_app.config,
+        run_id=run_id,
+        *args,
+        **kwargs
+    )
+    logger.debug(
+        (
+            "Response to request \"{method} {path} {protocol}\" from "
+            "{remote_addr}: {response}"
+        ).format(
+            method=request.environ['REQUEST_METHOD'],
+            path=request.environ['PATH_INFO'],
+            protocol=request.environ['SERVER_PROTOCOL'],
+            remote_addr=request.environ['REMOTE_ADDR'],
+            response=response,
+        )
+    )
+    return response
 
-### DELETE /runs/<run_id> ###
+
+# POST /runs/<run_id>/cancel
 @auth_token_optional
 def CancelRun(run_id, *args, **kwargs):
     '''Cancel unfinished workflow run'''
@@ -28,37 +49,22 @@ def CancelRun(run_id, *args, **kwargs):
         *args,
         **kwargs
     )
-    logger.debug("Response to request \"{method} {path} {protocol}\" from {remote_addr}: {response}".format(
-        method=request.environ['REQUEST_METHOD'],
-        path=request.environ['PATH_INFO'],
-        protocol=request.environ['SERVER_PROTOCOL'],
-        remote_addr=request.environ['REMOTE_ADDR'],
-        response=response,
-    ))
-    return response
-
-
-### GET /runs/<run_id> ###
-@auth_token_optional
-def GetRunLog(run_id, *args, **kwargs):
-    '''Return detailed run info'''
-    response = runs.get_run_log(
-        config=current_app.config,
-        run_id=run_id,
-        *args,
-        **kwargs
+    logger.debug(
+        (
+            "Response to request \"{method} {path} {protocol}\" from "
+            "{remote_addr}: {response}"
+        ).format(
+            method=request.environ['REQUEST_METHOD'],
+            path=request.environ['PATH_INFO'],
+            protocol=request.environ['SERVER_PROTOCOL'],
+            remote_addr=request.environ['REMOTE_ADDR'],
+            response=response,
+        )
     )
-    logger.debug("Response to request \"{method} {path} {protocol}\" from {remote_addr}: {response}".format(
-        method=request.environ['REQUEST_METHOD'],
-        path=request.environ['PATH_INFO'],
-        protocol=request.environ['SERVER_PROTOCOL'],
-        remote_addr=request.environ['REMOTE_ADDR'],
-        response=response,
-    ))
     return response
 
 
-### GET /runs/<run_id>/status ###
+# GET /runs/<run_id>/status
 @auth_token_optional
 def GetRunStatus(run_id, *args, **kwargs):
     '''Return run status'''
@@ -68,17 +74,22 @@ def GetRunStatus(run_id, *args, **kwargs):
         *args,
         **kwargs
     )
-    logger.debug("Response to request \"{method} {path} {protocol}\" from {remote_addr}: {response}".format(
-        method=request.environ['REQUEST_METHOD'],
-        path=request.environ['PATH_INFO'],
-        protocol=request.environ['SERVER_PROTOCOL'],
-        remote_addr=request.environ['REMOTE_ADDR'],
-        response=response,
-    ))
+    logger.debug(
+        (
+            "Response to request \"{method} {path} {protocol}\" from "
+            "{remote_addr}: {response}"
+        ).format(
+            method=request.environ['REQUEST_METHOD'],
+            path=request.environ['PATH_INFO'],
+            protocol=request.environ['SERVER_PROTOCOL'],
+            remote_addr=request.environ['REMOTE_ADDR'],
+            response=response,
+        )
+    )
     return response
 
 
-### GET /service-info ###
+# GET /service-info
 @auth_token_optional
 def GetServiceInfo(*args, **kwargs):
     '''Return service info'''
@@ -87,17 +98,22 @@ def GetServiceInfo(*args, **kwargs):
         *args,
         **kwargs
     )
-    logger.debug("Response to request \"{method} {path} {protocol}\" from {remote_addr}: {response}".format(
-        method=request.environ['REQUEST_METHOD'],
-        path=request.environ['PATH_INFO'],
-        protocol=request.environ['SERVER_PROTOCOL'],
-        remote_addr=request.environ['REMOTE_ADDR'],
-        response=response,
-    ))
+    logger.debug(
+        (
+            "Response to request \"{method} {path} {protocol}\" from "
+            "{remote_addr}: {response}"
+        ).format(
+            method=request.environ['REQUEST_METHOD'],
+            path=request.environ['PATH_INFO'],
+            protocol=request.environ['SERVER_PROTOCOL'],
+            remote_addr=request.environ['REMOTE_ADDR'],
+            response=response,
+        )
+    )
     return response
 
 
-### GET /runs ###
+# GET /runs
 @auth_token_optional
 def ListRuns(*args, **kwargs):
     '''List ids and status of all workflow runs'''
@@ -106,17 +122,22 @@ def ListRuns(*args, **kwargs):
         *args,
         **kwargs
     )
-    logger.debug("Response to request \"{method} {path} {protocol}\" from {remote_addr}: {response}".format(
-        method=request.environ['REQUEST_METHOD'],
-        path=request.environ['PATH_INFO'],
-        protocol=request.environ['SERVER_PROTOCOL'],
-        remote_addr=request.environ['REMOTE_ADDR'],
-        response=response,
-    ))
+    logger.debug(
+        (
+            "Response to request \"{method} {path} {protocol}\" from "
+            "{remote_addr}: {response}"
+        ).format(
+            method=request.environ['REQUEST_METHOD'],
+            path=request.environ['PATH_INFO'],
+            protocol=request.environ['SERVER_PROTOCOL'],
+            remote_addr=request.environ['REMOTE_ADDR'],
+            response=response,
+        )
+    )
     return response
 
 
-### POST /runs ###
+# POST /runs
 @auth_token_optional
 def RunWorkflow(*args, **kwargs):
     '''Execute workflow'''
@@ -126,11 +147,16 @@ def RunWorkflow(*args, **kwargs):
         *args,
         **kwargs
     )
-    logger.debug("Response to request \"{method} {path} {protocol}\" from {remote_addr}: {response}".format(
-        method=request.environ['REQUEST_METHOD'],
-        path=request.environ['PATH_INFO'],
-        protocol=request.environ['SERVER_PROTOCOL'],
-        remote_addr=request.environ['REMOTE_ADDR'],
-        response=response,
-    ))
+    logger.debug(
+        (
+            "Response to request \"{method} {path} {protocol}\" from "
+            "{remote_addr}: {response}"
+        ).format(
+            method=request.environ['REQUEST_METHOD'],
+            path=request.environ['PATH_INFO'],
+            protocol=request.environ['SERVER_PROTOCOL'],
+            remote_addr=request.environ['REMOTE_ADDR'],
+            response=response,
+        )
+    )
     return response

@@ -1,17 +1,24 @@
-from bson.objectid import ObjectId
 from pymongo.collection import ReturnDocument
 
 
 def find_one_latest(collection):
-    '''Returns newest/latest object, stripped of the object id, or None if no object exists'''
+    '''
+    Returns newest/latest object, stripped of the object id, or None if no
+    object exists
+    '''
     try:
-        return collection.find({}, {'_id': False}).sort([('_id', -1)]).limit(1).next()
+        return collection.find(
+            {},
+            {'_id': False}
+        ).sort([('_id', -1)]).limit(1).next()
     except StopIteration:
         return None
 
 
 def find_id_latest(collection):
-    '''Returns object id of newest/latest object, or None if no object exists'''
+    '''
+    Returns object id of newest/latest object, or None if no object exists
+    '''
     try:
         return collection.find().sort([('_id', -1)]).limit(1).next()['_id']
     except StopIteration:
@@ -40,7 +47,10 @@ def upsert_fields_in_root_object(
     '''Insert (or update) fields in(to) the same root (object) field'''
     return collection.find_one_and_update(
         {"task_id": task_id},
-        {"$set": {".".join([root, key]):value for (key,value) in kwargs.items()}},
+        {"$set": {
+            ".".join([root, key]):
+                value for (key, value) in kwargs.items()
+        }},
         return_document=ReturnDocument.AFTER
     )
 
@@ -51,12 +61,12 @@ def update_tes_task_state(
     tes_id,
     state
 ):
-    
+
     '''Update 'state' field in TES task log'''
 
     return collection.find_one_and_update(
         {"task_id": task_id, "api.task_logs": {"$elemMatch": {"id": tes_id}}},
-        {"$set" : {"api.task_logs.$.state" : state}},
+        {"$set": {"api.task_logs.$.state": state}},
         return_document=ReturnDocument.AFTER
     )
 

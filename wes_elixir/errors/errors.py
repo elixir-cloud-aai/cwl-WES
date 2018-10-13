@@ -1,7 +1,11 @@
 import logging
 
 from connexion import ProblemException
-from connexion.exceptions import (ExtraParameterProblem, Forbidden, Unauthorized)
+from connexion.exceptions import (
+    ExtraParameterProblem,
+    Forbidden,
+    Unauthorized
+)
 from flask import Response
 from json import dumps
 from werkzeug.exceptions import (BadRequest, InternalServerError, NotFound)
@@ -45,6 +49,7 @@ def handle_bad_request(exception):
         mimetype="application/problem+json"
     )
 
+
 def __handle_unauthorized(exception):
     return Response(
         response=dumps({
@@ -54,6 +59,7 @@ def __handle_unauthorized(exception):
         status=401,
         mimetype="application/problem+json"
     )
+
 
 def __handle_forbidden(exception):
     return Response(
@@ -65,6 +71,7 @@ def __handle_forbidden(exception):
         mimetype="application/problem+json"
     )
 
+
 def __handle_workflow_not_found(exception):
     return Response(
         response=dumps({
@@ -74,6 +81,7 @@ def __handle_workflow_not_found(exception):
         status=404,
         mimetype="application/problem+json"
     )
+
 
 def __handle_internal_server_error(exception):
     return Response(

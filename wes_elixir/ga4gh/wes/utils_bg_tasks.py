@@ -1,4 +1,3 @@
-import json
 import logging
 import re
 import subprocess
@@ -29,7 +28,7 @@ def task__run_workflow(
     )
 
     # Parse output in real-time
-    log, tes_ids =  __process_cwl_logs(self, stream=proc.stdout)
+    log, tes_ids = __process_cwl_logs(self, stream=proc.stdout)
 
     # Wait for process to complete and get return code
     returncode = proc.wait()
@@ -40,7 +39,8 @@ def task__run_workflow(
 
 def __process_cwl_logs(task, stream):
 
-    '''Parse combinend cwl-tes STDOUT/STDERR; send TES task IDs and state updates to broker'''
+    '''Parse combinend cwl-tes STDOUT/STDERR; send TES task IDs and state
+    updates to broker'''
 
     # Initiate container for filtered STDOUT/STDERR stream
     stream_container = list()
@@ -55,17 +55,17 @@ def __process_cwl_logs(task, stream):
         line = line.rstrip()
 
         # Handle special cases
-        lines =  __handle_cwl_tes_log_irregularities(line)
+        lines = __handle_cwl_tes_log_irregularities(line)
         for line in lines:
             stream_container.append(line)
             logger.info(line)
             continue
-        
+
         # Detect TES task state changes
         (tes_id, tes_state) = __extract_tes_task_state_from_cwl_tes_log(line)
         if tes_id:
             # Handle new task
-            if not tes_id in tes_states:
+            if tes_id not in tes_states:
                 tes_states[tes_id] = tes_state
                 __send_event_tes_task_update(
                     task,
@@ -98,7 +98,9 @@ def __handle_cwl_tes_log_irregularities(line):
     lines = list()
 
     # Handle special case where FTP and cwl-tes logs are on same line
-    re_ftp_cwl_tes = re.compile(r'^(\*cmd\* .*)(\[step \w*\] produced output \{)$')
+    re_ftp_cwl_tes = re.compile(
+        r'^(\*cmd\* .*)(\[step \w*\] produced output \{)$'
+    )
     m = re_ftp_cwl_tes.match(line)
     if m:
         lines.append(m.group(1))
@@ -122,7 +124,9 @@ def __extract_tes_task_state_from_cwl_tes_log(line):
         task_id = m.group(1)
 
     # Extract task ID and state
-    re_task_state_poll = re.compile(r"^\[job \w*\] POLLING '(\S*)', result: (\w*)")
+    re_task_state_poll = re.compile(
+        r"^\[job \w*\] POLLING '(\S*)', result: (\w*)"
+    )
     m = re_task_state_poll.match(line)
     if m:
         task_id = m.group(1)

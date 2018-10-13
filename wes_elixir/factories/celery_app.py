@@ -13,10 +13,10 @@ logger = logging.getLogger(__name__)
 def create_celery_app(app):
 
     # Re-assign config values
-    broker=get_conf(app.app.config, 'celery', 'broker_url')
-    backend=get_conf(app.app.config, 'celery', 'result_backend')
-    include=get_conf_type(app.app.config, 'celery', 'include', types=(list))
-    maxsize=get_conf(app.app.config, 'celery', 'message_maxsize')
+    broker = get_conf(app.app.config, 'celery', 'broker_url')
+    backend = get_conf(app.app.config, 'celery', 'result_backend')
+    include = get_conf_type(app.app.config, 'celery', 'include', types=(list))
+    maxsize = get_conf(app.app.config, 'celery', 'message_maxsize')
 
     # Instantiate Celery app
     celery = Celery(
@@ -30,8 +30,6 @@ def create_celery_app(app):
     ))
 
     # Set Celery options
-    # TODO: Fix to get around message truncation problem
-    # TODO: Possibly try to solve this differently (via result backend?) as this may not very robust
     celery.Task.resultrepr_maxsize = maxsize
     celery.amqp.argsrepr_maxsize = maxsize
     celery.amqp.kwargsrepr_maxsize = maxsize

@@ -3,7 +3,6 @@ import logging
 import os
 import re
 import shutil
-import string
 import subprocess
 
 from celery import uuid
@@ -12,7 +11,7 @@ from pymongo.errors import DuplicateKeyError
 from random import choice
 from yaml import dump
 
-from wes_elixir.config.config_parser import (get_conf, get_conf_type)
+from wes_elixir.config.config_parser import get_conf
 from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
 from wes_elixir.ga4gh.wes.utils_bg_tasks import task__run_workflow
 
@@ -21,10 +20,7 @@ from wes_elixir.ga4gh.wes.utils_bg_tasks import task__run_workflow
 logger = logging.getLogger(__name__)
 
 
-#############################
-### DELETE /runs/<run_id> ###
-#############################
-
+# Helper function POST /runs/<run_id>/delete
 def cancel_run(config, celery_app, run_id, *args, **kwargs):
     '''Cancel running workflow'''
 
@@ -47,29 +43,42 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
     else:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    
-    # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
+
+    # Raise error trying to access workflow run that is not owned by user
+    # Only if authorization enabled
     if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
-        logger.error("User '{user_id}' is not allowed to access workflow run {run_id}.".format(
-            user_id=kwargs['user_id'],
-            run_id=run_id,
-        ))
+        logger.error(
+            (
+                "User '{user_id}' is not allowed to access workflow run "
+                "{run_id}."
+            ).format(
+                user_id=kwargs['user_id'],
+                run_id=run_id,
+            )
+        )
         raise Forbidden
 
     # Cancel workflow run
     try:
         # TODO: Implement this better; terminate=True should be last resort
-        # TODO: See here: https://stackoverflow.com/questions/8920643/cancel-an-already-executing-task-with-celery
+        # TODO: See here:
+        # https://stackoverflow.com/questions/8920643/cancel-an-already-executing-task-with-celery
         celery_app.control.revoke(task_id, terminate=True, signal='SIGHUP')
 
     # Raise error if workflow run was not found
     except Exception as e:
-        logger.error("Failed to revoked task {task_id} for run '{run_id}'. Possible the workflow is not running anymore. Original error message: {type}: {msg}".format(
-            task_id=task_id,
-            run_id=run_id,
-            type=type(e).__name__,
-            msg=e,
-        ))
+        logger.error(
+            (
+                "Failed to revoked task {task_id} for run '{run_id}'. "
+                "Possibly the workflow is not running anymore. Original "
+                "error message: {type}: {msg}"
+            ).format(
+                task_id=task_id,
+                run_id=run_id,
+                type=type(e).__name__,
+                msg=e,
+            )
+        )
         raise WorkflowNotFound
 
     # Build formatted response object
@@ -79,10 +88,7 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
     return response
 
 
-##########################
-### GET /runs/<run_id> ###
-##########################
-
+# Helper function GET /runs/<run_id>
 def get_run_log(config, run_id, *args, **kwargs):
     '''Get detailed log information for specific run'''
 
@@ -105,23 +111,26 @@ def get_run_log(config, run_id, *args, **kwargs):
     else:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    
-    # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
+
+    # Raise error trying to access workflow run that is not owned by user
+    # Only if authorization enabled
     if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
-        logger.error("User '{user_id}' is not allowed to access workflow run {run_id}.".format(
-            user_id=kwargs['user_id'],
-            run_id=run_id,
-        ))
+        logger.error(
+            (
+                "User '{user_id}' is not allowed to access workflow run "
+                "{run_id}."
+            ).format(
+                user_id=kwargs['user_id'],
+                run_id=run_id,
+            )
+        )
         raise Forbidden
 
     # Return response
     return run_log
 
 
-#################################
-### GET /runs/<run_id>/status ###
-#################################
-
+# Helper function GET /runs/<run_id>/status
 def get_run_status(config, run_id, *args, **kwargs):
     '''Get status information for specific run'''
 
@@ -145,13 +154,19 @@ def get_run_status(config, run_id, *args, **kwargs):
     else:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
-    
-    # Raise error trying to access workflow run that is not owned by user (if authorization enabled)
+
+    # Raise error trying to access workflow run that is not owned by user
+    # Only if authorization enabled
     if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
-        logger.error("User '{user_id}' is not allowed to access workflow run {run_id}.".format(
-            user_id=kwargs['user_id'],
-            run_id=run_id,
-        ))
+        logger.error(
+            (
+                "User '{user_id}' is not allowed to access workflow run "
+                "{run_id}."
+            ).format(
+                user_id=kwargs['user_id'],
+                run_id=run_id,
+            )
+        )
         raise Forbidden
 
     # Build formatted response object
@@ -164,10 +179,7 @@ def get_run_status(config, run_id, *args, **kwargs):
     return response
 
 
-#################
-### GET /runs ###
-#################
-
+# Helper function GET /runs
 def list_runs(config, *args, **kwargs):
     '''Get status information for specific run'''
 
@@ -179,7 +191,15 @@ def list_runs(config, *args, **kwargs):
 
     # Fall back to default page size if not provided by user
     # TODO: uncomment when implementing pagination
-    #page_size = kwargs['page_size'] if 'page_size' in kwargs else cnx_app.app.config['api']['endpoint_params']['default_page_size']
+    # if 'page_size' in kwargs:
+    #     page_size = kwargs['page_size']
+    # else:
+    #     page_size = (
+    #         cnx_app.app.config
+    #         ['api']
+    #         ['endpoint_params']
+    #         ['default_page_size']
+    # )
 
     # Query database for workflow runs
     if 'user_id' in kwargs:
@@ -210,10 +230,7 @@ def list_runs(config, *args, **kwargs):
     return response
 
 
-##################
-### POST /runs ###
-##################
-
+# Helper function POST /runs
 def run_workflow(config, form_data, *args, **kwargs):
     '''Execute workflow and save info to database; returns unique run id'''
 
@@ -230,10 +247,18 @@ def run_workflow(config, form_data, *args, **kwargs):
     document = __init_run_document(data=form_data)
 
     # Create run environment
-    document = __create_run_environment(config=config, document=document, **kwargs)
+    document = __create_run_environment(
+        config=config,
+        document=document,
+        **kwargs
+    )
 
     # Start workflow run in background
-    __run_workflow(config=config, document=document, **kwargs)
+    __run_workflow(
+        config=config,
+        document=document,
+        **kwargs
+    )
 
     # Build formatted response object
     response = {"run_id": document['run_id']}
@@ -263,10 +288,13 @@ def __immutable_multi_dict_to_nested_dict(multi_dict):
 
 
 def __validate_run_workflow_request(data):
-    '''Validate presence and types of workflow run request form data; sets defaults for optional'''
+    '''Validate presence and types of workflow run request form data; sets
+    defaults for optional'''
 
-    # The form data is not validated properly because all types except 'workflow_attachment' are string and none are labeled as required
-    # Considering the 'RunRequest' model in the current specs (0.3.0), the following assumptions are made and verified for the indicated parameters:
+    # The form data is not validated properly because all types except
+    # 'workflow_attachment' are string and none are labeled as required
+    # Considering the 'RunRequest' model in the current specs (0.3.0), the
+    # following assumptions are made and verified for the indicated parameters:
     # workflow_params:
     #   type = dict
     #   required = True
@@ -290,12 +318,24 @@ def __validate_run_workflow_request(data):
     #   required = False
 
     # Set required parameters
-    required = {'workflow_params', 'workflow_type', 'workflow_type_version', 'workflow_url'}
-    type_str = dict((key, data[key]) for key in ['workflow_type', 'workflow_type_version', 'workflow_url'] if key in data)
-    # TODO: temporarily removed 'workflow_params' from required parameters as we can now supply
-    #       a file with these params (see __process_workflow_attachments())
-    #type_dict = dict((key, data[key]) for key in ['workflow_params', 'workflow_engine_parameters', 'tags'] if key in data)
-    type_dict = dict((key, data[key]) for key in ['workflow_params', 'workflow_engine_parameters', 'tags'] if key in data)
+    required = {
+        'workflow_params',
+        'workflow_type',
+        'workflow_type_version',
+        'workflow_url',
+    }
+    params_str = [
+        'workflow_type',
+        'workflow_type_version',
+        'workflow_url',
+    ]
+    params_dict = [
+        'workflow_params',
+        'workflow_engine_parameters',
+        'tags',
+    ]
+    type_str = dict((key, data[key]) for key in params_str if key in data)
+    type_dict = dict((key, data[key]) for key in params_dict if key in data)
     # TODO: implement type casting/checking for workflow attachment
 
     # Raise error if any required params are missing
@@ -343,7 +383,8 @@ def __init_run_document(data):
 
 
 def __create_run_environment(config, document, **kwargs):
-    '''Create unique run identifier and permanent and temporary storage directories for current run'''
+    '''Create unique run identifier and permanent and temporary storage
+    directories for current run'''
 
     # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
@@ -353,7 +394,8 @@ def __create_run_environment(config, document, **kwargs):
     run_id_length = get_conf(config, 'database', 'run_id', 'length')
 
     # Keep on trying until a unique run id was found and inserted
-    # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500 to user)
+    # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500
+    #       to user)
     while True:
 
         # Create unique run and task ids
@@ -370,7 +412,8 @@ def __create_run_environment(config, document, **kwargs):
         # Try to create workflow run directory (temporary)
         try:
             # TODO: Think about permissions
-            # TODO: Add working dir (currently one has to run the app from the outermost dir)
+            # TODO: Add working dir (currently one has to run the app from
+            #       outermost dir)
             os.mkdir(current_tmp_dir)
             os.mkdir(current_out_dir)
 
@@ -429,27 +472,48 @@ def __process_workflow_attachments(data):
     '''Process workflow attachments'''
 
     # TODO: implement properly
-    # Current workaround until processing of workflow attachments is implemented
-    # Use 'workflow_url' for path to (main) CWL workflow file on local file system or in Git repo
+    # Current workaround until processing of workflow attachments is
+    # implemented
+    # Use 'workflow_url' for path to (main) CWL workflow file on local file
+    # system or in Git repo
     # Use 'workflow_params' or file in Git repo to generate YAML file
 
     # Set regular expression for finding workflow files on git repositories
     # Assumptions:
-    # - A URL needs to consist of a root, a "separator" keyword, a branch/commit, and a "file path", separated by slashes
-    # - The root is the part of the URL up to the separator and is assumed to represent the "git clone URL" when '.git' is appended
+    # - A URL needs to consist of a root, a "separator" keyword, a
+    #   branch/commit, and a "file path", separated by slashes
+    # - The root is the part of the URL up to the separator and is assumed to
+    #   represent the "git clone URL" when '.git' is appended
     # - Accepted separator keywords are 'blob', 'src' and 'tree'
-    # - The value branch/commit is used to checkout the repo to that state before obtaining the file
-    # - The "file path" segment represents the relative path to the CWL workflow file when inside the repo
-    # All of the above assumptions should be met when copying the links of files in most repos on GitHub, GitLab or Bitbucket
-    # Note that the "file path" portion (see above) of a CWL *parameter file* can be *optionally* appended to the URL
-    # The following additional rules apply for workflow and/or parameter files: 
+    # - The value branch/commit is used to checkout the repo to that state
+    #   before obtaining the file
+    # - The "file path" segment represents the relative path to the CWL
+    #   workflow file when inside the repo
+    #
+    # All of the above assumptions should be met when copying the links of
+    # files in most repos on GitHub, GitLab or Bitbucket
+    #
+    # Note that the "file path" portion (see above) of a CWL *parameter file*
+    # can be *optionally* appended to the URL
+    #
+    # The following additional rules apply for workflow and/or parameter files:
     # - CWL workflow files *must* end in .cwl, .yml, .yaml or .json
     # - Parameter files *must* end in '.yml', '.yaml' or '.json'
-    # - Accepted delimiters for separating workflow and parameter file, if specified, are: ',', ';', ':', '|'
-    re_git_file = re.compile(r'^(https?:.*)\/(blob|src|tree)\/(.*?)\/(.*?\.(cwl|yml|yaml|json))[,:;|]?(.*\.(yml|yaml|json))?')
+    # - Accepted delimiters for separating workflow and parameter file, if
+    #   specified, are: ',', ';', ':', '|'
+    re_git_file = re.compile(
+        (
+            r'^(https?:.*)\/(blob|src|tree)\/(.*?)\/(.*?\.(cwl|yml|yaml|json))'
+            r'[,:;|]?(.*\.(yml|yaml|json))?'
+        )
+    )
 
     # Create directory for storing workflow files
-    workflow_dir = os.path.abspath(os.path.join(data['internal']['out_dir'], "workflow_files"))
+    workflow_dir = os.path.abspath(
+        os.path.join(
+            data['internal']['out_dir'], "workflow_files"
+        )
+    )
     try:
         os.mkdir(workflow_dir)
 
@@ -463,7 +527,7 @@ def __process_workflow_attachments(data):
 
     # Get workflow from Git repo if regex matches
     if m:
-        
+
         repo_url = '.'.join([m.group(1), 'git'])
         branch_commit = m.group(3)
         cwl_path = m.group(4)
@@ -478,7 +542,12 @@ def __process_workflow_attachments(data):
             ],
             check=True
         ):
-            logger.error("Could not clone Git repository. Check value of 'workflow_url' in run request.")
+            logger.error(
+                (
+                    "Could not clone Git repository. Check value of "
+                    "'workflow_url' in run request."
+                )
+            )
             raise BadRequest
 
         # Try to checkout branch/commit
@@ -494,27 +563,52 @@ def __process_workflow_attachments(data):
             ],
             check=True
         ):
-            logger.error("Could not checkout repository commit/branch. Check value of 'workflow_url' in run request.")
+            logger.error(
+                (
+                    "Could not checkout repository commit/branch. Check value "
+                    "of 'workflow_url' in run request."
+                )
+            )
             raise BadRequest
 
         # Set CWL path
-        data['internal']['cwl_path'] = os.path.join(workflow_dir, 'repo', cwl_path)
+        data['internal']['cwl_path'] = os.path.join(
+            workflow_dir,
+            'repo',
+            cwl_path
+        )
 
     # Else assume value of 'workflow_url' represents file on local file system
     else:
 
         # Set main CWL workflow file path
-        data['internal']['cwl_path'] = os.path.abspath(data['api']['request']['workflow_url'])
+        data['internal']['cwl_path'] = os.path.abspath(
+            data['api']['request']['workflow_url']
+        )
 
         # Extract name and extensions of workflow
-        workflow_name_ext = os.path.splitext(os.path.basename(data['internal']['cwl_path']))
+        workflow_name_ext = os.path.splitext(
+            os.path.basename(
+                data['internal']['cwl_path']
+            )
+        )
 
-    # Get parameter file 
-    workflow_name_ext = os.path.splitext(os.path.basename(data['internal']['cwl_path']))
+    # Get parameter file
+    workflow_name_ext = os.path.splitext(
+        os.path.basename(
+            data['internal']['cwl_path']
+        )
+    )
 
     # Try to get parameters from 'workflow_params' field
     if data['api']['request']['workflow_params']:
-        data['internal']['param_file_path'] = os.path.join(workflow_dir, '.'.join([workflow_name_ext[0], 'yml']))
+        data['internal']['param_file_path'] = os.path.join(
+            workflow_dir,
+            '.'.join([
+                workflow_name_ext[0],
+                'yml',
+            ]),
+        )
         with open(data['internal']['param_file_path'], 'w') as yaml_file:
             dump(
                 data['api']['request']["workflow_params"],
@@ -526,25 +620,37 @@ def __process_workflow_attachments(data):
     # Or from provided relative file path in repo
     elif m and m.group(6):
         param_path = m.group(6)
-        data['internal']['param_file_path'] = os.path.join(workflow_dir, 'repo', param_path)
+        data['internal']['param_file_path'] = os.path.join(
+            workflow_dir,
+            'repo',
+            param_path,
+        )
 
-    # Else try to see if there is a 'yml', 'yaml' or 'json' file with exactly the same basename as CWL in same dir
+    # Else try to see if there is a 'yml', 'yaml' or 'json' file with exactly
+    # the same basename as CWL in same dir
     else:
         param_file_extensions = ['yml', 'yaml', 'json']
         for ext in param_file_extensions:
-            possible_param_file = os.path.join(workflow_dir, 'repo', '.'.join([workflow_name_ext[0], ext]))
+            possible_param_file = os.path.join(
+                workflow_dir,
+                'repo',
+                '.'.join([
+                    workflow_name_ext[0],
+                    ext,
+                ]),
+            )
             if os.path.isfile(possible_param_file):
                 data['internal']['param_file_path'] = possible_param_file
                 break
 
     # Raise BadRequest if not parameter file was found
-    if not 'param_file_path' in data['internal']:
+    if 'param_file_path' not in data['internal']:
         raise BadRequest
 
     # Extract workflow attachments from form data dictionary
     if 'workflow_attachment' in data['api']['request']:
 
-#        # TODO: do something with data['workflow_attachment']
+        # TODO: do something with data['workflow_attachment']
 
         # Strip workflow attachments from data
         del data['api']['request']['workflow_attachment']
@@ -581,31 +687,41 @@ def __run_workflow(config, document, **kwargs):
     # Add authorization parameters
     if 'token' in kwargs:
         auth_params = [
-            "--token-public-key", get_conf(config, 'security', 'jwt', 'public_key').encode('unicode_escape').decode('utf-8'),
+            "--token-public-key", get_conf(
+                config,
+                'security',
+                'jwt',
+                'public_key'
+            ).encode('unicode_escape').decode('utf-8'),
             "--token", kwargs['token'],
         ]
         command_list[2:2] = auth_params
 
-    ## TEST CASE FOR SYSTEM ERROR
-    #command_list = [
-    #    "/path/to/non_existing/script"
-    #]
-    ## TEST CASE FOR EXECUTOR ERROR
-    #command_list = [
-    #    "/bin/false"
-    #]
-    ## TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
-    #command_list = [
-    #    "sleep",
-    #    "30"
-    #]
+    # TEST CASE FOR SYSTEM ERROR
+    # command_list = [
+    #     "/path/to/non_existing/script"
+    # ]
+    # TEST CASE FOR EXECUTOR ERROR
+    # command_list = [
+    #     "/bin/false"
+    # ]
+    # TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
+    # command_list = [
+    #     "sleep",
+    #     "30"
+    # ]
 
     # Execute command as background task
-    logger.info("Starting execution of run '{run_id}' as task '{task_id}' in '{tmp_dir}'...".format(
-        run_id=run_id,
-        task_id=task_id,
-        tmp_dir=tmp_dir,
-    ))
+    logger.info(
+        (
+            "Starting execution of run '{run_id}' as task '{task_id}' in "
+            "'{tmp_dir}'..."
+        ).format(
+            run_id=run_id,
+            task_id=task_id,
+            tmp_dir=tmp_dir,
+        )
+    )
     task__run_workflow.apply_async(
         None, {
             'command_list': command_list,

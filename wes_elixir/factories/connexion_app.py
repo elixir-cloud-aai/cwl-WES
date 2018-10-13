@@ -22,11 +22,15 @@ def create_connexion_app(config=None):
     ))
 
     # Workaround for adding a custom handler for `connexion.problem` responses
-    # Responses from request and paramater validators are not raised and cannot be intercepted by `add_error_handler`
-    # See here: https://github.com/zalando/connexion/issues/138
+    # Responses from request and paramater validators are not raised and
+    # cannot be intercepted by `add_error_handler`; see here:
+    # https://github.com/zalando/connexion/issues/138
     @app.app.after_request
     def _rewrite_bad_request(response):
-        if response.status_code == 400 and response.data.decode('utf-8').find('"title":') is not None:
+        if (
+            response.status_code == 400 and
+            response.data.decode('utf-8').find('"title":') is not None
+        ):
             response = handle_bad_request(400)
         return response
 
@@ -46,7 +50,8 @@ def __add_config_to_connexion_app(
     config
 ):
 
-    '''Add configuration to Flask app and replace default Connexion and Flask settings'''
+    '''Add configuration to Flask app and replace default Connexion and Flask
+    settings'''
 
     # Replace Connexion app settings
     app.host = get_conf(config, 'server', 'host')
