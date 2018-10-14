@@ -20,7 +20,7 @@ strf = '%Y-%m-%d %H:%M:%S.%f'
 
 
 class TaskMonitor():
-    '''Celery task monitor'''
+    """Celery task monitor."""
 
     def __init__(
         self,
@@ -30,8 +30,7 @@ class TaskMonitor():
         authorization=True,
         tes=None,
     ):
-
-        '''Start Celery task monitor daemon process'''
+        """Starts Celery task monitor daemon process."""
 
         self.celery_app = celery_app
         self.collection = collection
@@ -43,10 +42,10 @@ class TaskMonitor():
         self.thread.daemon = True
         self.thread.start()
 
-        logger.debug("Celery task monitor daemon process started...")
+        logger.debug('Celery task monitor daemon process started...')
 
     def run(self):
-        '''Daemon process for Celery task monitor'''
+        """Daemon process for Celery task monitor."""
 
         while True:
 
@@ -76,8 +75,8 @@ class TaskMonitor():
             except KeyboardInterrupt as e:
                 logger.exception(
                     (
-                        "Task monitor interrupted. Execution aborted. "
-                        "Original error message: {type}: {msg}"
+                        'Task monitor interrupted. Execution aborted. '
+                        'Original error message: {type}: {msg}'
                     ).format(
                         type=type(e).__name__,
                         msg=e,
@@ -88,8 +87,8 @@ class TaskMonitor():
             except Exception as e:
                 logger.exception(
                     (
-                        "Unknown error in task monitor occurred. Execution "
-                        "aborted. Original error message: {type}: {msg}"
+                        'Unknown error in task monitor occurred. Execution '
+                        'aborted. Original error message: {type}: {msg}'
                     ).format(
                         type=type(e).__name__,
                         msg=e,
@@ -101,8 +100,7 @@ class TaskMonitor():
             sleep(self.timeout)
 
     def on_task_failed(self, event):
-
-        '''Event handler for failed (system error) Celery tasks'''
+        """Event handler for failed (system error) Celery tasks."""
 
         # Create dictionary for internal parameters
         internal = dict()
@@ -123,8 +121,7 @@ class TaskMonitor():
         )
 
     def on_task_received(self, event):
-
-        '''Event handler for received Celery tasks'''
+        """Event handler for received Celery tasks."""
 
         # Parse subprocess inputs
         try:
@@ -133,7 +130,7 @@ class TaskMonitor():
             logger.exception(
                 (
                     "Field 'kwargs' in event message malformed. Execution "
-                    "aborted. Original error message: {type}: {msg}"
+                    'aborted. Original error message: {type}: {msg}'
                 ).format(
                     type=type(e).__name__,
                     msg=e,
@@ -177,7 +174,7 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Database error. Could not update log information for "
+                    'Database error. Could not update log information for '
                     "task '{task}'. Original error message: {type}: {msg}"
                 ).format(
                     task=event['uuid'],
@@ -188,8 +185,7 @@ class TaskMonitor():
             pass
 
     def on_task_revoked(self, event):
-
-        '''Event handler for revoked Celery tasks'''
+        """Event handler for revoked Celery tasks."""
 
         # Create dictionary for internal parameters
         internal = dict()
@@ -213,7 +209,7 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Database error. Could not update log information for "
+                    'Database error. Could not update log information for '
                     "task '{task}'. Original error message: {type}: {msg}"
                 ).format(
                     task=event['uuid'],
@@ -224,8 +220,7 @@ class TaskMonitor():
             pass
 
     def on_task_started(self, event):
-
-        '''Event handler for started Celery tasks'''
+        """Event handler for started Celery tasks."""
 
         # Create dictionary for internal parameters
         internal = dict()
@@ -246,7 +241,7 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Database error. Could not update log information for "
+                    'Database error. Could not update log information for '
                     "task '{task}'. Original error message: {type}: {msg}"
                 ).format(
                     task=event['uuid'],
@@ -257,9 +252,8 @@ class TaskMonitor():
             pass
 
     def on_task_succeeded(self, event):
-
-        '''Event handler for successful and failed (executor error) Celery
-        tasks'''
+        """Event handler for successful and failed (`EXECUTOR_ERROR`) Celery
+        tasks."""
 
         # Parse subprocess results
         try:
@@ -269,7 +263,7 @@ class TaskMonitor():
             logger.exception(
                 (
                     "Field 'result' in event message malformed. Execution "
-                    "aborted. Original error message: {type}: {msg}"
+                    'aborted. Original error message: {type}: {msg}'
                 ).format(
                     type=type(e).__name__,
                     msg=e,
@@ -316,7 +310,7 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Database error. Could not update log information for "
+                    'Database error. Could not update log information for '
                     "task '{task}'. Original error message: {type}: {msg}"
                 ).format(
                     task=event['uuid'],
@@ -340,7 +334,7 @@ class TaskMonitor():
             except Exception as e:
                 logger.exception(
                     (
-                        "Database error. Could not update log information for "
+                        'Database error. Could not update log information for '
                         "task '{task}'. Original error message: {type}: {msg}"
                     ).format(
                         task=event['uuid'],
@@ -362,7 +356,7 @@ class TaskMonitor():
             except Exception as e:
                 logger.exception(
                     (
-                        "Database error. Could not update log information for "
+                        'Database error. Could not update log information for '
                         "task '{task}'. Original error message: {type}: {msg}"
                     ).format(
                         task=event['uuid'],
@@ -381,9 +375,9 @@ class TaskMonitor():
         task_logs=None,
         **run_log_params
     ):
-
-        '''Update state, internal and run log parameters'''
-
+        """Updates state, internal and run log parameters in database
+        document.
+        """
         # TODO: Minimize db ops; try to compile entire object & update once
 
         # Update internal parameters
@@ -391,7 +385,7 @@ class TaskMonitor():
             document = db_utils.upsert_fields_in_root_object(
                 collection=self.collection,
                 task_id=event['uuid'],
-                root="internal",
+                root='internal',
                 **internal,
             )
 
@@ -400,7 +394,7 @@ class TaskMonitor():
             document = db_utils.upsert_fields_in_root_object(
                 collection=self.collection,
                 task_id=event['uuid'],
-                root="api.outputs",
+                root='api.outputs',
                 **outputs,
             )
 
@@ -409,7 +403,7 @@ class TaskMonitor():
             document = db_utils.upsert_fields_in_root_object(
                 collection=self.collection,
                 task_id=event['uuid'],
-                root="api",
+                root='api',
                 task_logs=task_logs,
             )
 
@@ -418,7 +412,7 @@ class TaskMonitor():
             document = db_utils.upsert_fields_in_root_object(
                 collection=self.collection,
                 task_id=event['uuid'],
-                root="api.run_log",
+                root='api.run_log',
                 **run_log_params,
             )
 
@@ -450,7 +444,7 @@ class TaskMonitor():
                 document = db_utils.upsert_fields_in_root_object(
                     collection=self.collection,
                     task_id=event['uuid'],
-                    root="api.run_log",
+                    root='api.run_log',
                     **durations,
                 )
 
@@ -468,8 +462,8 @@ class TaskMonitor():
         # Log info message
         logger.info(
             (
-                "State of run '{run_id}' (task id: {task_id}) changed to "
-                "'{state}'"
+                "State of run '{run_id}' (task id: '{task_id}') changed to "
+                "'{state}'."
             ).format(
                 run_id=document['run_id'],
                 task_id=event['uuid'],
@@ -479,8 +473,7 @@ class TaskMonitor():
 
     @staticmethod
     def __cwl_tes_outputs_parser(log):
-
-        '''Parse outputs from cwl-tes log'''
+        """Parses outputs from cwl-tes log."""
 
         # Find outputs object in log string
         re_outputs = re.compile(
@@ -497,8 +490,7 @@ class TaskMonitor():
         self,
         tes_ids=list()
     ):
-
-        '''Get multiple task logs from TES instance'''
+        """Gets multiple task logs from TES instance."""
 
         # Initialize container for task logs
         task_logs = list()
@@ -516,8 +508,7 @@ class TaskMonitor():
         self,
         tes_id
     ):
-
-        '''Get task log from TES instance'''
+        """Gets task log from TES instance."""
 
         # Build URL
         base = self.tes['url']

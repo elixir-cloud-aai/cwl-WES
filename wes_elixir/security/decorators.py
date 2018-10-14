@@ -14,11 +14,9 @@ logger = logging.getLogger(__name__)
 
 
 def auth_token_optional(fn):
-
-    '''
-    If protect is True, the decorator will ensure that the requester has a
-    valid access token before allowing the endpoint to be called.
-    '''
+    """The decorator protects an endpoint from being called without a valid
+    authorization token.
+    """
 
     @wraps(fn)
     def wrapper(*args, **kwargs):
@@ -63,8 +61,8 @@ def auth_token_optional(fn):
             except Exception as e:
                 logger.error(
                     (
-                        "Authentication token could not be decoded. Original "
-                        "error message: {type}: {msg}"
+                        'Authentication token could not be decoded. Original '
+                        'error message: {type}: {msg}'
                     ).format(
                         type=type(e).__name__,
                         msg=e,
@@ -107,9 +105,8 @@ def _parse_jwt_from_header(
     header_name='Authorization',
     expected_prefix='Bearer'
 ):
+    """Parses authorization token from HTTP header."""
     # TODO: Add custom errors
-
-    '''Parse authentication token from HTTP header'''
 
     # Ensure that authorization header is present
     auth_header = request.headers.get(header_name, None)
@@ -125,8 +122,8 @@ def _parse_jwt_from_header(
     except ValueError as e:
         logger.error(
             (
-                "Authentication header is malformed. Original error message: "
-                "{type}: {msg}"
+                'Authentication header is malformed. Original error message: '
+                '{type}: {msg}'
             ).format(
                 type=type(e).__name__,
                 msg=e,
@@ -136,7 +133,7 @@ def _parse_jwt_from_header(
     if prefix != expected_prefix:
         logger.error(
             (
-                "Expected token prefix in authentication header is "
+                'Expected token prefix in authentication header is '
                 "'{expected_prefix}', but '{prefix}' was found."
             ).format(
                 expected_prefix=expected_prefix,
@@ -145,7 +142,6 @@ def _parse_jwt_from_header(
         )
         raise Unauthorized
 
-    # Return token
     return token
 
 
@@ -153,8 +149,7 @@ def _validate_claims(
     token_data,
     required_claims=[]
 ):
-
-    '''Validate token data'''
+    """Validates token claims."""
 
     # Check for existence of required claims
     for claim in required_claims:

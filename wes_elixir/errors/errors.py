@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def register_error_handlers(app):
-    '''Add custom handlers for exceptions to Connexion app instance'''
+    """Adds custom handlers for exceptions to Connexion app instance."""
 
     # Add error handlers
     app.add_error_handler(BadRequest, handle_bad_request)
@@ -25,7 +25,7 @@ def register_error_handlers(app):
     app.add_error_handler(InternalServerError, __handle_internal_server_error)
     app.add_error_handler(Unauthorized, __handle_unauthorized)
     app.add_error_handler(WorkflowNotFound, __handle_workflow_not_found)
-    logger.info("Registered custom error handlers with Connexion app.")
+    logger.info('Registered custom error handlers with Connexion app.')
 
     # Return Connexion app instance
     return app
@@ -33,7 +33,8 @@ def register_error_handlers(app):
 
 # CUSTOM ERRORS
 class WorkflowNotFound(ProblemException, NotFound):
-    '''WorkflowNotFound(404) error compatible with Connexion'''
+    """WorkflowNotFound(404) error compatible with Connexion."""
+
     def __init__(self, title=None, **kwargs):
         super(WorkflowNotFound, self).__init__(title=title, **kwargs)
 

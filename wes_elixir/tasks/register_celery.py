@@ -10,13 +10,13 @@ logger = logging.getLogger(__name__)
 
 
 def register_task_service(app):
-    '''Instantiate Celery app and register task monitor'''
+    """Instantiates Celery app and registers task monitor."""
 
     # Ensure that code is executed only once when app reloader is used
-    if os.environ.get("WERKZEUG_RUN_MAIN") != "true":
+    if os.environ.get("WERKZEUG_RUN_MAIN") != 'true':
 
         # Instantiate Celery app instance
-        celery_app = create_celery_app(app)
+        celery_app = create_celery_app(app.app)
 
         # Start task monitor daemon
         TaskMonitor(
@@ -33,7 +33,7 @@ def register_task_service(app):
                     app.app.config['tes']['get_logs']['query_params'],
             },
         )
-        logger.info("Celery task monitor registered.")
+        logger.info('Celery task monitor registered.')
 
     # Nothing to return
     return None

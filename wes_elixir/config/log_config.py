@@ -21,29 +21,37 @@ def configure_logging(
     ),
     fallback_level=logging.DEBUG
 ):
-
-    '''Configure base logger'''
+    """Configures base logger."""
 
     # Create parser instance
     config = YAMLConfigParser()
 
-    # Parse config
-    try:
+    # Get config from variable if defined
+    if config_var and os.environ.get(config_var):
         paths = config.update_from_yaml(
-            config_paths=[default_path],
             config_vars=[config_var],
         )
         dictConfig(config)
 
-    # Fall back to default if no log config file was found/accessible
-    except (FileNotFoundError, PermissionError):
-        logger.warning((
-            "No custom logging config found. Falling back to default config."
-        ))
-        logging.basicConfig(level=fallback_level)
-
-    # Log info
+    # Otherwise get config from default config file
     else:
-        logger.info("Logging config loaded from '{paths}'.".format(
-            paths=paths,
-        ))
+        try:
+            paths = config.update_from_yaml(
+                config_paths=[default_path],
+                config_vars=[config_var],
+            )
+            dictConfig(config)
+
+        # Fall back to logging default if default config file is inaccessible/
+        # not found
+        except (FileNotFoundError, PermissionError):
+            logger.warning((
+                'No custom logging config found. Falling back to default '
+                'config.'
+            ))
+            logging.basicConfig(level=fallback_level)
+
+        else:
+            logger.info("Logging config loaded from '{paths}'.".format(
+                paths=paths,
+            ))

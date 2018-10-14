@@ -15,8 +15,7 @@ def task__run_workflow(
     command_list,
     tmp_dir
 ):
-
-    '''Adds workflow run to task queue'''
+    """Adds workflow run to task queue."""
 
     # Execute task in background
     proc = subprocess.Popen(
@@ -30,28 +29,21 @@ def task__run_workflow(
     # Parse output in real-time
     log, tes_ids = __process_cwl_logs(self, stream=proc.stdout)
 
-    # Wait for process to complete and get return code
     returncode = proc.wait()
 
-    # Return result
     return (returncode, log, tes_ids)
 
 
 def __process_cwl_logs(task, stream):
+    """Parses combinend cwl-tes STDOUT/STDERR and sends TES task IDs and state
+    updates to broker."""
 
-    '''Parse combinend cwl-tes STDOUT/STDERR; send TES task IDs and state
-    updates to broker'''
-
-    # Initiate container for filtered STDOUT/STDERR stream
     stream_container = list()
-
-    # Initiate dictionary to keep track of TES task state changes
     tes_states = dict()
 
     # Iterate over STDOUT/STDERR stream
     for line in iter(stream.readline, ''):
 
-        # Strip newline characters
         line = line.rstrip()
 
         # Handle special cases
@@ -64,6 +56,7 @@ def __process_cwl_logs(task, stream):
         # Detect TES task state changes
         (tes_id, tes_state) = __extract_tes_task_state_from_cwl_tes_log(line)
         if tes_id:
+
             # Handle new task
             if tes_id not in tes_states:
                 tes_states[tes_id] = tes_state
@@ -82,19 +75,15 @@ def __process_cwl_logs(task, stream):
             logger.info(line)
             continue
 
-        # Add line to container and write to logger
         stream_container.append(line)
         logger.info(line)
 
-    # Return filtered list of STDOUT/STDERR lines
     return (stream_container, list(tes_states.keys()))
 
 
 def __handle_cwl_tes_log_irregularities(line):
+    """Handles irregularities arising from log parsing."""
 
-    '''Handle irregularities arising from log parsing'''
-
-    # Initiate container for processed line
     lines = list()
 
     # Handle special case where FTP and cwl-tes logs are on same line
@@ -105,15 +94,12 @@ def __handle_cwl_tes_log_irregularities(line):
     if m:
         lines.append(m.group(1))
 
-    # Return processed lines
     return lines
 
 
 def __extract_tes_task_state_from_cwl_tes_log(line):
+    """Extracts task ID and state from cwl-tes log."""
 
-    '''Extract task ID and state from cwl-tes log'''
-
-    # Initiate task ID and state
     task_id = None
     task_state = None
 
@@ -132,7 +118,6 @@ def __extract_tes_task_state_from_cwl_tes_log(line):
         task_id = m.group(1)
         task_state = m.group(2)
 
-    # Return processed line
     return (task_id, task_state)
 
 
@@ -141,10 +126,8 @@ def __send_event_tes_task_update(
     tes_id,
     tes_state=None
 ):
+    """Sends custom event to inform about TES task state change."""
 
-    '''Send custom event to inform about TES task state change'''
-
-    # Send custom event
     task.send_event(
         'task-tes-task-update',
         tes_id=tes_id,

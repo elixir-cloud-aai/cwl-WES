@@ -14,7 +14,6 @@ def register_openapi(
     specs=[],
     add_security_definitions=True
 ):
-
     """Registers OpenAPI specs with Connexion app."""
 
     # Iterate over list of API specs
@@ -44,7 +43,6 @@ def register_openapi(
                 swagger_json=get_conf(spec, 'swagger_json'),
             )
 
-            # Log info message
             logger.info("API endpoints specified in '{path}' added.".format(
                 path=path,
             ))
@@ -71,7 +69,6 @@ def __add_security_definitions(
     in_file,
     ext='modified.yaml'
 ):
-
     """Adds 'securityDefinitions' section to OpenAPI YAML specs."""
 
     # Set security definitions
@@ -82,7 +79,8 @@ securityDefinitions:
   jwt:
     type: apiKey
     name: Authorization
-    in: header'''
+    in: header
+'''
 
     # Create copy for modification
     out_file = '.'.join([os.path.splitext(in_file)[0], ext])
@@ -92,5 +90,4 @@ securityDefinitions:
     with open(out_file, 'a') as mod:
         mod.write(amend)
 
-    # Return modified file path
     return out_file

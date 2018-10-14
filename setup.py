@@ -1,6 +1,6 @@
 from setuptools import (setup, find_packages)
 
-with open("README.md", "r") as fh:
+with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setup(
@@ -14,7 +14,10 @@ setup(
     license='Apache License 2.0',
     url='https://github.com/elixir-europe/WES-ELIXIR.git',
     packages=find_packages(),
-    keywords='ga4gh wes workflow elixir rest restful api app server openapi swagger mongodb python flask',
+    keywords=(
+        'ga4gh wes workflow elixir rest restful api app server openapi '
+        'swagger mongodb python flask'
+    ),
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
         'Development Status :: 3 - Alpha',

@@ -19,8 +19,7 @@ def parse_app_config(
         )
     )
 ):
-
-    '''Parse configuration file and add to Connexion app'''
+    """Parses configuration files and adds configuration to Connexion app."""
 
     # Create parser instance
     config = YAMLConfigParser()
@@ -36,10 +35,10 @@ def parse_app_config(
     except (FileNotFoundError, PermissionError) as e:
         logger.exception(
             (
-                "Config file not found. Ensure that default config file is "
+                'Config file not found. Ensure that default config file is '
                 "available and accessible at '{default_path}'. If "
                 "'{config_var}' is set, further ensure that the file or files "
-                "it points are available and accessible. Execution aborted. "
+                'it points are available and accessible. Execution aborted. '
                 "Original error message: {type}: {msg}"
             ).format(
                 default_path=default_path,
@@ -50,9 +49,7 @@ def parse_app_config(
         )
         raise SystemExit(1)
 
-    # Log info
     else:
         logger.info("App config loaded from '{paths}'.".format(paths=paths))
 
-    # Return config
     return config

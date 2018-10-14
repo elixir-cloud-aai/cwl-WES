@@ -11,12 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 def create_celery_app(app):
+    """Creates Celery application and configures it from Flask app."""
 
-    # Re-assign config values
-    broker = get_conf(app.app.config, 'celery', 'broker_url')
-    backend = get_conf(app.app.config, 'celery', 'result_backend')
-    include = get_conf_type(app.app.config, 'celery', 'include', types=(list))
-    maxsize = get_conf(app.app.config, 'celery', 'message_maxsize')
+    broker = get_conf(app.config, 'celery', 'broker_url')
+    backend = get_conf(app.config, 'celery', 'result_backend')
+    include = get_conf_type(app.config, 'celery', 'include', types=(list))
+    maxsize = get_conf(app.config, 'celery', 'message_maxsize')
 
     # Instantiate Celery app
     celery = Celery(
@@ -35,8 +35,8 @@ def create_celery_app(app):
     celery.amqp.kwargsrepr_maxsize = maxsize
 
     # Update Celery app configuration with Flask app configuration
-    celery.conf.update(app.app.config)
-    logger.info("Celery app configured.")
+    celery.conf.update(app.config)
+    logger.info('Celery app configured.')
 
     class ContextTask(celery.Task):
         def __call__(self, *args, **kwargs):
@@ -44,6 +44,6 @@ def create_celery_app(app):
                 return self.run(*args, **kwargs)
 
     celery.Task = ContextTask
-    logger.debug("App context added to celery.Task class.")
+    logger.debug("App context added to 'celery.Task' class.")
 
     return celery

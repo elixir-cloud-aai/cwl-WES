@@ -20,14 +20,11 @@ from wes_elixir.ga4gh.wes.utils_bg_tasks import task__run_workflow
 logger = logging.getLogger(__name__)
 
 
-# Helper function POST /runs/<run_id>/delete
+# Utility function for endpoint POST /runs/<run_id>/delete
 def cancel_run(config, celery_app, run_id, *args, **kwargs):
-    '''Cancel running workflow'''
+    """Cancels running workflow."""
 
-    # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
-
-    # Get document from database
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={
@@ -50,7 +47,7 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
         logger.error(
             (
                 "User '{user_id}' is not allowed to access workflow run "
-                "{run_id}."
+                "'{run_id}'."
             ).format(
                 user_id=kwargs['user_id'],
                 run_id=run_id,
@@ -69,9 +66,9 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
     except Exception as e:
         logger.error(
             (
-                "Failed to revoked task {task_id} for run '{run_id}'. "
-                "Possibly the workflow is not running anymore. Original "
-                "error message: {type}: {msg}"
+                "Failed to revoked task '{task_id}' for run '{run_id}'. "
+                'Possibly the workflow is not running anymore. Original '
+                'error message: {type}: {msg}'
             ).format(
                 task_id=task_id,
                 run_id=run_id,
@@ -81,21 +78,15 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
         )
         raise WorkflowNotFound
 
-    # Build formatted response object
-    response = {"run_id": run_id}
-
-    # Return response object
+    response = {'run_id': run_id}
     return response
 
 
-# Helper function GET /runs/<run_id>
+# Utility function for endpoint GET /runs/<run_id>
 def get_run_log(config, run_id, *args, **kwargs):
-    '''Get detailed log information for specific run'''
+    """Gets detailed log information for specific run."""
 
-    # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
-
-    # Get document from database
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={
@@ -118,7 +109,7 @@ def get_run_log(config, run_id, *args, **kwargs):
         logger.error(
             (
                 "User '{user_id}' is not allowed to access workflow run "
-                "{run_id}."
+                "'{run_id}'."
             ).format(
                 user_id=kwargs['user_id'],
                 run_id=run_id,
@@ -126,19 +117,14 @@ def get_run_log(config, run_id, *args, **kwargs):
         )
         raise Forbidden
 
-    # Return response
     return run_log
 
 
-# Helper function GET /runs/<run_id>/status
+# Utility function for endpoint GET /runs/<run_id>/status
 def get_run_status(config, run_id, *args, **kwargs):
-    '''Get status information for specific run'''
+    """Gets status information for specific run."""
 
-    # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
-
-    # Get document from database
-
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={
@@ -161,7 +147,7 @@ def get_run_status(config, run_id, *args, **kwargs):
         logger.error(
             (
                 "User '{user_id}' is not allowed to access workflow run "
-                "{run_id}."
+                "'{run_id}'."
             ).format(
                 user_id=kwargs['user_id'],
                 run_id=run_id,
@@ -169,21 +155,17 @@ def get_run_status(config, run_id, *args, **kwargs):
         )
         raise Forbidden
 
-    # Build formatted response object
     response = {
-        "run_id": run_id,
-        "state": state
+        'run_id': run_id,
+        'state': state
     }
-
-    # Return response object
     return response
 
 
-# Helper function GET /runs
+# Utility function for endpoint GET /runs
 def list_runs(config, *args, **kwargs):
-    '''Get status information for specific run'''
+    """Lists IDs and status for all workflow runs."""
 
-    # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # TODO: stable ordering (newest last?)
@@ -215,38 +197,26 @@ def list_runs(config, *args, **kwargs):
         }
     )
 
-    # Iterate through list
     runs_list = list()
     for record in cursor:
         runs_list.append(record)
 
-    # Build formatted response object
     response = {
-        "next_page_token": "token",
-        "runs": runs_list
+        'next_page_token': 'token',
+        'runs': runs_list
     }
-
-    # Return response object
     return response
 
 
-# Helper function POST /runs
+# Utility function for endpoint POST /runs
 def run_workflow(config, form_data, *args, **kwargs):
-    '''Execute workflow and save info to database; returns unique run id'''
+    """Executes workflow and save info to database; returns unique run id."""
 
-    # Arrange form data in dictionary
+    # Validate data and prepare run environment
     form_data = __immutable_multi_dict_to_nested_dict(multi_dict=form_data)
-
-    # Validate workflow run request
     __validate_run_workflow_request(data=form_data)
-
-    # Check compatibility with service info
     __check_service_info_compatibility(data=form_data)
-
-    # Initialize run document
     document = __init_run_document(data=form_data)
-
-    # Create run environment
     document = __create_run_environment(
         config=config,
         document=document,
@@ -260,15 +230,12 @@ def run_workflow(config, form_data, *args, **kwargs):
         **kwargs
     )
 
-    # Build formatted response object
-    response = {"run_id": document['run_id']}
-
-    # Return response object
+    response = {'run_id': document['run_id']}
     return response
 
 
 def __immutable_multi_dict_to_nested_dict(multi_dict):
-    '''Convert ImmutableMultiDict to nested dictionary'''
+    """Converts ImmutableMultiDict to nested dictionary."""
 
     # Convert ImmutableMultiDict to flat dictionary
     nested_dict = multi_dict.to_dict(flat=True)
@@ -288,8 +255,8 @@ def __immutable_multi_dict_to_nested_dict(multi_dict):
 
 
 def __validate_run_workflow_request(data):
-    '''Validate presence and types of workflow run request form data; sets
-    defaults for optional'''
+    """Validates presence and types of workflow run request form data; sets
+    defaults for optional fields."""
 
     # The form data is not validated properly because all types except
     # 'workflow_attachment' are string and none are labeled as required
@@ -340,17 +307,17 @@ def __validate_run_workflow_request(data):
 
     # Raise error if any required params are missing
     if not required <= set(data):
-        logger.error("POST request does not conform to schema.")
+        logger.error('POST request does not conform to schema.')
         raise BadRequest
 
     # Raise error if any string params are not of type string
     if not all(isinstance(value, str) for value in type_str.values()):
-        logger.error("POST request does not conform to schema.")
+        logger.error('POST request does not conform to schema.')
         raise BadRequest
 
     # Raise error if any dict params are not of type dict
     if not all(isinstance(value, dict) for value in type_dict.values()):
-        logger.error("POST request does not conform to schema.")
+        logger.error('POST request does not conform to schema.')
         raise BadRequest
 
     # Nothing to return
@@ -358,13 +325,13 @@ def __validate_run_workflow_request(data):
 
 
 def __check_service_info_compatibility(data):
-    '''Check compatibility with service info; raise bad request error'''
+    """Checks compatibility with service info; raises BadRequest."""
     # TODO: implement me
     return None
 
 
 def __init_run_document(data):
-    '''Initialize workflow run document'''
+    """Initializes workflow run document."""
 
     # Initialize document
     document = dict()
@@ -373,7 +340,7 @@ def __init_run_document(data):
 
     # Add required keys
     document['api']['request'] = data
-    document['api']['state'] = "UNKNOWN"
+    document['api']['state'] = 'UNKNOWN'
     document['api']['run_log'] = dict()
     document['api']['task_logs'] = list()
     document['api']['outputs'] = dict()
@@ -383,8 +350,8 @@ def __init_run_document(data):
 
 
 def __create_run_environment(config, document, **kwargs):
-    '''Create unique run identifier and permanent and temporary storage
-    directories for current run'''
+    """Creates unique run identifier and permanent and temporary storage
+    directories for current run."""
 
     # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
@@ -450,7 +417,7 @@ def __create_run_environment(config, document, **kwargs):
         # Catch other database errors
         # TODO: implement properly
         except Exception as e:
-            print("Database error")
+            print('Database error')
             print(e)
             break
 
@@ -462,14 +429,14 @@ def __create_run_environment(config, document, **kwargs):
 
 
 def __create_run_id(charset, length):
-    '''Create random run id'''
+    """Creates random run ID."""
 
     # Return run id
     return ''.join(choice(charset) for __ in range(length))
 
 
 def __process_workflow_attachments(data):
-    '''Process workflow attachments'''
+    """Processes workflow attachments."""
 
     # TODO: implement properly
     # Current workaround until processing of workflow attachments is
@@ -511,7 +478,7 @@ def __process_workflow_attachments(data):
     # Create directory for storing workflow files
     workflow_dir = os.path.abspath(
         os.path.join(
-            data['internal']['out_dir'], "workflow_files"
+            data['internal']['out_dir'], 'workflow_files'
         )
     )
     try:
@@ -544,7 +511,7 @@ def __process_workflow_attachments(data):
         ):
             logger.error(
                 (
-                    "Could not clone Git repository. Check value of "
+                    'Could not clone Git repository. Check value of '
                     "'workflow_url' in run request."
                 )
             )
@@ -565,7 +532,7 @@ def __process_workflow_attachments(data):
         ):
             logger.error(
                 (
-                    "Could not checkout repository commit/branch. Check value "
+                    'Could not checkout repository commit/branch. Check value '
                     "of 'workflow_url' in run request."
                 )
             )
@@ -611,7 +578,7 @@ def __process_workflow_attachments(data):
         )
         with open(data['internal']['param_file_path'], 'w') as yaml_file:
             dump(
-                data['api']['request']["workflow_params"],
+                data['api']['request']['workflow_params'],
                 yaml_file,
                 allow_unicode=True,
                 default_flow_style=False
@@ -660,13 +627,10 @@ def __process_workflow_attachments(data):
 
 
 def __run_workflow(config, document, **kwargs):
-    '''Helper function for `run_workflow()`'''
+    """Helper function `run_workflow()`."""
 
-    # Re-assign config values
     tes_url = get_conf(config, 'tes', 'url')
     remote_storage_url = get_conf(config, 'storage', 'remote_storage_url')
-
-    # Re-assign document values
     run_id = document['run_id']
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
@@ -675,11 +639,11 @@ def __run_workflow(config, document, **kwargs):
 
     # Build command
     command_list = [
-        "cwl-tes",
-        "--debug",
-        "--leave-outputs",
-        "--remote-storage-url", remote_storage_url,
-        "--tes", tes_url,
+        'cwl-tes',
+        '--debug',
+        '--leave-outputs',
+        '--remote-storage-url', remote_storage_url,
+        '--tes', tes_url,
         cwl_path,
         param_file_path
     ]
@@ -687,28 +651,28 @@ def __run_workflow(config, document, **kwargs):
     # Add authorization parameters
     if 'token' in kwargs:
         auth_params = [
-            "--token-public-key", get_conf(
+            '--token-public-key', get_conf(
                 config,
                 'security',
                 'jwt',
                 'public_key'
             ).encode('unicode_escape').decode('utf-8'),
-            "--token", kwargs['token'],
+            '--token', kwargs['token'],
         ]
         command_list[2:2] = auth_params
 
     # TEST CASE FOR SYSTEM ERROR
     # command_list = [
-    #     "/path/to/non_existing/script"
+    #     '/path/to/non_existing/script'
     # ]
     # TEST CASE FOR EXECUTOR ERROR
     # command_list = [
-    #     "/bin/false"
+    #     '/bin/false'
     # ]
     # TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
     # command_list = [
-    #     "sleep",
-    #     "30"
+    #     'sleep',
+    #     '30'
     # ]
 
     # Execute command as background task
@@ -730,5 +694,4 @@ def __run_workflow(config, document, **kwargs):
         task_id=task_id
     )
 
-    # Nothing to return
     return None

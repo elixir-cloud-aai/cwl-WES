@@ -12,8 +12,7 @@ logger = logging.getLogger(__name__)
 
 
 def create_connexion_app(config=None):
-
-    '''Create and configure Connexion app'''
+    """Creates and configure Connexion app."""
 
     # Instantiate Connexion app
     app = App(__name__)
@@ -41,7 +40,6 @@ def create_connexion_app(config=None):
             config=config,
         )
 
-    # Return Connexion app
     return app
 
 
@@ -49,9 +47,8 @@ def __add_config_to_connexion_app(
     app,
     config
 ):
-
-    '''Add configuration to Flask app and replace default Connexion and Flask
-    settings'''
+    """Adds configuration to Flask app and replaces default Connexion and Flask
+    settings."""
 
     # Replace Connexion app settings
     app.host = get_conf(config, 'server', 'host')
@@ -64,7 +61,7 @@ def __add_config_to_connexion_app(
     app.app.config['TESTING'] = get_conf(config, 'server', 'testing')
 
     # Log Flask config
-    logger.debug("Flask app settings:")
+    logger.debug('Flask app settings:')
     for (key, value) in app.app.config.items():
         logger.debug('* {}: {}'.format(key, value))
 
@@ -72,7 +69,7 @@ def __add_config_to_connexion_app(
     app.app.config.update(config)
 
     # Log info message
-    logger.info("Connexion app configured.")
+    logger.info('Connexion app configured.')
 
     # Return Connexion app instance
     return app

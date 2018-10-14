@@ -11,13 +11,12 @@ logger = logging.getLogger(__name__)
 
 
 def register_mongodb(app):
-    '''Instantiate database and initialize collections'''
+    """Instantiates database and initializes collections."""
 
-    # Set parameter
     config = app.app.config
 
     # Initialize PyMongo instance
-    uri = "mongodb://{host}:{port}/{name}".format(
+    uri = 'mongodb://{host}:{port}/{name}'.format(
         host=get_conf(config, 'database', 'host'),
         port=get_conf(config, 'database', 'port'),
         name=get_conf(config, 'database', 'name'),
@@ -26,7 +25,7 @@ def register_mongodb(app):
     logger.info(
         (
             "Registered database '{name}' at URI '{uri}' with Connexion "
-            "application."
+            'application.'
         ).format(
             name=get_conf(config, 'database', 'name'),
             uri=uri,
@@ -59,8 +58,7 @@ def register_mongodb(app):
     app.app.config = config
 
     # Initialize service info
-    logger.debug("Initializing service info...")
+    logger.debug('Initializing service info...')
     get_service_info(config, silent=True)
 
-    # Return app
     return app

@@ -11,8 +11,8 @@ logger = logging.getLogger(__name__)
 
 # Helper function GET /service-info
 def get_service_info(config, silent=False, *args, **kwargs):
-    '''Returns readily formatted service info or None (in silent mode);
-    creates service info database document if does not exist'''
+    """Returns readily formatted service info or `None` (in silent mode);
+    creates service info database document if it does not exist."""
 
     # Re-assign config values
     collection_service_info = config['database']['collections']['service_info']
@@ -22,11 +22,11 @@ def get_service_info(config, silent=False, *args, **kwargs):
     # Write current service info to database if absent or different from latest
     if not service_info == db_utils.find_one_latest(collection_service_info):
         collection_service_info.insert(service_info)
-        logger.info("Updated service info: {service_info}".format(
+        logger.info('Updated service info: {service_info}'.format(
             service_info=service_info,
         ))
     else:
-        logger.debug("No change in service info. Not updated.")
+        logger.debug('No change in service info. Not updated.')
 
     # Return None when called in silent mode:
     if silent:
@@ -47,7 +47,7 @@ def get_service_info(config, silent=False, *args, **kwargs):
 
 
 def __get_system_state_counts(collection_runs):
-    '''Get current system state counts'''
+    """Gets current system state counts."""
 
     # Iterate through list
     current_counts = __init_system_state_counts()
@@ -72,18 +72,19 @@ def __get_system_state_counts(collection_runs):
 
 
 def __init_system_state_counts():
-    '''Initialize system state counts'''
+    """Initializes system state counts."""
 
     # Set all state counts to zero
-    # TODO: Get states programmatically
+    # TODO: Get states programmatically or define as enum
     return {
-        "UNKNOWN": 0,
-        "QUEUED": 0,
-        "INITIALIZING": 0,
-        "RUNNING": 0,
-        "PAUSED": 0,
-        "COMPLETE": 0,
-        "EXECUTOR_ERROR": 0,
-        "SYSTEM_ERROR": 0,
-        "CANCELED": 0
+        'UNKNOWN': 0,
+        'QUEUED': 0,
+        'INITIALIZING': 0,
+        'RUNNING': 0,
+        'PAUSED': 0,
+        'COMPLETE': 0,
+        'EXECUTOR_ERROR': 0,
+        'SYSTEM_ERROR': 0,
+        'CANCELED': 0,
+        'CANCELING': 0,
     }

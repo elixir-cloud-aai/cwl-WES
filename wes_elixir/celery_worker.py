@@ -7,4 +7,4 @@ from wes_elixir.factories.connexion_app import create_connexion_app
 config = parse_app_config(config_var='WES_CONFIG')
 
 # Create Celery app
-celery = create_celery_app(create_connexion_app(config))
+celery = create_celery_app(create_connexion_app(config).app)
