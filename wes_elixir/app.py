@@ -1,3 +1,5 @@
+"""Entry point to start service."""
+
 from wes_elixir.api.register_openapi import register_openapi
 from wes_elixir.config.app_config import parse_app_config
 from wes_elixir.config.config_parser import (get_conf, get_conf_type)

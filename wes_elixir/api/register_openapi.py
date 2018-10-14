@@ -1,3 +1,6 @@
+"""Functions for amending OpenAPI specs and registering them with a Connexion
+app instance."""
+
 import logging
 import os
 from shutil import copyfile

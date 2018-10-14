@@ -1,3 +1,5 @@
+"""Factory for creating and configuring Connexion app instances."""
+
 from inspect import stack
 import logging
 

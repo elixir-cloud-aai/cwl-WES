@@ -1,3 +1,5 @@
+"""YAML config parser and access/validation functions."""
+
 from itertools import chain
 import logging
 import os

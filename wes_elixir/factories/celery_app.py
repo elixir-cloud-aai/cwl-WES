@@ -1,3 +1,5 @@
+"""Factory for creating Celery app instances based on Flask apps."""
+
 from inspect import stack
 import logging
 

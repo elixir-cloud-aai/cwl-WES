@@ -1,3 +1,5 @@
+"""Controller for GA4GH WES API endpoints."""
+
 import logging
 
 from celery import current_app as celery_app

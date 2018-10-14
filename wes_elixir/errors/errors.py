@@ -1,3 +1,6 @@
+"""Custom errors, error handler functions and function to register error
+handlers with a Connexion app instance."""
+
 import logging
 
 from connexion import ProblemException

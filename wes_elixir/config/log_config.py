@@ -1,3 +1,5 @@
+"""Function for configuring logging."""
+
 import logging
 from logging.config import dictConfig
 import os

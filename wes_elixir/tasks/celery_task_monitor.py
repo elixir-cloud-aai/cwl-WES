@@ -1,3 +1,5 @@
+"""Celery task monitor, event handlers and related utility functions."""
+
 from ast import literal_eval
 from datetime import datetime
 import logging

@@ -1,3 +1,5 @@
+"""Utility functions for MongoDB document insertion, updates and retrieval."""
+
 from pymongo.collection import ReturnDocument
 
 

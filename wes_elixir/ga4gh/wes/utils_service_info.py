@@ -1,3 +1,5 @@
+"""Utility functions for GET /service-info endpoint."""
+
 from copy import deepcopy
 from datetime import datetime
 import logging

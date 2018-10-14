@@ -1,3 +1,5 @@
+"""Function for Registering MongoDB with a Connexion app instance."""
+
 import logging
 
 from flask_pymongo import ASCENDING, PyMongo

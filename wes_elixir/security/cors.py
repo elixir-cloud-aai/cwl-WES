@@ -1,3 +1,6 @@
+"""Function enabling cross-origin resource sharing for a Connexion app
+instance."""
+
 import logging
 
 from flask_cors import CORS

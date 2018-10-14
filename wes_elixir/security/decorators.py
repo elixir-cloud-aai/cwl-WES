@@ -1,3 +1,5 @@
+"""Decorator and utility functions for protecting access to endpoints."""
+
 from connexion.exceptions import Unauthorized
 from connexion import request
 from flask import current_app
@@ -25,7 +27,7 @@ def auth_token_optional(fn):
         if get_conf(current_app.config, 'security', 'authorization_required'):
 
             # Parse token from HTTP header
-            token = _parse_jwt_from_header(
+            token = parse_jwt_from_header(
                 header_name=get_conf(
                     current_app.config,
                     'security',
@@ -77,7 +79,7 @@ def auth_token_optional(fn):
                 'jwt',
                 'identity_claim'
             )
-            _validate_claims(
+            validate_claims(
                 token_data=token_data,
                 required_claims=[identity_claim],
             )
@@ -101,7 +103,7 @@ def auth_token_optional(fn):
     return wrapper
 
 
-def _parse_jwt_from_header(
+def parse_jwt_from_header(
     header_name='Authorization',
     expected_prefix='Bearer'
 ):
@@ -145,7 +147,7 @@ def _parse_jwt_from_header(
     return token
 
 
-def _validate_claims(
+def validate_claims(
     token_data,
     required_claims=[]
 ):

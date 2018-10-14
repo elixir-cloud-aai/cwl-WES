@@ -1,3 +1,5 @@
+"""Function to create Celery app instance and register task monitor."""
+
 import logging
 import os
 

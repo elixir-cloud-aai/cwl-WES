@@ -1,3 +1,5 @@
+"""Function for configuring a Connection app instance."""
+
 import logging
 import os
 

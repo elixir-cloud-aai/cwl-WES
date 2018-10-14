@@ -1,3 +1,5 @@
+"""Functions to be executed in background and related utility functions."""
+
 import logging
 import re
 import subprocess
