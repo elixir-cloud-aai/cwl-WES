@@ -5,7 +5,7 @@ with open('README.md', 'r') as fh:
 
 setup(
     name='wes-elixir',
-    version='0.11.0',
+    version='0.12.0',
     author='Elixir Europe',
     author_email='alexander.kanitz@alumni.ethz.ch',
     description='Flask- and MongoDB-powered GA4GH WES server',
