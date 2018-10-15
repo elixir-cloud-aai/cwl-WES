@@ -1,3 +1,5 @@
+"""Entry point to start service."""
+
 from wes_elixir.api.register_openapi import register_openapi
 from wes_elixir.config.app_config import parse_app_config
 from wes_elixir.config.config_parser import (get_conf, get_conf_type)
@@ -21,19 +23,23 @@ def main():
     connexion_app = create_connexion_app(config)
 
     # Register MongoDB
-    connexion_app = register_mongodb(connexion_app)
+    connexion_app.app = register_mongodb(connexion_app.app)
 
     # Register error handlers
     connexion_app = register_error_handlers(connexion_app)
 
     # Create Celery app and register background task monitoring service
-    register_task_service(connexion_app)
+    register_task_service(connexion_app.app)
 
     # Register OpenAPI specs
     connexion_app = register_openapi(
         app=connexion_app,
         specs=get_conf_type(config, 'api', 'specs', types=(list)),
-        add_security_definitions=get_conf(config, 'security', 'authorization_required')
+        add_security_definitions=get_conf(
+            config,
+            'security',
+            'authorization_required'
+        )
     )
 
     # Enable cross-origin resource sharing

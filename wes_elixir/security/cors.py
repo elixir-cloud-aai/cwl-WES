@@ -1,4 +1,8 @@
+"""Function enabling cross-origin resource sharing for a Flask app
+instance."""
+
 import logging
+from flask import Flask
 
 from flask_cors import CORS
 
@@ -7,9 +11,7 @@ from flask_cors import CORS
 logger = logging.getLogger(__name__)
 
 
-def enable_cors(app):
-    '''Enable cross- resources sharing for Connexion app'''
-
-    # Enable CORS
+def enable_cors(app: Flask) -> None:
+    """Enables cross-origin resource sharing for Flask app."""
     CORS(app)
-    logger.info("Enabled CORS for Connexion app.")
+    logger.info('Enabled CORS for Flask app.')
