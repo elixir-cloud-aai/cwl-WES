@@ -95,14 +95,14 @@ class TaskMonitor():
             except Exception as e:
                 logger.exception(
                     (
-                        'Unknown error in task monitor occurred. Execution '
-                        'aborted. Original error message: {type}: {msg}'
+                        'Unknown error in task monitor occurred. Original '
+                        'error message: {type}: {msg}'
                     ).format(
                         type=type(e).__name__,
                         msg=e,
                     )
                 )
-                raise SystemExit
+                pass
 
             # Sleep for specified interval
             sleep(self.timeout)
@@ -141,14 +141,14 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Field 'kwargs' in event message malformed. Execution "
-                    'aborted. Original error message: {type}: {msg}'
+                    "Field 'kwargs' in event message malformed. Original "
+                    'error message: {type}: {msg}'
                 ).format(
                     type=type(e).__name__,
                     msg=e,
                 )
             )
-            raise SystemExit
+            pass
 
         # Build command
         if 'command_list' in kwargs:
@@ -280,14 +280,14 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Field 'result' in event message malformed. Execution "
-                    'aborted. Original error message: {type}: {msg}'
+                    "Field 'result' in event message malformed. Original "
+                    'error message: {type}: {msg}'
                 ).format(
                     type=type(e).__name__,
                     msg=e,
                 )
             )
-            raise SystemExit
+            pass
 
         # Create dictionary for internal parameters
         internal = dict()

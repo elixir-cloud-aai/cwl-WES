@@ -6,6 +6,7 @@ import os
 import re
 import shutil
 import subprocess
+import string  # noqa: F401
 
 from celery import (Celery, uuid)
 from json import (decoder, loads)
@@ -684,12 +685,12 @@ def __run_workflow(
     # ]
     # TEST CASE FOR EXECUTOR ERROR
     # command_list = [
-    #     '/bin/false'
+    #     '/bin/false',
     # ]
     # TEST CASE FOR SLOW COMPLETION WITH ARGUMENT (NO STDOUT/STDERR)
     # command_list = [
     #     'sleep',
-    #     '30'
+    #     '30',
     # ]
 
     # Execute command as background task
