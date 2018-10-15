@@ -1,7 +1,14 @@
+"""Custom errors, error handler functions and function to register error
+handlers with a Connexion app instance."""
+
 import logging
 
-from connexion import ProblemException
-from connexion.exceptions import (ExtraParameterProblem, Forbidden, Unauthorized)
+from connexion import App, ProblemException
+from connexion.exceptions import (
+    ExtraParameterProblem,
+    Forbidden,
+    Unauthorized
+)
 from flask import Response
 from json import dumps
 from werkzeug.exceptions import (BadRequest, InternalServerError, NotFound)
@@ -11,9 +18,8 @@ from werkzeug.exceptions import (BadRequest, InternalServerError, NotFound)
 logger = logging.getLogger(__name__)
 
 
-def register_error_handlers(app):
-    '''Add custom handlers for exceptions to Connexion app instance'''
-
+def register_error_handlers(app: App) -> App:
+    """Adds custom handlers for exceptions to Connexion app instance."""
     # Add error handlers
     app.add_error_handler(BadRequest, handle_bad_request)
     app.add_error_handler(ExtraParameterProblem, handle_bad_request)
@@ -21,7 +27,7 @@ def register_error_handlers(app):
     app.add_error_handler(InternalServerError, __handle_internal_server_error)
     app.add_error_handler(Unauthorized, __handle_unauthorized)
     app.add_error_handler(WorkflowNotFound, __handle_workflow_not_found)
-    logger.info("Registered custom error handlers with Connexion app.")
+    logger.info('Registered custom error handlers with Connexion app.')
 
     # Return Connexion app instance
     return app
@@ -29,13 +35,14 @@ def register_error_handlers(app):
 
 # CUSTOM ERRORS
 class WorkflowNotFound(ProblemException, NotFound):
-    '''WorkflowNotFound(404) error compatible with Connexion'''
+    """WorkflowNotFound(404) error compatible with Connexion."""
+
     def __init__(self, title=None, **kwargs):
         super(WorkflowNotFound, self).__init__(title=title, **kwargs)
 
 
 # CUSTOM ERROR HANDLERS
-def handle_bad_request(exception):
+def handle_bad_request(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The request is malformed.',
@@ -45,7 +52,8 @@ def handle_bad_request(exception):
         mimetype="application/problem+json"
     )
 
-def __handle_unauthorized(exception):
+
+def __handle_unauthorized(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The request is unauthorized.',
@@ -55,7 +63,8 @@ def __handle_unauthorized(exception):
         mimetype="application/problem+json"
     )
 
-def __handle_forbidden(exception):
+
+def __handle_forbidden(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The requester is not authorized to perform this action.',
@@ -65,7 +74,8 @@ def __handle_forbidden(exception):
         mimetype="application/problem+json"
     )
 
-def __handle_workflow_not_found(exception):
+
+def __handle_workflow_not_found(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The requested workflow run wasn\'t found.',
@@ -75,7 +85,8 @@ def __handle_workflow_not_found(exception):
         mimetype="application/problem+json"
     )
 
-def __handle_internal_server_error(exception):
+
+def __handle_internal_server_error(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'An unexpected error occurred.',

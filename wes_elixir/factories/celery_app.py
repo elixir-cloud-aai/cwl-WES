@@ -1,6 +1,9 @@
+"""Factory for creating Celery app instances based on Flask apps."""
+
 from inspect import stack
 import logging
 
+from flask import Flask
 from celery import Celery
 
 from wes_elixir.config.config_parser import (get_conf, get_conf_type)
@@ -10,13 +13,12 @@ from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 logger = logging.getLogger(__name__)
 
 
-def create_celery_app(app):
-
-    # Re-assign config values
-    broker=get_conf(app.app.config, 'celery', 'broker_url')
-    backend=get_conf(app.app.config, 'celery', 'result_backend')
-    include=get_conf_type(app.app.config, 'celery', 'include', types=(list))
-    maxsize=get_conf(app.app.config, 'celery', 'message_maxsize')
+def create_celery_app(app: Flask) -> Celery:
+    """Creates Celery application and configures it from Flask app."""
+    broker = get_conf(app.config, 'celery', 'broker_url')
+    backend = get_conf(app.config, 'celery', 'result_backend')
+    include = get_conf_type(app.config, 'celery', 'include', types=(list))
+    maxsize = get_conf(app.config, 'celery', 'message_maxsize')
 
     # Instantiate Celery app
     celery = Celery(
@@ -30,22 +32,21 @@ def create_celery_app(app):
     ))
 
     # Set Celery options
-    # TODO: Fix to get around message truncation problem
-    # TODO: Possibly try to solve this differently (via result backend?) as this may not very robust
     celery.Task.resultrepr_maxsize = maxsize
     celery.amqp.argsrepr_maxsize = maxsize
     celery.amqp.kwargsrepr_maxsize = maxsize
 
     # Update Celery app configuration with Flask app configuration
-    celery.conf.update(app.app.config)
-    logger.info("Celery app configured.")
+    celery.conf.update(app.config)
+    logger.info('Celery app configured.')
 
-    class ContextTask(celery.Task):
+    class ContextTask(celery.Task):  # type: ignore
+        # https://github.com/python/mypy/issues/4284)
         def __call__(self, *args, **kwargs):
-            with app.app.app_context():
+            with app.app_context():
                 return self.run(*args, **kwargs)
 
     celery.Task = ContextTask
-    logger.debug("App context added to celery.Task class.")
+    logger.debug("App context added to 'celery.Task' class.")
 
     return celery

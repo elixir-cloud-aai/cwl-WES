@@ -1,5 +1,8 @@
+"""Factory for creating and configuring Connexion app instances."""
+
 from inspect import stack
 import logging
+from typing import (Mapping, Optional)
 
 from connexion import App
 
@@ -11,10 +14,8 @@ from wes_elixir.config.config_parser import get_conf
 logger = logging.getLogger(__name__)
 
 
-def create_connexion_app(config=None):
-
-    '''Create and configure Connexion app'''
-
+def create_connexion_app(config: Optional[Mapping] = None) -> App:
+    """Creates and configure Connexion app."""
     # Instantiate Connexion app
     app = App(__name__)
     logger.info("Connexion app created from '{calling_module}'.".format(
@@ -22,11 +23,15 @@ def create_connexion_app(config=None):
     ))
 
     # Workaround for adding a custom handler for `connexion.problem` responses
-    # Responses from request and paramater validators are not raised and cannot be intercepted by `add_error_handler`
-    # See here: https://github.com/zalando/connexion/issues/138
+    # Responses from request and paramater validators are not raised and
+    # cannot be intercepted by `add_error_handler`; see here:
+    # https://github.com/zalando/connexion/issues/138
     @app.app.after_request
     def _rewrite_bad_request(response):
-        if response.status_code == 400 and response.data.decode('utf-8').find('"title":') is not None:
+        if (
+            response.status_code == 400 and
+            response.data.decode('utf-8').find('"title":') is not None
+        ):
             response = handle_bad_request(400)
         return response
 
@@ -37,17 +42,15 @@ def create_connexion_app(config=None):
             config=config,
         )
 
-    # Return Connexion app
     return app
 
 
 def __add_config_to_connexion_app(
-    app,
-    config
-):
-
-    '''Add configuration to Flask app and replace default Connexion and Flask settings'''
-
+    app: App,
+    config: Mapping
+) -> App:
+    """Adds configuration to Flask app and replaces default Connexion and Flask
+    settings."""
     # Replace Connexion app settings
     app.host = get_conf(config, 'server', 'host')
     app.port = get_conf(config, 'server', 'port')
@@ -59,15 +62,12 @@ def __add_config_to_connexion_app(
     app.app.config['TESTING'] = get_conf(config, 'server', 'testing')
 
     # Log Flask config
-    logger.debug("Flask app settings:")
+    logger.debug('Flask app settings:')
     for (key, value) in app.app.config.items():
         logger.debug('* {}: {}'.format(key, value))
 
     # Add user configuration to Flask app config
     app.app.config.update(config)
 
-    # Log info message
-    logger.info("Connexion app configured.")
-
-    # Return Connexion app instance
+    logger.info('Connexion app configured.')
     return app
