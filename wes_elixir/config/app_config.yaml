@@ -84,7 +84,7 @@ service_info:
           default_value: '5'
     tags:
         known_tes_endpoints: 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
-        wes_elixir_version: 0.12.0
+        wes_elixir_version: 0.13.0
 
 # TES server
 tes:
