@@ -3,6 +3,7 @@
 from itertools import chain
 import logging
 import os
+from typing import (Any, List, Mapping)
 
 import yaml
 
@@ -22,9 +23,9 @@ class YAMLConfigParser(Dict):
 
     def update_from_yaml(
         self,
-        config_paths=[],
-        config_vars=[],
-    ):
+        config_paths: List[Any] = [],
+        config_vars: List[Any] = [],
+    ) -> str:
         """Updates config dictionary from file paths or environment variables
         pointing to one or more YAML files.
 
@@ -75,11 +76,11 @@ class YAMLConfigParser(Dict):
 
 
 def get_conf_type(
-    config,
-    *args,
-    types=False,
-    invert_types=False,
-    touchy=True
+    config: Mapping[Any, Any],
+    *args: str,
+    types: Any = False,
+    invert_types: bool = False,
+    touchy: bool = True
 ):
     """Returns the value corresponding to a chain of keys from a nested
     dictionary.
@@ -159,9 +160,9 @@ def get_conf_type(
 
 
 def get_conf(
-    config,
-    *args,
-    touchy=True
+    config: Mapping[str, Any],
+    *args: str,
+    touchy: bool = True
 ):
     """Returns the value corresponding to a chain of keys from a nested
     dictionary. Extracts only 'leafs' of nested dictionary.
@@ -182,5 +183,5 @@ def get_conf(
         *args,
         types=(dict, list),
         invert_types=True,
-        touchy=touchy
+        touchy=touchy,
     )

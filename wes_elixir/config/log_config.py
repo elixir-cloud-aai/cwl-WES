@@ -1,8 +1,9 @@
 """Function for configuring logging."""
 
 import logging
-from logging.config import dictConfig
 import os
+from logging.config import dictConfig
+from typing import Optional
 
 from wes_elixir.config.config_parser import YAMLConfigParser
 
@@ -12,8 +13,8 @@ logger = logging.getLogger(__name__)
 
 
 def configure_logging(
-    config_var=None,
-    default_path=os.path.abspath(
+    config_var: Optional[str] = None,
+    default_path: str = os.path.abspath(
         os.path.join(
             os.path.dirname(
                 os.path.realpath(__file__)
@@ -21,8 +22,8 @@ def configure_logging(
             'log_config.yaml'
         )
     ),
-    fallback_level=logging.DEBUG
-):
+    fallback_level: int = logging.DEBUG
+) -> None:
     """Configures base logger."""
 
     # Create parser instance

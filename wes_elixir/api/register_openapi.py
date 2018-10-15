@@ -4,6 +4,9 @@ app instance."""
 import logging
 import os
 from shutil import copyfile
+from typing import List
+
+from connexion import App
 
 from wes_elixir.config.config_parser import get_conf
 
@@ -13,10 +16,10 @@ logger = logging.getLogger(__name__)
 
 
 def register_openapi(
-    app=None,
-    specs=[],
-    add_security_definitions=True
-):
+    app: App,
+    specs: List[str] = [],
+    add_security_definitions: bool = True
+) -> App:
     """Registers OpenAPI specs with Connexion app."""
 
     # Iterate over list of API specs
@@ -64,14 +67,13 @@ def register_openapi(
             )
             raise SystemExit(1)
 
-    # Return Connexion app
     return(app)
 
 
 def __add_security_definitions(
-    in_file,
-    ext='modified.yaml'
-):
+    in_file: str,
+    ext: str = 'modified.yaml'
+) -> str:
     """Adds 'securityDefinitions' section to OpenAPI YAML specs."""
 
     # Set security definitions
@@ -86,7 +88,7 @@ securityDefinitions:
 '''
 
     # Create copy for modification
-    out_file = '.'.join([os.path.splitext(in_file)[0], ext])
+    out_file: str = '.'.join([os.path.splitext(in_file)[0], ext])
     copyfile(in_file, out_file)
 
     # Append security definitions

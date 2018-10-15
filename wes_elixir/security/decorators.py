@@ -5,6 +5,7 @@ from connexion import request
 from flask import current_app
 from functools import wraps
 import logging
+from typing import (Callable, Iterable, Mapping)
 
 from jwt import decode
 
@@ -15,7 +16,7 @@ from wes_elixir.config.config_parser import get_conf
 logger = logging.getLogger(__name__)
 
 
-def auth_token_optional(fn):
+def auth_token_optional(fn: Callable) -> Callable:
     """The decorator protects an endpoint from being called without a valid
     authorization token.
     """
@@ -104,9 +105,9 @@ def auth_token_optional(fn):
 
 
 def parse_jwt_from_header(
-    header_name='Authorization',
-    expected_prefix='Bearer'
-):
+    header_name: str ='Authorization',
+    expected_prefix: str ='Bearer'
+) -> Mapping:
     """Parses authorization token from HTTP header."""
     # TODO: Add custom errors
 
@@ -148,8 +149,8 @@ def parse_jwt_from_header(
 
 
 def validate_claims(
-    token_data,
-    required_claims=[]
+    token_data: Mapping,
+    required_claims: Iterable[str] = []
 ):
     """Validates token claims."""
 

@@ -23,13 +23,13 @@ def main():
     connexion_app = create_connexion_app(config)
 
     # Register MongoDB
-    connexion_app = register_mongodb(connexion_app)
+    connexion_app.app = register_mongodb(connexion_app.app)
 
     # Register error handlers
     connexion_app = register_error_handlers(connexion_app)
 
     # Create Celery app and register background task monitoring service
-    register_task_service(connexion_app)
+    register_task_service(connexion_app.app)
 
     # Register OpenAPI specs
     connexion_app = register_openapi(

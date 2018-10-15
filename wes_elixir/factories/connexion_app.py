@@ -2,6 +2,7 @@
 
 from inspect import stack
 import logging
+from typing import (Mapping, Optional)
 
 from connexion import App
 
@@ -13,7 +14,7 @@ from wes_elixir.config.config_parser import get_conf
 logger = logging.getLogger(__name__)
 
 
-def create_connexion_app(config=None):
+def create_connexion_app(config: Optional[Mapping] = None) -> App:
     """Creates and configure Connexion app."""
 
     # Instantiate Connexion app
@@ -46,9 +47,9 @@ def create_connexion_app(config=None):
 
 
 def __add_config_to_connexion_app(
-    app,
-    config
-):
+    app: App,
+    config: Mapping
+) -> App:
     """Adds configuration to Flask app and replaces default Connexion and Flask
     settings."""
 

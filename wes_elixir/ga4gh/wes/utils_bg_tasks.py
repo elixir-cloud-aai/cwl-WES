@@ -1,8 +1,10 @@
 """Functions to be executed in background and related utility functions."""
 
+from _io import TextIOWrapper
 import logging
 import re
 import subprocess
+from typing import (Dict, List, Optional, Tuple)
 
 from wes_elixir.celery_worker import celery
 
@@ -14,9 +16,9 @@ logger = logging.getLogger(__name__)
 @celery.task(bind=True, track_started=True)
 def task__run_workflow(
     self,
-    command_list,
-    tmp_dir
-):
+    command_list: List,
+    tmp_dir: str
+) -> Tuple[int, List[str], List[str]]:
     """Adds workflow run to task queue."""
 
     # Execute task in background
@@ -36,12 +38,15 @@ def task__run_workflow(
     return (returncode, log, tes_ids)
 
 
-def __process_cwl_logs(task, stream):
+def __process_cwl_logs(
+    task: celery.Task,
+    stream: TextIOWrapper
+) -> Tuple[List, List]:
     """Parses combinend cwl-tes STDOUT/STDERR and sends TES task IDs and state
     updates to broker."""
 
-    stream_container = list()
-    tes_states = dict()
+    stream_container: List = list()
+    tes_states: Dict = dict()
 
     # Iterate over STDOUT/STDERR stream
     for line in iter(stream.readline, ''):
@@ -83,10 +88,10 @@ def __process_cwl_logs(task, stream):
     return (stream_container, list(tes_states.keys()))
 
 
-def __handle_cwl_tes_log_irregularities(line):
+def __handle_cwl_tes_log_irregularities(line: str) -> List[str]:
     """Handles irregularities arising from log parsing."""
 
-    lines = list()
+    lines: List = list()
 
     # Handle special case where FTP and cwl-tes logs are on same line
     re_ftp_cwl_tes = re.compile(
@@ -99,11 +104,13 @@ def __handle_cwl_tes_log_irregularities(line):
     return lines
 
 
-def __extract_tes_task_state_from_cwl_tes_log(line):
+def __extract_tes_task_state_from_cwl_tes_log(
+    line: str
+) -> Tuple[Optional[str], Optional[str]]:
     """Extracts task ID and state from cwl-tes log."""
 
-    task_id = None
-    task_state = None
+    task_id: Optional[str] = None
+    task_state: Optional[str] = None
 
     # Extract new task ID
     re_task_new = re.compile(r"^\[job \w*\] task id: (\S*)$")
@@ -124,10 +131,10 @@ def __extract_tes_task_state_from_cwl_tes_log(line):
 
 
 def __send_event_tes_task_update(
-    task,
-    tes_id,
-    tes_state=None
-):
+    task: celery.Task,
+    tes_id: str,
+    tes_state: Optional[str] = None
+) -> None:
     """Sends custom event to inform about TES task state change."""
 
     task.send_event(
@@ -135,3 +142,5 @@ def __send_event_tes_task_update(
         tes_id=tes_id,
         tes_state=tes_state,
     )
+
+    return None

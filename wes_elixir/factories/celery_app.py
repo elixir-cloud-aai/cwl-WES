@@ -3,6 +3,7 @@
 from inspect import stack
 import logging
 
+from flask import Flask
 from celery import Celery
 
 from wes_elixir.config.config_parser import (get_conf, get_conf_type)
@@ -12,7 +13,7 @@ from wes_elixir.config.config_parser import (get_conf, get_conf_type)
 logger = logging.getLogger(__name__)
 
 
-def create_celery_app(app):
+def create_celery_app(app: Flask) -> Celery:
     """Creates Celery application and configures it from Flask app."""
 
     broker = get_conf(app.config, 'celery', 'broker_url')
@@ -40,9 +41,10 @@ def create_celery_app(app):
     celery.conf.update(app.config)
     logger.info('Celery app configured.')
 
-    class ContextTask(celery.Task):
+    class ContextTask(celery.Task):  # type: ignore
+        # https://github.com/python/mypy/issues/4284)
         def __call__(self, *args, **kwargs):
-            with app.app.app_context():
+            with app.app_context():
                 return self.run(*args, **kwargs)
 
     celery.Task = ContextTask

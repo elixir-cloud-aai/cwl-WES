@@ -1,7 +1,8 @@
-"""Function for Registering MongoDB with a Connexion app instance."""
+"""Function for Registering MongoDB with a Flask app instance."""
 
 import logging
 
+from flask import Flask
 from flask_pymongo import ASCENDING, PyMongo
 
 from wes_elixir.config.config_parser import get_conf
@@ -12,10 +13,10 @@ from wes_elixir.ga4gh.wes.utils_service_info import get_service_info
 logger = logging.getLogger(__name__)
 
 
-def register_mongodb(app):
+def register_mongodb(app: Flask) -> Flask:
     """Instantiates database and initializes collections."""
 
-    config = app.app.config
+    config = app.config
 
     # Initialize PyMongo instance
     uri = 'mongodb://{host}:{port}/{name}'.format(
@@ -23,10 +24,10 @@ def register_mongodb(app):
         port=get_conf(config, 'database', 'port'),
         name=get_conf(config, 'database', 'name'),
     )
-    mongo = PyMongo(app.app, uri=uri)
+    mongo = PyMongo(app, uri=uri)
     logger.info(
         (
-            "Registered database '{name}' at URI '{uri}' with Connexion "
+            "Registered database '{name}' at URI '{uri}' with Flask "
             'application.'
         ).format(
             name=get_conf(config, 'database', 'name'),
@@ -57,7 +58,7 @@ def register_mongodb(app):
     config['database']['collections'] = dict()
     config['database']['collections']['runs'] = collection_runs
     config['database']['collections']['service_info'] = collection_service_info
-    app.app.config = config
+    app.config = config
 
     # Initialize service info
     logger.debug('Initializing service info...')

@@ -2,6 +2,7 @@
 
 import logging
 import os
+from typing import Optional
 
 from wes_elixir.config.config_parser import YAMLConfigParser
 
@@ -11,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 
 def parse_app_config(
-    config_var=None,
-    default_path=os.path.abspath(
+    config_var: Optional[str] = None,
+    default_path: str = os.path.abspath(
         os.path.join(
             os.path.dirname(
                 os.path.realpath(__file__)
@@ -20,7 +21,7 @@ def parse_app_config(
             'app_config.yaml'
         )
     )
-):
+) -> YAMLConfigParser:
     """Parses configuration files and adds configuration to Connexion app."""
 
     # Create parser instance

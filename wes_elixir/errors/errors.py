@@ -3,7 +3,7 @@ handlers with a Connexion app instance."""
 
 import logging
 
-from connexion import ProblemException
+from connexion import App, ProblemException
 from connexion.exceptions import (
     ExtraParameterProblem,
     Forbidden,
@@ -18,7 +18,7 @@ from werkzeug.exceptions import (BadRequest, InternalServerError, NotFound)
 logger = logging.getLogger(__name__)
 
 
-def register_error_handlers(app):
+def register_error_handlers(app: App) -> App:
     """Adds custom handlers for exceptions to Connexion app instance."""
 
     # Add error handlers
@@ -43,7 +43,7 @@ class WorkflowNotFound(ProblemException, NotFound):
 
 
 # CUSTOM ERROR HANDLERS
-def handle_bad_request(exception):
+def handle_bad_request(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The request is malformed.',
@@ -54,7 +54,7 @@ def handle_bad_request(exception):
     )
 
 
-def __handle_unauthorized(exception):
+def __handle_unauthorized(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The request is unauthorized.',
@@ -65,7 +65,7 @@ def __handle_unauthorized(exception):
     )
 
 
-def __handle_forbidden(exception):
+def __handle_forbidden(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The requester is not authorized to perform this action.',
@@ -76,7 +76,7 @@ def __handle_forbidden(exception):
     )
 
 
-def __handle_workflow_not_found(exception):
+def __handle_workflow_not_found(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'The requested workflow run wasn\'t found.',
@@ -87,7 +87,7 @@ def __handle_workflow_not_found(exception):
     )
 
 
-def __handle_internal_server_error(exception):
+def __handle_internal_server_error(exception: Exception) -> Response:
     return Response(
         response=dumps({
             'msg': 'An unexpected error occurred.',

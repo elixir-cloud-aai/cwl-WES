@@ -3,6 +3,9 @@
 from copy import deepcopy
 from datetime import datetime
 import logging
+from typing import (Any, Dict, Mapping)
+
+from pymongo import collection
 
 import wes_elixir.database.db_utils as db_utils
 
@@ -12,7 +15,12 @@ logger = logging.getLogger(__name__)
 
 
 # Helper function GET /service-info
-def get_service_info(config, silent=False, *args, **kwargs):
+def get_service_info(
+    config: Mapping,
+    silent: bool = False,
+    *args: Any,
+    **kwarg: Any
+):
     """Returns readily formatted service info or `None` (in silent mode);
     creates service info database document if it does not exist."""
 
@@ -40,22 +48,23 @@ def get_service_info(config, silent=False, *args, **kwargs):
     )
 
     # Add timestamps
-    service_info['tags']['timestamp_last_service_info_update'] = \
-        db_utils.find_id_latest(collection_service_info).generation_time
-    service_info['tags']['timestamp_current'] = datetime.utcnow().isoformat()
+    _id = db_utils.find_id_latest(collection_service_info)
+    if _id:
+        service_info['tags']['last_service_info_update'] = _id.generation_time
+    service_info['tags']['current_time'] = datetime.utcnow().isoformat()
 
     # Return service info
     return service_info
 
 
-def __get_system_state_counts(collection_runs):
+def __get_system_state_counts(collection: collection) -> Dict[str, int]:
     """Gets current system state counts."""
 
     # Iterate through list
     current_counts = __init_system_state_counts()
 
     # Query database for workflow run states
-    cursor = collection_runs.find(
+    cursor = collection.find(
         filter={},
         projection={
             'api.state': True,
@@ -70,10 +79,10 @@ def __get_system_state_counts(collection_runs):
         current_counts[record['api']['state']] += 1
 
     # Return counts
-    return(current_counts)
+    return current_counts
 
 
-def __init_system_state_counts():
+def __init_system_state_counts() -> Dict[str, int]:
     """Initializes system state counts."""
 
     # Set all state counts to zero
