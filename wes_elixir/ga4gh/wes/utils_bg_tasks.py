@@ -51,6 +51,9 @@ def __process_cwl_logs(
 
         line = line.rstrip()
 
+        # Replace single quote characters to avoid `literal_eval()` errors
+        line = line.replace("'", '"')
+
         # Handle special cases
         lines = __handle_cwl_tes_log_irregularities(line)
         for line in lines:
