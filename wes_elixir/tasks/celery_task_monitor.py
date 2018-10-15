@@ -9,6 +9,13 @@ import requests
 from shlex import quote
 from threading import Thread
 from time import sleep
+from typing import (Dict, List, Optional)
+
+from celery import Celery
+from celery.events import Event
+from celery.events.receiver import EventReceiver
+from kombu.connection import Connection  # noqa: F401
+from pymongo import collection as Collection
 
 import wes_elixir.database.db_utils as db_utils
 
@@ -18,7 +25,7 @@ logger = logging.getLogger(__name__)
 
 
 # Set string time format
-strf = '%Y-%m-%d %H:%M:%S.%f'
+strf: str = '%Y-%m-%d %H:%M:%S.%f'
 
 
 class TaskMonitor():
@@ -26,19 +33,18 @@ class TaskMonitor():
 
     def __init__(
         self,
-        celery_app=None,
-        collection=None,
-        timeout=0,
-        authorization=True,
-        tes=None,
-    ):
+        celery_app: Celery,
+        collection: Collection,
+        tes_config: Dict[str, str],
+        timeout: float = 0,
+        authorization: bool = True,
+    ) -> None:
         """Starts Celery task monitor daemon process."""
-
         self.celery_app = celery_app
         self.collection = collection
         self.timeout = timeout
         self.authorization = authorization
-        self.tes = tes
+        self.tes_config = tes_config
 
         self.thread = Thread(target=self.run, args=())
         self.thread.daemon = True
@@ -46,16 +52,16 @@ class TaskMonitor():
 
         logger.debug('Celery task monitor daemon process started...')
 
-    def run(self):
+    def run(self) -> None:
         """Daemon process for Celery task monitor."""
-
         while True:
 
             try:
 
-                with self.celery_app.connection() as connection:
+                with self.celery_app.connection() as \
+                     connection:  # type: Connection
 
-                    listener = self.celery_app.events.Receiver(
+                    listener: EventReceiver = self.celery_app.events.Receiver(
                         connection,
                         handlers={
                             'task-failed':
@@ -101,9 +107,11 @@ class TaskMonitor():
             # Sleep for specified interval
             sleep(self.timeout)
 
-    def on_task_failed(self, event):
+    def on_task_failed(
+        self,
+        event: Event
+    ) -> None:
         """Event handler for failed (system error) Celery tasks."""
-
         # Create dictionary for internal parameters
         internal = dict()
         internal['task_finished'] = datetime.utcfromtimestamp(
@@ -122,9 +130,11 @@ class TaskMonitor():
             exception=event['exception'],
         )
 
-    def on_task_received(self, event):
+    def on_task_received(
+        self,
+        event: Event
+    ) -> None:
         """Event handler for received Celery tasks."""
-
         # Parse subprocess inputs
         try:
             kwargs = literal_eval(event['kwargs'])
@@ -186,9 +196,11 @@ class TaskMonitor():
             )
             pass
 
-    def on_task_revoked(self, event):
+    def on_task_revoked(
+        self,
+        event: Event
+    ) -> None:
         """Event handler for revoked Celery tasks."""
-
         # Create dictionary for internal parameters
         internal = dict()
         internal['task_finished'] = datetime.utcfromtimestamp(
@@ -221,9 +233,11 @@ class TaskMonitor():
             )
             pass
 
-    def on_task_started(self, event):
+    def on_task_started(
+        self,
+        event: Event
+    ) -> None:
         """Event handler for started Celery tasks."""
-
         # Create dictionary for internal parameters
         internal = dict()
         internal['task_started'] = datetime.utcfromtimestamp(
@@ -253,10 +267,12 @@ class TaskMonitor():
             )
             pass
 
-    def on_task_succeeded(self, event):
+    def on_task_succeeded(
+        self,
+        event: Event
+    ) -> None:
         """Event handler for successful and failed (`EXECUTOR_ERROR`) Celery
         tasks."""
-
         # Parse subprocess results
         try:
             (returncode, log, tes_ids) = literal_eval(event['result'])
@@ -322,8 +338,11 @@ class TaskMonitor():
             )
             pass
 
-    def on_task_tes_task_update(self, event):
-
+    def on_task_tes_task_update(
+        self,
+        event: Event
+    ) -> None:
+        """Event handler for TES task state changes."""
         # If TES task is new, add task log to database
         if not event['tes_state']:
             try:
@@ -370,18 +389,17 @@ class TaskMonitor():
 
     def update_run_document(
         self,
-        event,
-        state=None,
-        internal=None,
-        outputs=None,
-        task_logs=None,
+        event: Event,
+        state: Optional[str] = None,
+        internal: Optional[Dict] = None,
+        outputs: Optional[Dict] = None,
+        task_logs: Optional[List[Dict]] = None,
         **run_log_params
     ):
         """Updates state, internal and run log parameters in database
         document.
         """
         # TODO: Minimize db ops; try to compile entire object & update once
-
         # Update internal parameters
         if internal:
             document = db_utils.upsert_fields_in_root_object(
@@ -419,7 +437,7 @@ class TaskMonitor():
             )
 
         # Calculate queue, execution and run time
-        if document['internal']:
+        if document and document['internal']:
             run_log = document['internal']
             durations = dict()
 
@@ -462,21 +480,23 @@ class TaskMonitor():
                 raise
 
         # Log info message
-        logger.info(
-            (
-                "State of run '{run_id}' (task id: '{task_id}') changed to "
-                "'{state}'."
-            ).format(
-                run_id=document['run_id'],
-                task_id=event['uuid'],
-                state=state,
+        if document:
+            logger.info(
+                (
+                    "State of run '{run_id}' (task id: '{task_id}') changed "
+                    "to '{state}'."
+                ).format(
+                    run_id=document['run_id'],
+                    task_id=event['uuid'],
+                    state=state,
+                )
             )
-        )
+
+        return document
 
     @staticmethod
-    def __cwl_tes_outputs_parser(log):
+    def __cwl_tes_outputs_parser(log: str) -> Dict:
         """Parses outputs from cwl-tes log."""
-
         # Find outputs object in log string
         re_outputs = re.compile(
             r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)',
@@ -490,36 +510,28 @@ class TaskMonitor():
 
     def __get_tes_task_logs(
         self,
-        tes_ids=list()
-    ):
+        tes_ids: List = list()
+    ) -> List:
         """Gets multiple task logs from TES instance."""
-
-        # Initialize container for task logs
         task_logs = list()
-
-        # Iterate over task IDs
         for tes_id in tes_ids:
-
-            # Add log to container
             task_logs.append(self.__get_tes_task_log(tes_id))
-
-        # Return task logs container
         return task_logs
 
     def __get_tes_task_log(
         self,
-        tes_id
-    ):
+        tes_id: str
+    ) -> str:
         """Gets task log from TES instance."""
-
         # Build URL
-        base = self.tes['url']
-        root = self.tes['logs_endpoint_root']
-        suffix = ''.join([tes_id, self.tes['logs_endpoint_query_params']])
+        base = self.tes_config['url']
+        root = self.tes_config['logs_endpoint_root']
+        suffix = ''.join(
+            [tes_id, self.tes_config['logs_endpoint_query_params']]
+        )
         url = '/'.join(frag.strip('/') for frag in [base, root, suffix])
 
         # Send GET request to URL to obtain task log
         task_log = requests.get(url).json()
 
-        # Return log
         return task_log

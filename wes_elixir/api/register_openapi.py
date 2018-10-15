@@ -21,7 +21,6 @@ def register_openapi(
     add_security_definitions: bool = True
 ) -> App:
     """Registers OpenAPI specs with Connexion app."""
-
     # Iterate over list of API specs
     for spec in specs:
 
@@ -75,7 +74,6 @@ def __add_security_definitions(
     ext: str = 'modified.yaml'
 ) -> str:
     """Adds 'securityDefinitions' section to OpenAPI YAML specs."""
-
     # Set security definitions
     amend = '''
 

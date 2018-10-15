@@ -19,7 +19,6 @@ logger = logging.getLogger(__name__)
 @auth_token_optional
 def GetRunLog(run_id, *args, **kwargs):
     """Returns detailed run info."""
-
     response = runs.get_run_log(
         config=current_app.config,
         run_id=run_id,
@@ -34,7 +33,6 @@ def GetRunLog(run_id, *args, **kwargs):
 @auth_token_optional
 def CancelRun(run_id, *args, **kwargs):
     """Cancels unfinished workflow run."""
-
     response = runs.cancel_run(
         config=current_app.config,
         celery_app=celery_app,
@@ -50,7 +48,6 @@ def CancelRun(run_id, *args, **kwargs):
 @auth_token_optional
 def GetRunStatus(run_id, *args, **kwargs):
     """Returns run status."""
-
     response = runs.get_run_status(
         config=current_app.config,
         run_id=run_id,
@@ -65,7 +62,6 @@ def GetRunStatus(run_id, *args, **kwargs):
 @auth_token_optional
 def GetServiceInfo(*args, **kwargs):
     """Returns service info."""
-
     response = service_info.get_service_info(
         config=current_app.config,
         *args,
@@ -79,7 +75,6 @@ def GetServiceInfo(*args, **kwargs):
 @auth_token_optional
 def ListRuns(*args, **kwargs):
     """Lists IDs and status of all workflow runs."""
-
     response = runs.list_runs(
         config=current_app.config,
         *args,
@@ -93,7 +88,6 @@ def ListRuns(*args, **kwargs):
 @auth_token_optional
 def RunWorkflow(*args, **kwargs):
     """Executes workflow."""
-
     response = runs.run_workflow(
         config=current_app.config,
         form_data=request.form,
@@ -107,7 +101,6 @@ def RunWorkflow(*args, **kwargs):
 def log_request(request, response):
     """Writes request and response to log."""
     # TODO: write decorator for request logging
-
     logger.debug(
         (
             "Response to request \"{method} {path} {protocol}\" from "

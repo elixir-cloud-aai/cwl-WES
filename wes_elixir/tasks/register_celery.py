@@ -14,7 +14,6 @@ logger = logging.getLogger(__name__)
 
 def register_task_service(app: Flask) -> None:
     """Instantiates Celery app and registers task monitor."""
-
     # Ensure that code is executed only once when app reloader is used
     if os.environ.get("WERKZEUG_RUN_MAIN") != 'true':
 
@@ -25,9 +24,7 @@ def register_task_service(app: Flask) -> None:
         TaskMonitor(
             celery_app=celery_app,
             collection=app.config['database']['collections']['runs'],
-            timeout=app.config['celery']['monitor']['timeout'],
-            authorization=app.config['security']['authorization_required'],
-            tes={
+            tes_config={
                 'url':
                     app.config['tes']['url'],
                 'logs_endpoint_root':
@@ -35,8 +32,9 @@ def register_task_service(app: Flask) -> None:
                 'logs_endpoint_query_params':
                     app.config['tes']['get_logs']['query_params'],
             },
+            timeout=app.config['celery']['monitor']['timeout'],
+            authorization=app.config['security']['authorization_required'],
         )
         logger.info('Celery task monitor registered.')
 
-    # Nothing to return
     return None

@@ -4,14 +4,13 @@ from typing import (Any, Mapping, Optional)
 
 from bson.objectid import ObjectId
 from pymongo.collection import ReturnDocument
-from pymongo import collection
+from pymongo import collection as Collection
 
 
-def find_one_latest(collection: collection) -> Optional[Mapping[Any, Any]]:
+def find_one_latest(collection: Collection) -> Optional[Mapping[Any, Any]]:
     """Returns newest/latest object, stripped of the object id, or None if no
     object exists: collection.
     """
-
     try:
         return collection.find(
             {},
@@ -21,10 +20,9 @@ def find_one_latest(collection: collection) -> Optional[Mapping[Any, Any]]:
         return None
 
 
-def find_id_latest(collection: collection) -> Optional[ObjectId]:
+def find_id_latest(collection: Collection) -> Optional[ObjectId]:
     """Returns object id of newest/latest object, or None if no object exists.
     """
-
     try:
         return collection.find().sort([('_id', -1)]).limit(1).next()['_id']
     except StopIteration:
@@ -32,12 +30,11 @@ def find_id_latest(collection: collection) -> Optional[ObjectId]:
 
 
 def update_run_state(
-    collection: collection,
+    collection: Collection,
     task_id: str,
     state: str = 'UNKNOWN'
 ) -> Optional[Mapping[Any, Any]]:
     """Updates state of workflow run and returns document."""
-
     return collection.find_one_and_update(
         {'task_id': task_id},
         {'$set': {'api.state': state}},
@@ -46,7 +43,7 @@ def update_run_state(
 
 
 def upsert_fields_in_root_object(
-    collection: collection,
+    collection: Collection,
     task_id: str,
     root: str,
     **kwargs
@@ -54,7 +51,6 @@ def upsert_fields_in_root_object(
     """Inserts (or updates) fields in(to) the same root (object) field and
     returns document.
     """
-
     return collection.find_one_and_update(
         {'task_id': task_id},
         {'$set': {
@@ -66,13 +62,12 @@ def upsert_fields_in_root_object(
 
 
 def update_tes_task_state(
-    collection: collection,
+    collection: Collection,
     task_id: str,
     tes_id: str,
     state: str
 ) -> Optional[Mapping[Any, Any]]:
     """Updates `state` field in TES task log and returns updated document."""
-
     return collection.find_one_and_update(
         {'task_id': task_id, 'api.task_logs': {'$elemMatch': {'id': tes_id}}},
         {'$set': {'api.task_logs.$.state': state}},
@@ -81,12 +76,11 @@ def update_tes_task_state(
 
 
 def append_to_tes_task_logs(
-    collection: collection,
+    collection: Collection,
     task_id: str,
     tes_log: str
 ) -> Optional[Mapping[Any, Any]]:
     """Appends task log to TES task logs and returns updated document."""
-
     return collection.find_one_and_update(
         {'task_id': task_id},
         {'$push': {'api.task_logs': tes_log}},

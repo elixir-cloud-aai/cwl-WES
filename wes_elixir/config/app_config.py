@@ -23,7 +23,6 @@ def parse_app_config(
     )
 ) -> YAMLConfigParser:
     """Parses configuration files and adds configuration to Connexion app."""
-
     # Create parser instance
     config = YAMLConfigParser()
 

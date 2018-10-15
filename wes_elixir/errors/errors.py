@@ -20,7 +20,6 @@ logger = logging.getLogger(__name__)
 
 def register_error_handlers(app: App) -> App:
     """Adds custom handlers for exceptions to Connexion app instance."""
-
     # Add error handlers
     app.add_error_handler(BadRequest, handle_bad_request)
     app.add_error_handler(ExtraParameterProblem, handle_bad_request)

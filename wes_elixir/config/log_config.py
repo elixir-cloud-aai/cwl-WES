@@ -25,7 +25,6 @@ def configure_logging(
     fallback_level: int = logging.DEBUG
 ) -> None:
     """Configures base logger."""
-
     # Create parser instance
     config = YAMLConfigParser()
 

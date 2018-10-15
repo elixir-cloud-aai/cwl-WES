@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 def create_celery_app(app: Flask) -> Celery:
     """Creates Celery application and configures it from Flask app."""
-
     broker = get_conf(app.config, 'celery', 'broker_url')
     backend = get_conf(app.config, 'celery', 'result_backend')
     include = get_conf_type(app.config, 'celery', 'include', types=(list))

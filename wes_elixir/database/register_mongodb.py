@@ -15,7 +15,6 @@ logger = logging.getLogger(__name__)
 
 def register_mongodb(app: Flask) -> Flask:
     """Instantiates database and initializes collections."""
-
     config = app.config
 
     # Initialize PyMongo instance

@@ -7,11 +7,13 @@ import re
 import shutil
 import subprocess
 
-from celery import uuid
+from celery import (Celery, uuid)
 from json import (decoder, loads)
 from pymongo.errors import DuplicateKeyError
 from random import choice
+from typing import Dict
 from yaml import dump
+from werkzeug.datastructures import ImmutableMultiDict
 
 from wes_elixir.config.config_parser import get_conf
 from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
@@ -23,9 +25,14 @@ logger = logging.getLogger(__name__)
 
 
 # Utility function for endpoint POST /runs/<run_id>/delete
-def cancel_run(config, celery_app, run_id, *args, **kwargs):
+def cancel_run(
+    config: Dict,
+    celery_app: Celery,
+    run_id: str,
+    *args,
+    **kwargs
+) -> Dict:
     """Cancels running workflow."""
-
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
     document = collection_runs.find_one(
         filter={'run_id': run_id},
@@ -85,9 +92,13 @@ def cancel_run(config, celery_app, run_id, *args, **kwargs):
 
 
 # Utility function for endpoint GET /runs/<run_id>
-def get_run_log(config, run_id, *args, **kwargs):
+def get_run_log(
+    config: Dict,
+    run_id: str,
+    *args,
+    **kwargs
+) -> Dict:
     """Gets detailed log information for specific run."""
-
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
     document = collection_runs.find_one(
         filter={'run_id': run_id},
@@ -123,9 +134,13 @@ def get_run_log(config, run_id, *args, **kwargs):
 
 
 # Utility function for endpoint GET /runs/<run_id>/status
-def get_run_status(config, run_id, *args, **kwargs):
+def get_run_status(
+    config: Dict,
+    run_id: str,
+    *args,
+    **kwargs
+) -> Dict:
     """Gets status information for specific run."""
-
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
     document = collection_runs.find_one(
         filter={'run_id': run_id},
@@ -165,9 +180,12 @@ def get_run_status(config, run_id, *args, **kwargs):
 
 
 # Utility function for endpoint GET /runs
-def list_runs(config, *args, **kwargs):
+def list_runs(
+    config: Dict,
+    *args,
+    **kwargs
+) -> Dict:
     """Lists IDs and status for all workflow runs."""
-
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
 
     # TODO: stable ordering (newest last?)
@@ -211,14 +229,20 @@ def list_runs(config, *args, **kwargs):
 
 
 # Utility function for endpoint POST /runs
-def run_workflow(config, form_data, *args, **kwargs):
+def run_workflow(
+    config: Dict,
+    form_data: ImmutableMultiDict,
+    *args,
+    **kwargs
+) -> Dict:
     """Executes workflow and save info to database; returns unique run id."""
-
     # Validate data and prepare run environment
-    form_data = __immutable_multi_dict_to_nested_dict(multi_dict=form_data)
-    __validate_run_workflow_request(data=form_data)
-    __check_service_info_compatibility(data=form_data)
-    document = __init_run_document(data=form_data)
+    form_data_dict = __immutable_multi_dict_to_nested_dict(
+        multi_dict=form_data
+    )
+    __validate_run_workflow_request(data=form_data_dict)
+    __check_service_info_compatibility(data=form_data_dict)
+    document = __init_run_document(data=form_data_dict)
     document = __create_run_environment(
         config=config,
         document=document,
@@ -236,30 +260,24 @@ def run_workflow(config, form_data, *args, **kwargs):
     return response
 
 
-def __immutable_multi_dict_to_nested_dict(multi_dict):
+def __immutable_multi_dict_to_nested_dict(
+    multi_dict: ImmutableMultiDict
+) -> Dict:
     """Converts ImmutableMultiDict to nested dictionary."""
-
-    # Convert ImmutableMultiDict to flat dictionary
+    # Convert to flat dictionary
     nested_dict = multi_dict.to_dict(flat=True)
-
-    # Iterate over key in dictionary
     for key in nested_dict:
-
         # Try to decode JSON string; ignore JSONDecodeErrors
         try:
             nested_dict[key] = loads(nested_dict[key])
-
         except decoder.JSONDecodeError:
             pass
-
-    # Return formatted request dictionary
     return nested_dict
 
 
-def __validate_run_workflow_request(data):
+def __validate_run_workflow_request(data: Dict) -> None:
     """Validates presence and types of workflow run request form data; sets
     defaults for optional fields."""
-
     # The form data is not validated properly because all types except
     # 'workflow_attachment' are string and none are labeled as required
     # Considering the 'RunRequest' model in the current specs (0.3.0), the
@@ -322,40 +340,35 @@ def __validate_run_workflow_request(data):
         logger.error('POST request does not conform to schema.')
         raise BadRequest
 
-    # Nothing to return
     return None
 
 
-def __check_service_info_compatibility(data):
+def __check_service_info_compatibility(data: Dict) -> None:
     """Checks compatibility with service info; raises BadRequest."""
     # TODO: implement me
     return None
 
 
-def __init_run_document(data):
+def __init_run_document(data: Dict) -> Dict:
     """Initializes workflow run document."""
-
-    # Initialize document
-    document = dict()
+    document: Dict = dict()
     document['api'] = dict()
     document['internal'] = dict()
-
-    # Add required keys
     document['api']['request'] = data
     document['api']['state'] = 'UNKNOWN'
     document['api']['run_log'] = dict()
     document['api']['task_logs'] = list()
     document['api']['outputs'] = dict()
-
-    # Return run document
     return document
 
 
-def __create_run_environment(config, document, **kwargs):
+def __create_run_environment(
+    config: Dict,
+    document: Dict,
+    **kwargs
+) -> Dict:
     """Creates unique run identifier and permanent and temporary storage
     directories for current run."""
-
-    # Re-assign config values
     collection_runs = get_conf(config, 'database', 'collections', 'runs')
     out_dir = get_conf(config, 'storage', 'permanent_dir')
     tmp_dir = get_conf(config, 'storage', 'tmp_dir')
@@ -426,20 +439,19 @@ def __create_run_environment(config, document, **kwargs):
         # Exit loop
         break
 
-    # Return updated document
     return document
 
 
-def __create_run_id(charset, length):
+def __create_run_id(
+    charset: str = '0123456789',
+    length: int = 6
+) -> str:
     """Creates random run ID."""
-
-    # Return run id
     return ''.join(choice(charset) for __ in range(length))
 
 
-def __process_workflow_attachments(data):
+def __process_workflow_attachments(data: Dict) -> Dict:
     """Processes workflow attachments."""
-
     # TODO: implement properly
     # Current workaround until processing of workflow attachments is
     # implemented
@@ -628,9 +640,12 @@ def __process_workflow_attachments(data):
     return data
 
 
-def __run_workflow(config, document, **kwargs):
+def __run_workflow(
+    config: Dict,
+    document: Dict,
+    **kwargs
+) -> None:
     """Helper function `run_workflow()`."""
-
     tes_url = get_conf(config, 'tes', 'url')
     remote_storage_url = get_conf(config, 'storage', 'remote_storage_url')
     run_id = document['run_id']
@@ -695,5 +710,4 @@ def __run_workflow(config, document, **kwargs):
         },
         task_id=task_id
     )
-
     return None

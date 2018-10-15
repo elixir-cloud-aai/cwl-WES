@@ -5,7 +5,7 @@ from datetime import datetime
 import logging
 from typing import (Any, Dict, Mapping)
 
-from pymongo import collection
+from pymongo import collection as Collection
 
 import wes_elixir.database.db_utils as db_utils
 
@@ -23,8 +23,6 @@ def get_service_info(
 ):
     """Returns readily formatted service info or `None` (in silent mode);
     creates service info database document if it does not exist."""
-
-    # Re-assign config values
     collection_service_info = config['database']['collections']['service_info']
     collection_runs = config['database']['collections']['runs']
     service_info = deepcopy(config['service_info'])
@@ -53,14 +51,11 @@ def get_service_info(
         service_info['tags']['last_service_info_update'] = _id.generation_time
     service_info['tags']['current_time'] = datetime.utcnow().isoformat()
 
-    # Return service info
     return service_info
 
 
-def __get_system_state_counts(collection: collection) -> Dict[str, int]:
+def __get_system_state_counts(collection: Collection) -> Dict[str, int]:
     """Gets current system state counts."""
-
-    # Iterate through list
     current_counts = __init_system_state_counts()
 
     # Query database for workflow run states
@@ -72,21 +67,17 @@ def __get_system_state_counts(collection: collection) -> Dict[str, int]:
         }
     )
 
-    # Iterate over states
+    # Iterate over states and increase counter
     for record in cursor:
-
-        # Increase counter for state of current record
         current_counts[record['api']['state']] += 1
 
-    # Return counts
     return current_counts
 
 
 def __init_system_state_counts() -> Dict[str, int]:
     """Initializes system state counts."""
-
-    # Set all state counts to zero
     # TODO: Get states programmatically or define as enum
+    # Set all state counts to zero
     return {
         'UNKNOWN': 0,
         'QUEUED': 0,

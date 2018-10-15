@@ -56,7 +56,6 @@ class YAMLConfigParser(Dict):
             FileNotFoundError: Any of the files were not found.
             PermissionError: Any of the files were not accessible.
         """
-
         # Get ordered list of file paths
         paths = config_paths + [os.environ.get(var) for var in config_vars]
         paths = list(filter(None, paths))
@@ -105,7 +104,6 @@ def get_conf_type(
                    `True`); only raised if `touchy` is `False`.
         SystemExit: Raised if any exception occurs and `touchy` is `True`.
     """
-
     # Get value for list of keys
     keys = list(args)
     try:
@@ -177,7 +175,6 @@ def get_conf(
 
     See signature for `get_conf_type()` for info on arguments and errors.
     """
-
     return get_conf_type(
         config,
         *args,

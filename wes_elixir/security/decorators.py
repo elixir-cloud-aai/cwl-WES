@@ -20,7 +20,6 @@ def auth_token_optional(fn: Callable) -> Callable:
     """The decorator protects an endpoint from being called without a valid
     authorization token.
     """
-
     @wraps(fn)
     def wrapper(*args, **kwargs):
 
@@ -110,7 +109,6 @@ def parse_jwt_from_header(
 ) -> Mapping:
     """Parses authorization token from HTTP header."""
     # TODO: Add custom errors
-
     # Ensure that authorization header is present
     auth_header = request.headers.get(header_name, None)
     if not auth_header:
@@ -153,7 +151,6 @@ def validate_claims(
     required_claims: Iterable[str] = []
 ):
     """Validates token claims."""
-
     # Check for existence of required claims
     for claim in required_claims:
         if claim not in token_data:

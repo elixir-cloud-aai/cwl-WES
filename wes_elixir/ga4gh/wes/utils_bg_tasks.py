@@ -20,7 +20,6 @@ def task__run_workflow(
     tmp_dir: str
 ) -> Tuple[int, List[str], List[str]]:
     """Adds workflow run to task queue."""
-
     # Execute task in background
     proc = subprocess.Popen(
         command_list,
@@ -44,7 +43,6 @@ def __process_cwl_logs(
 ) -> Tuple[List, List]:
     """Parses combinend cwl-tes STDOUT/STDERR and sends TES task IDs and state
     updates to broker."""
-
     stream_container: List = list()
     tes_states: Dict = dict()
 
@@ -90,7 +88,6 @@ def __process_cwl_logs(
 
 def __handle_cwl_tes_log_irregularities(line: str) -> List[str]:
     """Handles irregularities arising from log parsing."""
-
     lines: List = list()
 
     # Handle special case where FTP and cwl-tes logs are on same line
@@ -108,7 +105,6 @@ def __extract_tes_task_state_from_cwl_tes_log(
     line: str
 ) -> Tuple[Optional[str], Optional[str]]:
     """Extracts task ID and state from cwl-tes log."""
-
     task_id: Optional[str] = None
     task_state: Optional[str] = None
 
@@ -136,7 +132,6 @@ def __send_event_tes_task_update(
     tes_state: Optional[str] = None
 ) -> None:
     """Sends custom event to inform about TES task state change."""
-
     task.send_event(
         'task-tes-task-update',
         tes_id=tes_id,

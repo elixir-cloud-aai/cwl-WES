@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 
 def create_connexion_app(config: Optional[Mapping] = None) -> App:
     """Creates and configure Connexion app."""
-
     # Instantiate Connexion app
     app = App(__name__)
     logger.info("Connexion app created from '{calling_module}'.".format(
@@ -52,7 +51,6 @@ def __add_config_to_connexion_app(
 ) -> App:
     """Adds configuration to Flask app and replaces default Connexion and Flask
     settings."""
-
     # Replace Connexion app settings
     app.host = get_conf(config, 'server', 'host')
     app.port = get_conf(config, 'server', 'port')
@@ -71,8 +69,5 @@ def __add_config_to_connexion_app(
     # Add user configuration to Flask app config
     app.app.config.update(config)
 
-    # Log info message
     logger.info('Connexion app configured.')
-
-    # Return Connexion app instance
     return app
