@@ -6,7 +6,7 @@ from flask import Flask
 from flask_pymongo import ASCENDING, PyMongo
 
 from wes_elixir.config.config_parser import get_conf
-from wes_elixir.ga4gh.wes.utils_service_info import get_service_info
+from wes_elixir.ga4gh.wes.endpoints.get_service_info import get_service_info
 
 
 # Get logger instance
