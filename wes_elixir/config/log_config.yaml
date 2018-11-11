@@ -11,7 +11,7 @@ formatters:
     long:
         class: logging.Formatter
         style: "{"
-        format: "[{asctime}: {levelname:<8} {name:<40}] {message}"
+        format: "[{asctime}: {levelname:<8}] {message} [{name}]"
 
     # OTHER FORMATS
         #format: "{message}"

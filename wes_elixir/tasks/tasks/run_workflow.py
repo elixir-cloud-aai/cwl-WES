@@ -1,4 +1,4 @@
-"""Functions to be executed in background and related utility functions."""
+"""Celery background task to start workflow run."""
 
 from _io import TextIOWrapper
 import logging
@@ -13,7 +13,12 @@ from wes_elixir.celery_worker import celery
 logger = logging.getLogger(__name__)
 
 
-@celery.task(bind=True, track_started=True)
+@celery.task(
+    name='tasks.run_workflow',
+    bind=True,
+    ignore_result=True,
+    track_started=True
+)
 def task__run_workflow(
     self,
     command_list: List,
@@ -28,7 +33,6 @@ def task__run_workflow(
         stderr=subprocess.STDOUT,
         universal_newlines=True,
     )
-
     # Parse output in real-time
     log, tes_ids = __process_cwl_logs(self, stream=proc.stdout)
 
@@ -119,7 +123,7 @@ def __extract_tes_task_state_from_cwl_tes_log(
 
     # Extract task ID and state
     re_task_state_poll = re.compile(
-        r"^\[job \w*\] POLLING '(\S*)', result: (\w*)"
+        r'^\[job \w*\] POLLING "(\S*)", result: (\w*)'
     )
     m = re_task_state_poll.match(line)
     if m:

@@ -1,6 +1,6 @@
 """Utility functions for MongoDB document insertion, updates and retrieval."""
 
-from typing import (Any, Mapping, Optional)
+from typing import (Any, List, Mapping, Optional)
 
 from bson.objectid import ObjectId
 from pymongo.collection import ReturnDocument
@@ -86,3 +86,11 @@ def append_to_tes_task_logs(
         {'$push': {'api.task_logs': tes_log}},
         return_document=ReturnDocument.AFTER
     )
+
+
+def find_tes_task_ids(
+    collection: Collection,
+    run_id: str
+) -> List:
+    """Get list of TES task ids associated with a run of interest."""
+    return collection.distinct('api.task_logs.id', {'run_id': run_id})

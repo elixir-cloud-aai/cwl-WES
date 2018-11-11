@@ -1,14 +1,14 @@
-"""Utility functions for /runs endpoints."""
+"""Utility functions for POST /runs endpoint."""
 
-from connexion.exceptions import Forbidden
 import logging
 import os
 import re
 import shutil
+import string  # noqa: F401
 import subprocess
 import string  # noqa: F401
 
-from celery import (Celery, uuid)
+from celery import uuid
 from json import (decoder, loads)
 from pymongo.errors import DuplicateKeyError
 from random import choice
@@ -17,216 +17,12 @@ from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 
 from wes_elixir.config.config_parser import get_conf
-from wes_elixir.errors.errors import (BadRequest, WorkflowNotFound)
-from wes_elixir.ga4gh.wes.utils_bg_tasks import task__run_workflow
+from wes_elixir.errors.errors import BadRequest
+from wes_elixir.tasks.tasks.run_workflow import task__run_workflow
 
 
 # Get logger instance
 logger = logging.getLogger(__name__)
-
-
-# Utility function for endpoint POST /runs/<run_id>/delete
-def cancel_run(
-    config: Dict,
-    celery_app: Celery,
-    run_id: str,
-    *args,
-    **kwargs
-) -> Dict:
-    """Cancels running workflow."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
-    document = collection_runs.find_one(
-        filter={'run_id': run_id},
-        projection={
-            'user_id': True,
-            'task_id': True,
-            '_id': False,
-        }
-    )
-
-    # Raise error if workflow run was not found or has no task ID
-    if document:
-        task_id = document['task_id']
-    else:
-        logger.error("Run '{run_id}' not found.".format(run_id=run_id))
-        raise WorkflowNotFound
-
-    # Raise error trying to access workflow run that is not owned by user
-    # Only if authorization enabled
-    if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
-        logger.error(
-            (
-                "User '{user_id}' is not allowed to access workflow run "
-                "'{run_id}'."
-            ).format(
-                user_id=kwargs['user_id'],
-                run_id=run_id,
-            )
-        )
-        raise Forbidden
-
-    # Cancel workflow run
-    try:
-        # TODO: Implement this better; terminate=True should be last resort
-        # TODO: See here:
-        # https://stackoverflow.com/questions/8920643/cancel-an-already-executing-task-with-celery
-        celery_app.control.revoke(task_id, terminate=True, signal='SIGHUP')
-
-    # Raise error if workflow run was not found
-    except Exception as e:
-        logger.error(
-            (
-                "Failed to revoked task '{task_id}' for run '{run_id}'. "
-                'Possibly the workflow is not running anymore. Original '
-                'error message: {type}: {msg}'
-            ).format(
-                task_id=task_id,
-                run_id=run_id,
-                type=type(e).__name__,
-                msg=e,
-            )
-        )
-        raise WorkflowNotFound
-
-    response = {'run_id': run_id}
-    return response
-
-
-# Utility function for endpoint GET /runs/<run_id>
-def get_run_log(
-    config: Dict,
-    run_id: str,
-    *args,
-    **kwargs
-) -> Dict:
-    """Gets detailed log information for specific run."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
-    document = collection_runs.find_one(
-        filter={'run_id': run_id},
-        projection={
-            'user_id': True,
-            'api': True,
-            '_id': False,
-        }
-    )
-
-    # Raise error if workflow run was not found or has no task ID
-    if document:
-        run_log = document['api']
-    else:
-        logger.error("Run '{run_id}' not found.".format(run_id=run_id))
-        raise WorkflowNotFound
-
-    # Raise error trying to access workflow run that is not owned by user
-    # Only if authorization enabled
-    if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
-        logger.error(
-            (
-                "User '{user_id}' is not allowed to access workflow run "
-                "'{run_id}'."
-            ).format(
-                user_id=kwargs['user_id'],
-                run_id=run_id,
-            )
-        )
-        raise Forbidden
-
-    return run_log
-
-
-# Utility function for endpoint GET /runs/<run_id>/status
-def get_run_status(
-    config: Dict,
-    run_id: str,
-    *args,
-    **kwargs
-) -> Dict:
-    """Gets status information for specific run."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
-    document = collection_runs.find_one(
-        filter={'run_id': run_id},
-        projection={
-            'user_id': True,
-            'api.state': True,
-            '_id': False,
-        }
-    )
-
-    # Raise error if workflow run was not found or has no task ID
-    if document:
-        state = document['api']['state']
-    else:
-        logger.error("Run '{run_id}' not found.".format(run_id=run_id))
-        raise WorkflowNotFound
-
-    # Raise error trying to access workflow run that is not owned by user
-    # Only if authorization enabled
-    if 'user_id' in kwargs and document['user_id'] != kwargs['user_id']:
-        logger.error(
-            (
-                "User '{user_id}' is not allowed to access workflow run "
-                "'{run_id}'."
-            ).format(
-                user_id=kwargs['user_id'],
-                run_id=run_id,
-            )
-        )
-        raise Forbidden
-
-    response = {
-        'run_id': run_id,
-        'state': state
-    }
-    return response
-
-
-# Utility function for endpoint GET /runs
-def list_runs(
-    config: Dict,
-    *args,
-    **kwargs
-) -> Dict:
-    """Lists IDs and status for all workflow runs."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
-
-    # TODO: stable ordering (newest last?)
-    # TODO: implement next page token
-
-    # Fall back to default page size if not provided by user
-    # TODO: uncomment when implementing pagination
-    # if 'page_size' in kwargs:
-    #     page_size = kwargs['page_size']
-    # else:
-    #     page_size = (
-    #         cnx_app.app.config
-    #         ['api']
-    #         ['endpoint_params']
-    #         ['default_page_size']
-    # )
-
-    # Query database for workflow runs
-    if 'user_id' in kwargs:
-        filter_dict = {'user_id': kwargs['user_id']}
-    else:
-        filter_dict = {}
-    cursor = collection_runs.find(
-        filter=filter_dict,
-        projection={
-            'run_id': True,
-            'state': True,
-            '_id': False,
-        }
-    )
-
-    runs_list = list()
-    for record in cursor:
-        runs_list.append(record)
-
-    response = {
-        'next_page_token': 'token',
-        'runs': runs_list
-    }
-    return response
 
 
 # Utility function for endpoint POST /runs
@@ -681,7 +477,7 @@ def __run_workflow(
 
     # TEST CASE FOR SYSTEM ERROR
     # command_list = [
-    #     '/path/to/non_existing/script'
+    #     '/path/to/non_existing/script',
     # ]
     # TEST CASE FOR EXECUTOR ERROR
     # command_list = [
@@ -692,6 +488,14 @@ def __run_workflow(
     #     'sleep',
     #     '30',
     # ]
+
+    # Get timeout duration
+    timeout_duration = get_conf(
+        config,
+        'api',
+        'endpoint_params',
+        'timeout_run_workflow',
+    )
 
     # Execute command as background task
     logger.info(
@@ -705,10 +509,12 @@ def __run_workflow(
         )
     )
     task__run_workflow.apply_async(
-        None, {
+        None,
+        {
             'command_list': command_list,
-            'tmp_dir': tmp_dir
+            'tmp_dir': tmp_dir,
         },
-        task_id=task_id
+        task_id=task_id,
+        soft_time_limit=timeout_duration,
     )
     return None

@@ -4,7 +4,7 @@ app instance."""
 import logging
 import os
 from shutil import copyfile
-from typing import List
+from typing import (List, Dict)
 
 from connexion import App
 
@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 
 def register_openapi(
     app: App,
-    specs: List[str] = [],
+    specs: List[Dict] = [],
     add_security_definitions: bool = True
 ) -> App:
     """Registers OpenAPI specs with Connexion app."""

@@ -8,6 +8,7 @@ from typing import (Any, Dict, Mapping)
 from pymongo import collection as Collection
 
 import wes_elixir.database.db_utils as db_utils
+from wes_elixir.ga4gh.wes.states import States
 
 
 # Get logger instance
@@ -78,15 +79,4 @@ def __init_system_state_counts() -> Dict[str, int]:
     """Initializes system state counts."""
     # TODO: Get states programmatically or define as enum
     # Set all state counts to zero
-    return {
-        'UNKNOWN': 0,
-        'QUEUED': 0,
-        'INITIALIZING': 0,
-        'RUNNING': 0,
-        'PAUSED': 0,
-        'COMPLETE': 0,
-        'EXECUTOR_ERROR': 0,
-        'SYSTEM_ERROR': 0,
-        'CANCELED': 0,
-        'CANCELING': 0,
-    }
+    return {state: 0 for state in States.ALL}
