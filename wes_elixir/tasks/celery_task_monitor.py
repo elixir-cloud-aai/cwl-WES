@@ -64,14 +64,12 @@ class TaskMonitor():
                     listener: EventReceiver = self.celery_app.events.Receiver(
                         connection,
                         handlers={
-                            'task-failed':
-                                self.on_task_failed,
                             'task-received':
                                 self.on_task_received,
-                            'task-revoked':
-                                self.on_task_revoked,
                             'task-started':
                                 self.on_task_started,
+                            'task-failed':
+                                self.on_task_failed,
                             'task-succeeded':
                                 self.on_task_succeeded,
                             'task-tes-task-update':
@@ -95,60 +93,39 @@ class TaskMonitor():
             except Exception as e:
                 logger.exception(
                     (
-                        'Unknown error in task monitor occurred. Execution '
-                        'aborted. Original error message: {type}: {msg}'
+                        'Unknown error in task monitor occurred. Original '
+                        'error message: {type}: {msg}'
                     ).format(
                         type=type(e).__name__,
                         msg=e,
                     )
                 )
-                raise SystemExit
+                pass
 
             # Sleep for specified interval
             sleep(self.timeout)
-
-    def on_task_failed(
-        self,
-        event: Event
-    ) -> None:
-        """Event handler for failed (system error) Celery tasks."""
-        # Create dictionary for internal parameters
-        internal = dict()
-        internal['task_finished'] = datetime.utcfromtimestamp(
-            event['timestamp']
-        )
-        internal['traceback'] = event['traceback']
-
-        # Update run document in databse
-        self.update_run_document(
-            event=event,
-            state='SYSTEM_ERROR',
-            internal=internal,
-            task_finished=datetime.utcfromtimestamp(
-                event['timestamp']
-            ).strftime(strf),
-            exception=event['exception'],
-        )
 
     def on_task_received(
         self,
         event: Event
     ) -> None:
         """Event handler for received Celery tasks."""
+        if not event['name'] == 'tasks.run_workflow':
+            return None
         # Parse subprocess inputs
         try:
             kwargs = literal_eval(event['kwargs'])
         except Exception as e:
             logger.exception(
                 (
-                    "Field 'kwargs' in event message malformed. Execution "
-                    'aborted. Original error message: {type}: {msg}'
+                    "Field 'kwargs' in event message malformed. Original "
+                    'error message: {type}: {msg}'
                 ).format(
                     type=type(e).__name__,
                     msg=e,
                 )
             )
-            raise SystemExit
+            pass
 
         # Build command
         if 'command_list' in kwargs:
@@ -166,7 +143,7 @@ class TaskMonitor():
         internal['task_received'] = datetime.utcfromtimestamp(
             event['timestamp']
         )
-        internal['process_id'] = event['pid']
+        internal['process_id_worker'] = event['pid']
         internal['host'] = event['hostname']
 
         # Update run document in database
@@ -194,56 +171,18 @@ class TaskMonitor():
                     msg=e,
                 )
             )
-            pass
-
-    def on_task_revoked(
-        self,
-        event: Event
-    ) -> None:
-        """Event handler for revoked Celery tasks."""
-        # Create dictionary for internal parameters
-        internal = dict()
-        internal['task_finished'] = datetime.utcfromtimestamp(
-            event['timestamp']
-        )
-        internal['signal_number'] = event['signum']
-        internal['terminated'] = event['terminated']
-
-        # Update run document in database
-        try:
-            self.update_run_document(
-                event=event,
-                state='CANCELED',
-                internal=internal,
-                task_finished=datetime.utcfromtimestamp(
-                    event['timestamp']
-                ).strftime(strf),
-                expired=event['expired'],
-            )
-        except Exception as e:
-            logger.exception(
-                (
-                    'Database error. Could not update log information for '
-                    "task '{task}'. Original error message: {type}: {msg}"
-                ).format(
-                    task=event['uuid'],
-                    type=type(e).__name__,
-                    msg=e,
-                )
-            )
-            pass
 
     def on_task_started(
         self,
         event: Event
     ) -> None:
         """Event handler for started Celery tasks."""
-        # Create dictionary for internal parameters
+        if not self.collection.find_one({'task_id': event['uuid']}):
+            return None
         internal = dict()
         internal['task_started'] = datetime.utcfromtimestamp(
             event['timestamp']
         )
-
         # Update run document in database
         try:
             self.update_run_document(
@@ -265,14 +204,40 @@ class TaskMonitor():
                     msg=e,
                 )
             )
-            pass
+
+    def on_task_failed(
+        self,
+        event: Event
+    ) -> None:
+        """Event handler for failed (system error) Celery tasks."""
+        if not self.collection.find_one({'task_id': event['uuid']}):
+            return None
+        # Create dictionary for internal parameters
+        internal = dict()
+        internal['task_finished'] = datetime.utcfromtimestamp(
+            event['timestamp']
+        )
+        internal['traceback'] = event['traceback']
+
+        # Update run document in databse
+        self.update_run_document(
+            event=event,
+            state='SYSTEM_ERROR',
+            internal=internal,
+            task_finished=datetime.utcfromtimestamp(
+                event['timestamp']
+            ).strftime(strf),
+            exception=event['exception'],
+        )
 
     def on_task_succeeded(
         self,
         event: Event
     ) -> None:
-        """Event handler for successful and failed (`EXECUTOR_ERROR`) Celery
+        """Event handler for successful, failed and canceled Celery
         tasks."""
+        if not self.collection.find_one({'task_id': event['uuid']}):
+            return None
         # Parse subprocess results
         try:
             (returncode, log, tes_ids) = literal_eval(event['result'])
@@ -280,14 +245,14 @@ class TaskMonitor():
         except Exception as e:
             logger.exception(
                 (
-                    "Field 'result' in event message malformed. Execution "
-                    'aborted. Original error message: {type}: {msg}'
+                    "Field 'result' in event message malformed. Original "
+                    'error message: {type}: {msg}'
                 ).format(
                     type=type(e).__name__,
                     msg=e,
                 )
             )
-            raise SystemExit
+            pass
 
         # Create dictionary for internal parameters
         internal = dict()
@@ -295,16 +260,22 @@ class TaskMonitor():
             event['timestamp']
         )
 
-        # Set state depending on return code
-        if returncode:
+        # Set final state to be set
+        document = self.collection.find_one(
+            filter={'task_id': event['uuid']},
+            projection={
+                'api.state': True,
+                '_id': False,
+            }
+        )
+        if document and document['api']['state'] == 'CANCELING':
+            state = 'CANCELED'
+        elif returncode:
             state = 'EXECUTOR_ERROR'
         else:
             state = 'COMPLETE'
 
         # Extract run outputs
-        import pickle
-        with open('/home/kanitz/log.pkl', 'wb') as output:
-            pickle.dump(log, output, pickle.HIGHEST_PROTOCOL)
         outputs = self.__cwl_tes_outputs_parser(log)
 
         # Get task logs
@@ -373,6 +344,16 @@ class TaskMonitor():
                     task_id=event['uuid'],
                     tes_id=event['tes_id'],
                     state=event['tes_state'],
+                )
+                logger.info(
+                    (
+                        "State of TES task '{tes_id}' of run with task ID "
+                        "'{task_id}' changed to '{state}'."
+                    ).format(
+                        task_id=event['uuid'],
+                        tes_id=event['tes_id'],
+                        state=event['tes_state'],
+                    )
                 )
             except Exception as e:
                 logger.exception(

@@ -198,7 +198,7 @@ Install app
 python setup.py develop
 ```
 
-Optionally, override default config by setting environment variable and pointing it to a YAML config 
+Optionally, override default config by setting environment variable and pointing it to a YAML config
 file. Ensure the file is accessible.
 
 ```bash
