@@ -36,8 +36,6 @@ def cancel_run(
         }
     )
 
-    # Set workflow state to CANCELING if in cancelable state
-    # Else do nothing
     # Raise error if workflow run was not found
     if not document:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
