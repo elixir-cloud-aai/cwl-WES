@@ -1,13 +1,14 @@
 """Utility functions for POST /runs/{run_id}/cancel endpoints."""
 
-from connexion.exceptions import Forbidden
 import logging
-
-from celery import Celery
 from typing import Dict
+
+from celery import (Celery, uuid)
+from connexion.exceptions import Forbidden
 
 from wes_elixir.config.config_parser import get_conf
 from wes_elixir.errors.errors import WorkflowNotFound
+from wes_elixir.ga4gh.wes.states import States
 from wes_elixir.tasks.tasks.cancel_run import task__cancel_run
 
 
@@ -30,14 +31,15 @@ def cancel_run(
         projection={
             'user_id': True,
             'task_id': True,
+            'api.state': True,
             '_id': False,
         }
     )
 
-    # Raise error if workflow run was not found or has no task ID
-    if document:
-        task_id = document['task_id']
-    else:
+    # Set workflow state to CANCELING if in cancelable state
+    # Else do nothing
+    # Raise error if workflow run was not found
+    if not document:
         logger.error("Run '{run_id}' not found.".format(run_id=run_id))
         raise WorkflowNotFound
 
@@ -55,30 +57,37 @@ def cancel_run(
         )
         raise Forbidden
 
-    # Cancel workflow run
-    try:
-        # TODO: Work on this!!!
-        # TODO: Implement this better; terminate=True should be last resort
-        # TODO: See here:
-        # https://stackoverflow.com/questions/8920643/cancel-an-already-executing-task-with-celery
-        celery_app.control.revoke(task_id, terminate=True, signal='SIGHUP')
-        task__cancel_run.apply_async()
+    # Cancel unfinished workflow run in background
+    if document['api']['state'] in States.CANCELABLE:
 
-    # Raise error if workflow run was not found
-    except Exception as e:
-        logger.error(
+        # Get timeout duration
+        timeout_duration = get_conf(
+            config,
+            'api',
+            'endpoint_params',
+            'timeout_cancel_run',
+        )
+
+        # Execute cancelation task in background
+        task_id = uuid()
+        logger.info(
             (
-                "Failed to revoked task '{task_id}' for run '{run_id}'. "
-                'Possibly the workflow is not running anymore. Original '
-                'error message: {type}: {msg}'
+                "Canceling run '{run_id}' as background task "
+                "'{task_id}'..."
             ).format(
-                task_id=task_id,
                 run_id=run_id,
-                type=type(e).__name__,
-                msg=e,
+                task_id=task_id,
             )
         )
-        raise WorkflowNotFound
+        task__cancel_run.apply_async(
+            None,
+            {
+                'run_id': run_id,
+                'task_id': document['task_id'],
+            },
+            task_id=task_id,
+            soft_time_limit=timeout_duration,
+        )
 
     response = {'run_id': run_id}
     return response

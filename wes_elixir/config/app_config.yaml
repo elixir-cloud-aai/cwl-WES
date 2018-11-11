@@ -63,6 +63,8 @@ api:
           swagger_json: True
     endpoint_params:
         default_page_size: 10
+        timeout_cancel_run: 60
+        timeout_run_workflow: Null
 
 # WES service info settings
 service_info:
@@ -90,6 +92,7 @@ service_info:
 # TES server
 tes:
     url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
+    timeout: 5
     get_logs:
         url_root: 'v1/tasks/'
         query_params: '?view=FULL'

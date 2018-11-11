@@ -1,6 +1,7 @@
 """Function for Registering MongoDB with a Flask app instance."""
 
 import logging
+from typing import Dict
 
 from flask import Flask
 from flask_pymongo import ASCENDING, PyMongo
@@ -17,21 +18,10 @@ def register_mongodb(app: Flask) -> Flask:
     """Instantiates database and initializes collections."""
     config = app.config
 
-    # Initialize PyMongo instance
-    uri = 'mongodb://{host}:{port}/{name}'.format(
-        host=get_conf(config, 'database', 'host'),
-        port=get_conf(config, 'database', 'port'),
-        name=get_conf(config, 'database', 'name'),
-    )
-    mongo = PyMongo(app, uri=uri)
-    logger.info(
-        (
-            "Registered database '{name}' at URI '{uri}' with Flask "
-            'application.'
-        ).format(
-            name=get_conf(config, 'database', 'name'),
-            uri=uri,
-        )
+    # Instantiante PyMongo client
+    mongo = create_mongo_client(
+        app=app,
+        config=config,
     )
 
     # Add database
@@ -64,3 +54,26 @@ def register_mongodb(app: Flask) -> Flask:
     get_service_info(config, silent=True)
 
     return app
+
+
+def create_mongo_client(
+    app: Flask,
+    config: Dict,
+):
+    """Instantiate MongoDB client."""
+    uri = 'mongodb://{host}:{port}/{name}'.format(
+        host=get_conf(config, 'database', 'host'),
+        port=get_conf(config, 'database', 'port'),
+        name=get_conf(config, 'database', 'name'),
+    )
+    mongo = PyMongo(app, uri=uri)
+    logger.info(
+        (
+            "Registered database '{name}' at URI '{uri}' with Flask "
+            'application.'
+        ).format(
+            name=get_conf(config, 'database', 'name'),
+            uri=uri,
+        )
+    )
+    return mongo

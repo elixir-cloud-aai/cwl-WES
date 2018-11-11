@@ -488,6 +488,14 @@ def __run_workflow(
     #     '30',
     # ]
 
+    # Get timeout duration
+    timeout_duration = get_conf(
+        config,
+        'api',
+        'endpoint_params',
+        'timeout_run_workflow',
+    )
+
     # Execute command as background task
     logger.info(
         (
@@ -500,10 +508,12 @@ def __run_workflow(
         )
     )
     task__run_workflow.apply_async(
-        None, {
+        None,
+        {
             'command_list': command_list,
-            'tmp_dir': tmp_dir
+            'tmp_dir': tmp_dir,
         },
-        task_id=task_id
+        task_id=task_id,
+        soft_time_limit=timeout_duration,
     )
     return None

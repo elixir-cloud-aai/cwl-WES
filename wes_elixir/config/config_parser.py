@@ -61,7 +61,6 @@ class YAMLConfigParser(Dict):
         paths = list(filter(None, paths))
         paths = [item.split(':') for item in paths]
         paths = list(chain.from_iterable(paths))
-        logger.warning('PATHS: {}'.format(paths))
 
         # Update dictionary
         for path in paths:
