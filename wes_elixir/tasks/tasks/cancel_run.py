@@ -41,14 +41,14 @@ def task__cancel_run(
             config=config,
         )
         collection = mongo.db['runs']
-        # Set run state to 'CANCEL(ING'
+        # Set run state to 'CANCELING'
         set_run_state(
             collection=collection,
             run_id=run_id,
             task_id=task_id,
             state='CANCELING',
         )
-        # Cancel individual TES ta(sks
+        # Cancel individual TES tasks
         __cancel_tes_tasks(
             collection=collection,
             run_id=run_id,
@@ -107,5 +107,5 @@ def __cancel_tes_tasks(
                 '_id': False,
             }
         )
-        if document['api']['state'] not in States.UNFINISHED:
+        if document['api']['state'] in States.FINISHED:
             break
