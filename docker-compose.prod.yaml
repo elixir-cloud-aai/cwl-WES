@@ -9,7 +9,7 @@ services:
     environment:
       - WES_CONFIG=/app/wes_elixir/config/override/app_config.prod.yaml
     ports:
-      - "80:80"
+      - "80:8080"
 
   rabbit:
     ports:
