@@ -21,7 +21,7 @@ services:
     restart: always
     links:
       - mongo
-    command: bash -c "cd /app/; python wes_elixir/app.py"
+    command: bash -c "cd /app/wes_elixir; gunicorn -c config.py -b 0.0.0.0:8080 'app:main()'"
     volumes:
       - ../data:/data
 

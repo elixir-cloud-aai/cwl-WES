@@ -67,3 +67,4 @@ urllib3==1.23
 vine==1.1.4
 Werkzeug==0.14.1
 wrapt==1.10.11
+gunicorn==19.9.0

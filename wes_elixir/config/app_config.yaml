@@ -1,7 +1,7 @@
 # General server/service settings
 server:
     host: '0.0.0.0'
-    port: 8888
+    port: 8080
     debug: True
     environment: development
     testing: False
@@ -44,7 +44,8 @@ storage:
 
 # Celery task queue
 celery:
-    broker_url: 'pyamqp://localhost:5672//'
+    broker_host: 'localhost'
+    broker_port: 5672
     result_backend: 'rpc://'
     include:
         - wes_elixir.tasks.tasks.run_workflow
