@@ -44,6 +44,10 @@ Hinxton, and WES-ELIXIR itself is being developed by ELIXIR Switzerland at the
 
 ## Installation
 
+### Kubernetes
+
+See instructions in [the deployment directory's README.md file](deployment/README.md).
+
 ### Docker
 
 #### Requirements (Docker)

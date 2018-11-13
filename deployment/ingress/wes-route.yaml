@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: Route
+metadata:
+  name: wes-route
+spec:
+  to:
+    kind: Service
+    name: wes-service
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge

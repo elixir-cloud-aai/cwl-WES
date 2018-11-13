@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: wes-service
+spec:
+  selector:
+    app: wes-flask
+  ports:
+  - port: 8080
+    targetPort: wes-port
