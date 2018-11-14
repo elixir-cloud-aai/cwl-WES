@@ -1,5 +1,5 @@
 ##### BASE IMAGE #####
-FROM ubuntu:16.04
+FROM python:slim-stretch
 
 ##### METADATA #####
 LABEL base.image="ubuntu:16.04"
@@ -17,22 +17,11 @@ LABEL maintainer.location="Klingelbergstrasse 50/70, CH-4056 Basel, Switzerland"
 LABEL maintainer.lab="Zavolan Lab"
 LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 
-## Install system resources & dependencies
-RUN apt-get update \
-  && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl nodejs
 
-## Install Python
-RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
-  && tar xJf Python-3.6.0.tar.xz \
-  && cd Python-3.6.0 \
-  && ./configure \
-  && make altinstall \
-  && ln -s /Python-3.6.0/python /usr/local/bin \
-  && cd .. \
-  && python -m pip install --upgrade pip setuptools wheel virtualenv
+RUN apt-get update && apt-get install -y nodejs openssl git build-essential python3-dev
 
 ## Copy app files
-COPY ./ /app
+ADD ./ /app
 
 ## Install dependencies
 RUN cd /app \
@@ -45,6 +34,3 @@ RUN cd /app \
   && cd /app/src/py-tes \
   && python setup.py develop \
   && cd /
-
-## Copy FTP server credentials
-COPY .netrc /root
