@@ -226,3 +226,4 @@ tests/tmp/*
 tests/output/*
 *.modified.yaml
 .netrc
+.idea/*

@@ -1,0 +1,18 @@
+sudo: required
+
+dist: xenial
+
+service:
+   - docker
+
+stages:
+  - build docker image
+
+
+jobs:
+  include:
+  - stage: build base docker image
+    script:
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - docker build -t weselixir/elixir-wes-app .
+      - docker push weselixir/elixir-wes-app
