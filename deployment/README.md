@@ -6,7 +6,7 @@ directory structure is as follows:
 - common: YAML files used in all Kubernetes clusters where this is deployed
   - mongodb: YAML for deploying MongoDB (TODO)
   - rabbitmq: YAML for deploying RabbitMQ (TODO)
-  - wes: YAML for deploying WES Flash server and WES Celery worker
+  - wes: YAML for deploying WES Flask server and WES Celery worker
 - ingress: cluster specific config for ingress (e.g. OpenShift Route or NGINX ingress)
 
 ## Usage
@@ -60,6 +60,35 @@ cd deployment/ingress
 oc create -f wes-route.yaml
 ```
 
+### Updates
+
+If you make changes to any of the Deployments, you can update them with
+`kubectl`. For example, this is how you would update the Celery worker Deployment:
+
+```bash
+kubectl replace -f wes-celery-deployment.yaml
+```
+
+The OpenShift specific objects need to be updated using the `oc` tool instead.
+Also, if you update the Route you must use the `--force` flag. This removes and
+recreates the Route.
+
+If you want to point to a different FTP server or change the login credentials
+for the current FTP server, you can update the netrc secret like so:
+
+```bash
+kubectl create secret generic netrc --from-file .netrc --dry-run -o yaml | kubectl apply -f -
+```
+
+If you want to update the configuration, you can update the ConfigMap or use a
+different ConfigMap with the same name. The Deployments expect to find the
+`app_config.yaml` ConfigMap with the name `wes-config`. You can update the
+ConfigMap like so:
+
+```bash
+kubectl replace -f wes-configmap.yaml
+```
+
 ## Technical details
 
 ### MongoDB
@@ -79,4 +108,5 @@ deployed using:
 - wes-celery-deployment.yaml
 
 These deployments depend on setting up a shared ReadWriteMany volume between
-Flask and Celery and a shared ConfigMap (`wes-configmap.yaml`).
+Flask and Celery (`wes-volume.yaml`) and a shared ConfigMap
+(`wes-configmap.yaml`).
