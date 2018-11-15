@@ -25,7 +25,7 @@ spec:
         image: weselixir/elixir-wes-app:rc1
         workingDir: '/app/wes_elixir'
         command: [ 'celery' ]
-        args: [ 'worker', '-A', 'celery_worker', '-E', '--loglevel=info' ]
+        args: [ 'worker', '-A', 'celery_worker', '-E', '--loglevel=info', '-c', '1', '-Q', 'celery' ]
         env:
         - name: MONGO_HOST
           value: mongodb
@@ -53,7 +53,7 @@ spec:
             cpu: "300m"
           limits:
             memory: "8Gi"
-            cpu: "2"
+            cpu: "1"
         volumeMounts:
         - mountPath: /data
           name: wes-volume
