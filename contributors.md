@@ -8,6 +8,7 @@
 ## Other contributors (in alphabetical order)
 
 * [Shubham Kapoor](https://github.com/shukapoo)
+* [Risto Laurikainen](https://github.com/rlaurika)
 * [Susheel Varma](https://github.com/susheel)
 * [Kevin Sayers](https://github.com/KevinSayers)
 * [Jaroslaw Surkont](https://github.com/jsurkont)
