@@ -12,6 +12,7 @@
 * [Kevin Sayers](https://github.com/KevinSayers)
 * [Jaroslaw Surkont](https://github.com/jsurkont)
 * [Juha Törnroos](https://github.com/juhtornr)
+* [Yacine Khettab](https://github.com/djixyacine)
 
 ## Acknowledgements
 
