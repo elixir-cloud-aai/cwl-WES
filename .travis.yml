@@ -19,14 +19,13 @@ jobs:
       - version=0.1
       - docker build -t weselixir/elixir-wes-app:"$version" -t weselixir/elixir-wes-app:master .
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push weselixir/elixir-wes-app:"$version"; fi
+      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push "$DOCKER_REPO_NAME":"$version"; fi
   - stage: dev build
     script:
       - docker build -t weselixir/elixir-wes-app:dev -t weselixir/elixir-wes-app:build-"$TRAVIS_BUILD_NUMBER" .
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push weselixir/elixir-wes-app:build-"$TRAVIS_BUILD_NUMBER"; fi
+      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push "$DOCKER_REPO_NAME":build-"$TRAVIS_BUILD_NUMBER"; fi
   - stage: branch build
     script:
       - docker build -t weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER" .
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER"; fi
