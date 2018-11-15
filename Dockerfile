@@ -2,7 +2,7 @@
 FROM python:3.6-slim-stretch
 
 ##### METADATA #####
-LABEL base.image="ubuntu:16.04"
+LABEL base.image="python:3.6-slim-stretch"
 LABEL version="1.1"
 LABEL software="WES-ELIXIR"
 LABEL software.version="1.0"
@@ -16,6 +16,10 @@ LABEL maintainer.organisation="Biozentrum, University of Basel"
 LABEL maintainer.location="Klingelbergstrasse 50/70, CH-4056 Basel, Switzerland"
 LABEL maintainer.lab="Zavolan Lab"
 LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
+
+# Python UserID workaround for OpenShift/K8S
+ENV LOGNAME=ipython
+ENV USER=ipython
 
 RUN apt-get update && apt-get install -y nodejs openssl git build-essential python3-dev
 
