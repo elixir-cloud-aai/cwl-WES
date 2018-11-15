@@ -62,7 +62,7 @@ def create_mongo_client(
     app: Flask,
     config: Dict,
 ):
-    """Regsiter MongoDB uri and credentials."""
+    """Register MongoDB uri and credentials."""
     if os.environ.get('MONGO_USERNAME') != '':
         auth = '{username}:{password}@'.format(
             username=os.environ.get('MONGO_USERNAME'),
