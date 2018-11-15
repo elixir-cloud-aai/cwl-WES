@@ -11,7 +11,7 @@ from wes_elixir.tasks.register_celery import register_task_service
 from wes_elixir.security.cors import enable_cors
 
 
-def main():
+def run_server():
 
     # Configure logger
     configure_logging(config_var='WES_CONFIG_LOG')
@@ -45,11 +45,12 @@ def main():
     # Enable cross-origin resource sharing
     enable_cors(connexion_app.app)
 
+    return connexion_app, config
+
+
+if __name__ == '__main__':
+    connexion_app, config = run_server()
     # Run app
     connexion_app.run(
         use_reloader=get_conf(config, 'server', 'use_reloader')
     )
-
-
-if __name__ == '__main__':
-    main()

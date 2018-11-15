@@ -22,7 +22,7 @@ spec:
           name: wes-volume
       containers:
       - name: wes-celery-worker
-        image: docker-registry.c03.k8s-popup.csc.fi/wes-repo/celery-worker:0.3
+        image: weselixir/elixir-wes-app:rc1
         workingDir: '/app/wes_elixir'
         command: [ 'celery' ]
         args: [ 'worker', '-A', 'celery_worker', '-E', '--loglevel=info' ]

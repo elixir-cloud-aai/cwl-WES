@@ -22,10 +22,10 @@ spec:
           name: wes-volume
       containers:
       - name: wes-flask
-        image: docker-registry.c03.k8s-popup.csc.fi/wes-repo/wes-elixir:0.15
+        image: weselixir/elixir-wes-app:rc1
         workingDir: '/app/wes_elixir'
-        command: [ 'python' ]
-        args: [ 'app.py' ]
+        command: [ 'gunicorn' ]
+        args: [ '-c', 'config.py', 'wsgi:app' ]
         env:
         - name: MONGO_HOST
           value: mongodb
