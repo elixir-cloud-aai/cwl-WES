@@ -27,6 +27,6 @@ jobs:
       - if [ "$TRAVIS_PULL_REQUEST = false" ]; then docker push weselixir/elixir-wes-app:"$TRAVIS_BUILD_NUMBER"; fi
   - stage: branch build
     script:
-      - docker build -t weselixir/elixir-wes-app-branched:"$TRAVIS_BUILD_NUMBER" .
+      - docker build -t weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER" .
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - if [ "$TRAVIS_PULL_REQUEST = false" ]; then docker push weselixir/elixir-wes-app-branched:"$TRAVIS_BUILD_NUMBER"; fi
+      - if [ "$TRAVIS_PULL_REQUEST = false" ]; then docker push weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER"; fi
