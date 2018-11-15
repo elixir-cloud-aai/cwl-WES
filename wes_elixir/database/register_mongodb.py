@@ -70,6 +70,7 @@ def create_mongo_client(
         )
     else:
         auth = ''
+
     app.config['MONGO_URI'] = 'mongodb://{auth}{host}:{port}/{dbname}'.format(
         host=os.environ.get('MONGO_HOST', get_conf(config, 'database', 'host')),
         port=os.environ.get('MONGO_PORT', get_conf(config, 'database', 'port')),

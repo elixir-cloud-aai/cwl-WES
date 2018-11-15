@@ -14,8 +14,8 @@ forwarded_allow_ips = '*'
 
 # Gunicorn bind address
 bind = '{address}:{port}'.format(
-        address=os.environ.get('MONGO_HOST', get_conf(flask_config, 'server', 'host')),
-        port=os.environ.get('MONGO_PORT', get_conf(flask_config, 'server', 'port')),
+        address=get_conf(flask_config, 'server', 'host'),
+        port=get_conf(flask_config, 'server', 'port'),
     )
 
 # Source the environment variables for the Gunicorn workers
