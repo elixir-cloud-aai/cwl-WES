@@ -46,7 +46,7 @@ After this you can deploy WES using kubectl:
 
 ```bash
 cd deployment/common/wes
-kubectl create -f wes-*
+ls wes-* | xargs -L1 kubectl create -f
 ```
 
 Once WES is deployed, you can expose it with the YAML files found under
@@ -88,6 +88,45 @@ ConfigMap like so:
 ```bash
 kubectl replace -f wes-configmap.yaml
 ```
+
+### Using with an external MongoDB
+
+In certain situations, you may want to run an external MongoDB. There is an
+example headless service file for this case under `deployment/mongodb`.
+
+Make a copy of the example Service:
+
+```bash
+cd deployment/mongodb
+cp mongodb-service-external.yaml.example mongodb-service-external.yaml
+```
+
+Edit the `mongodb-service-external.yaml` file and under `externalName` add your
+external MongoDB's hostname. After this, create the Service:
+
+```bash
+kubectl create -f mongodb-service-external.yaml
+```
+
+It is assumed that the external MongoDB already has a database called
+`wes-elixir-db` created and a user with read-write access available. Next you
+will need to configure the MongoDB user and password in a secret (replace
+`<username>` and `<password>`):
+
+```bash
+kubectl create secret generic mongodb --from-literal=database-user=<username> --from-literal=database-password=<password>
+```
+
+Depending on your MongoDB provider, the port may differ from 27017. In this
+case, you will need to modify the Deployment files accordingly to use the
+correct port (replace `<my external mongodb port>`):
+
+```bash
+cd deployment/common
+find . -name *.yaml | xargs -L1 sed -i -e 's/27017/<my external mongodb port>/g'
+```
+
+After this you can deploy WES (see above).
 
 ## Technical details
 
