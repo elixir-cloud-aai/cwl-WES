@@ -6,13 +6,27 @@ service:
    - docker
 
 stages:
-  - build docker image
-
+  - if: branch = master
+    name: master build
+  - if: branch = dev
+    name: dev build
+  - name: branch build
 
 jobs:
   include:
-  - stage: build base docker image
+  - stage: master build
     script:
+      - version=0.1
+      - docker build -t weselixir/elixir-wes-app:"$version" .
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - docker build -t weselixir/elixir-wes-app .
-      - docker push weselixir/elixir-wes-app
+      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push weselixir/elixir-wes-app:"$version"; fi
+  - stage: dev build
+    script:
+      - docker build -t weselixir/elixir-wes-app:dev -t weselixir/elixir-wes-app:"$TRAVIS_BUILD_NUMBER" .
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push weselixir/elixir-wes-app:"$TRAVIS_BUILD_NUMBER"; fi
+  - stage: branch build
+    script:
+      - docker build -t weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER" .
+      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER"; fi
