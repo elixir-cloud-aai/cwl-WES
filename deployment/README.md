@@ -1,5 +1,15 @@
 # Kubernetes deployment for WES
 
+- [Kubernetes deployment for WES](#kubernetes-deployment-for-wes)
+    - [Usage](#usage)
+        - [Updates](#updates)
+        - [Using with an external MongoDB](#using-with-an-external-mongodb)
+        - [Setting up RabbitMQ for testing on OpenShift](#setting-up-rabbitmq-for-testing-on-openshift)
+    - [Technical details](#technical-details)
+        - [MongoDB](#mongodb)
+        - [RabbitMQ](#rabbitmq)
+        - [WES](#wes)
+
 The files under this directory can be used to deploy WES on Kubernetes. The
 directory structure is as follows:
 
@@ -27,11 +37,11 @@ There are some prerequisites to deploying WES on Kubernetes. Namely:
   - in the same namespace reachable via 'rabbitmq-cluster'
 - Secret called netrc created (see below)
 
-You'll need to configure an FTP server connection using a .netrc file with the
+You'll need to configure an SFTP server connection using a .netrc file with the
 following format:
 
 ```
-machine my-ftp-server.com
+machine my-sftp-server.com
 login <username>
 password <password>
 ```
@@ -127,6 +137,17 @@ find . -name *.yaml | xargs -L1 sed -i -e 's/27017/<my external mongodb port>/g'
 ```
 
 After this you can deploy WES (see above).
+
+### Setting up RabbitMQ for testing on OpenShift
+
+During development of the WES deployment, a RabbitMQ cluster template was used
+for testing integration with RabbitMQ in the same namespace:
+
+[jharting/openshift-rabbitmq-cluster](https://github.com/jharting/openshift-rabbitmq-cluster)
+
+The disadvantage with this template is that it only works with OpenShift because
+it uses objects that are only available in OpenShift. For plain Kubernetes a
+different approach needs to be used.
 
 ## Technical details
 
