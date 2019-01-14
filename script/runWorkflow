@@ -1,0 +1,34 @@
+
+
+workflowUrl='https://github.com/common-workflow-language/cwl-tes/blob/master/tests/hashsplitter-workflow.cwl.yml'
+
+curl -iv -X POST                                    \
+     --header 'Content-Type: multipart/form-data'   \
+     --header 'Accept: application/json'            \
+     -F workflow_params='{}'                        \
+     -F workflow_type=cwl                           \
+     -F workflow_type_version=v1.0                  \
+     -F "workflow_url=$workflowUrl"                 \
+     'http://localhost:7777/ga4gh/wes/v1/runs'
+
+
+#
+# Authorization
+# -------------
+# 
+# If you enable authorization:
+# 
+# i. Get the token from 
+#
+#         https://tesk.c01.k8s-popup.csc.fi/swagger-ui.html#/TaskService
+#
+#     1. Click on "Authorize"
+#     2. Call /v1/tasks
+#     3. Copy the token from the curl cmd line and paste it here, as the value of this variable:
+#
+#     token="eyJqa3UiOiJodHRwczpcL1wvbG9naW4uZWxpeGlyLWN6ZWNoLm9yZ1wvb2lkY1wvandrIiwia2lkIjoicnNhMSIsImFsZyI6IlJTMjU2In0.eyJzdWIiOiIxZGFiMjE5NGJiZjhiNGFlYTkyYmE0ZTUwNmJkMzk0MDhlMmY2ZTAxQGVsaXhpci1ldXJvcGUub3JnIiwiYXpwIjoiODI0YThjODYtZWYwZC00YTY3LWFjY2EtMWMwNDgzOTViMjc4IiwiaXNzIjoiaHR0cHM6XC9cL2xvZ2luLmVsaXhpci1jemVjaC5vcmdcL29pZGNcLyIsImV4cCI6MTU0NzQ4MTE1MywiaWF0IjoxNTQ3NDc3NTUzLCJqdGkiOiJhMzA3MGRmMS0xNTE2LTQ4YjctOGM1Mi1iMDIyYWZmOWE0NDkifQ.O3ZX6C5m71HtW3zXWml0iMm3jU3gYgSS-X_BRRpz0d_2Zn6U33NvPBlk4K5a_4B66jknekrHUeJxeCQ6lQOGZaDxHVxnMS8fczFChXWoUQIyztvrqQz5DGxGqO-PyBnuf2kChNCZDWGpg_gpKu9I3aQOnNMPKF-13QcHxt45JqjsPUkXn-0LSVmjjjqdFGZB5ozOYJINH56pCqZmPbZ0Mem_zeF5jGPqlEIf0HphTkdE3WZ5Xirc9WAayqaypvplCmbyzrK_2hHb_MQR0WH_wlHDK46N3EPCbO6Tj5BhQ0B-fNneQldPPclFSDn_9LUFUNUFkAYffwJPa4uKs174tA"
+# 
+# ii. Add this header to your curl request:
+# 
+#     --header "Authorization: Bearer $token"        \
+#
