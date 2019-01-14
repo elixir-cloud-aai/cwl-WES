@@ -4,7 +4,7 @@ server:
 
 # Security settings
 security:
-    authorization_required: True
+    authorization_required: False
 
 # Database settings
 database:
