@@ -1,0 +1,17 @@
+
+
+
+workflowUrl='https://github.com/EBI-Metagenomics/CWL-assembly/blob/demo/cwl/demo_megahit_pipeline_paired.cwl'
+
+params='{   "cwl:tool": "megahit_pipeline_simple.cwl",   "run_id": "ERR866589",   "forward_reads": {     "location": "http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR866/ERR866603/ERR866603_1.fastq.gz",     "class": "File"   },   "reverse_reads": {     "location": "http://ftp.sra.ebi.ac.uk/vol1/fastq/ERR866/ERR866603/ERR866603_2.fastq.gz",     "class": "File"   },   "output_dest": "out.json",   "output_assembly_name": "ERR866589",   "min_contig_length": 200 }'
+
+
+curl -iv -X POST                                    \
+     -H 'Content-Type: multipart/form-data'         \
+     -H 'Accept: application/json'                  \
+     -F workflow_params="$params"                   \
+     -F workflow_type=cwl                           \
+     -F workflow_type_version=v1.0                  \
+     -F "workflow_url=$workflowUrl"                 \
+     'http://localhost:7777/ga4gh/wes/v1/runs'
+
