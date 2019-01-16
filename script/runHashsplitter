@@ -1,0 +1,17 @@
+
+
+
+workflowUrl='https://github.com/fgypas/cwl-example-workflows/blob/master/hashsplitter-workflow.cwl'
+
+params='{ "input": {   "class": "File",   "location": "https://github.com/common-workflow-language/cwl-tes/blob/master/tests/resources/test.txt" } }'
+
+
+curl -iv -X POST                                    \
+     -H 'Content-Type: multipart/form-data'         \
+     -H 'Accept: application/json'                  \
+     -F workflow_params="$params"                   \
+     -F workflow_type=cwl                           \
+     -F workflow_type_version=v1.0                  \
+     -F "workflow_url=$workflowUrl"                 \
+     'http://localhost:7777/ga4gh/wes/v1/runs'
+
