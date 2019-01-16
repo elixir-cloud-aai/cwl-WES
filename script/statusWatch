@@ -1,0 +1,6 @@
+
+
+id="$1"
+
+watch -d "./status "$1" | jsonpath '$.state'"
+
