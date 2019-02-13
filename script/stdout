@@ -1,0 +1,7 @@
+
+
+
+id="$1"
+
+./info "$id" | jsonpath '$.run_log.stdout' | less
+
