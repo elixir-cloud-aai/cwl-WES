@@ -63,7 +63,7 @@ def create_mongo_client(
     config: Dict,
 ):
     """Register MongoDB uri and credentials."""
-    if os.environ.get('MONGO_USERNAME') != '':
+    if os.environ.get('MONGO_USERNAME'):
         auth = '{username}:{password}@'.format(
             username=os.environ.get('MONGO_USERNAME'),
             password=os.environ.get('MONGO_PASSWORD'),
