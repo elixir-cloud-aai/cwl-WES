@@ -1,25 +1,21 @@
 
 
-
 runId="$1"
 
 
-# teskTasks() {
+cmd() {
 
-#     watch -n 1 -d teskTasks
-# }
+    local title="$1"
+    shift
 
-# watch -n 1 -d kubectl get pods
+    echo "watch -n 1 -t -d 'echo -- $title --; echo; $@'"
+}
 
-# ./statusWatch "$runId"
 
-# Use tmux?
-
-tmux new-session                watch -n 1 -t -d "echo Pods; echo;          kubectl get pods"   \;    \
-     split-window -v -p 20     ./statusWatch "$runId"                                           \;    \
-     select-pane -U                                                                             \;    \
-     split-window -h            watch -n 1 -t -d "echo TESK tasks; echo;    teskTasks"          \;    \
+tmux new-session                "$(cmd 'Pods'           kubectl get pods  )"    \;    \
+     split-window -v -p 20      "$(cmd 'Wes status'     ./status "$runId" )"    \;    \
+     select-pane -U                                                             \;    \
+     split-window -h            "$(cmd "TESK tasks"     teskTasks         )"    \;    \
      attach
 
 
-# watch -t -d "echo Wes status; echo; ./status "$1" | jsonpath '$.state'"
