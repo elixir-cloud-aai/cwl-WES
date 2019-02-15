@@ -1,0 +1,25 @@
+
+
+
+runId="$1"
+
+
+# teskTasks() {
+
+#     watch -n 1 -d teskTasks
+# }
+
+# watch -n 1 -d kubectl get pods
+
+# ./statusWatch "$runId"
+
+# Use tmux?
+
+tmux new-session                watch -n 1 -t -d "echo Pods; echo;          kubectl get pods"   \;    \
+     split-window -v -p 20     ./statusWatch "$runId"                                           \;    \
+     select-pane -U                                                                             \;    \
+     split-window -h            watch -n 1 -t -d "echo TESK tasks; echo;    teskTasks"          \;    \
+     attach
+
+
+# watch -t -d "echo Wes status; echo; ./status "$1" | jsonpath '$.state'"
