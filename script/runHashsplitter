@@ -13,5 +13,5 @@ curl -iv -X POST                                    \
      -F workflow_type=cwl                           \
      -F workflow_type_version=v1.0                  \
      -F "workflow_url=$workflowUrl"                 \
-     'http://localhost:7777/ga4gh/wes/v1/runs'
+     "$(wesUrl)/runs"
 

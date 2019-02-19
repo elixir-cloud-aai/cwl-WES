@@ -4,7 +4,7 @@
 
 id="$1"
 
-curl -sS -X GET --header 'Accept: application/json' "http://localhost:7777/ga4gh/wes/v1/runs/$id/status"
+curl -sS -X GET --header 'Accept: application/json' "$(wesUrl)/runs/$id/status"
 
 # | jsonpath '$.state'        # TODO?
 
