@@ -58,10 +58,8 @@ def register_mongodb(app: Flask) -> Flask:
     return app
 
 
-def create_mongo_client(
-    app: Flask,
-    config: Dict,
-):
+def getMongoUri(config):
+    
     """Register MongoDB uri and credentials."""
     if os.environ.get('MONGO_USERNAME'):
         auth = '{username}:{password}@'.format(
@@ -71,12 +69,27 @@ def create_mongo_client(
     else:
         auth = ''
 
-    app.config['MONGO_URI'] = 'mongodb://{auth}{host}:{port}/{dbname}'.format(
+    return 'mongodb://{auth}{host}:{port}/{dbname}'.format(
         host=os.environ.get('MONGO_HOST', get_conf(config, 'database', 'host')),
         port=os.environ.get('MONGO_PORT', get_conf(config, 'database', 'port')),
         dbname=os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name')),
         auth=auth
     )
+    
+    
+
+def create_mongo_client(
+    app: Flask,
+    config: Dict,
+):
+    
+    mongoUri = getMongoUri(config)
+    
+    app.config['MONGO_URI'] = mongoUri
+    
+    logger.info("MONGO_HOST = '{}'".format(os.environ.get('MONGO_HOST')))
+    logger.info("MONGO_PORT = '{}'".format(os.environ.get('MONGO_PORT')))
+    logger.info("mongoUri = '{}'".format(mongoUri))
 
     """Instantiate MongoDB client."""
     mongo = PyMongo(app)
