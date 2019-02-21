@@ -1,4 +1,35 @@
 
+
+printHead() {
+
+    echo "$1"
+    git --no-pager log -n 1
+}
+
+fixCwlToolVersion()
+{
+    echo
+    echo
+    echo '-- Fixing cwltool version -------------------------------------------------------------------------------------'
+    echo
+
+    cd .venv/src/cwltool
+
+    printHead 'Before:'
+
+    gitSwitch 1.0.20181201184214
+
+    echo
+    printHead 'After:'
+
+    echo
+    echo '-- Installing again -------------------------------------------------------------------------------------------'
+    echo
+    python setup.py develop
+}
+
+
 pip install -r requirements.txt
 python setup.py develop
 
+fixCwlToolVersion
