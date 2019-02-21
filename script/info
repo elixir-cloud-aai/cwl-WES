@@ -3,5 +3,5 @@
 
 id="$1"
 
-curl -X GET --header 'Accept: application/json' "http://localhost:7777/ga4gh/wes/v1/runs/$id" | less
+curl -X GET --header 'Accept: application/json' "$(wesUrl)/runs/$id" | less
 
