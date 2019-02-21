@@ -1,0 +1,4 @@
+
+cd wes_elixir
+celery worker -A celery_worker -E --loglevel=info
+

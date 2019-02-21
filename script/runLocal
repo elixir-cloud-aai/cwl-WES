@@ -1,0 +1,3 @@
+
+PYTHONPATH="." python wes_elixir/app.py
+
