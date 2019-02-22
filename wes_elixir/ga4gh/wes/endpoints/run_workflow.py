@@ -19,6 +19,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from wes_elixir.config.config_parser import get_conf, get_conf_optional
 from wes_elixir.errors.errors import BadRequest
 from wes_elixir.tasks.tasks.run_workflow import task__run_workflow
+from wes_elixir.utils import concat
 
 
 # Get logger instance
@@ -435,15 +436,6 @@ def __process_workflow_attachments(data: Dict) -> Dict:
 
     # Return form data stripped of workflow attachments
     return data
-
-
-# TODO move to util?
-#        or replace with toolz.itertoolz.concatv() ?
-#        (https://toolz.readthedocs.io/en/latest/api.html#toolz.itertoolz.concatv)
-#
-def concat(*lists):
-    
-    return sum(list(lists), [])
 
 
 def __run_workflow(
