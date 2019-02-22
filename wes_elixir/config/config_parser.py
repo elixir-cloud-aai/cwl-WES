@@ -156,6 +156,21 @@ def get_conf_type(
         return val
 
 
+def get_conf_optional(
+    config: Mapping[str, Any],
+    *args: str
+):
+    
+    try:
+    
+        return get_conf(config, *args, touchy = False)
+
+    except KeyError:
+        
+        return None
+
+
+
 def get_conf(
     config: Mapping[str, Any],
     *args: str,

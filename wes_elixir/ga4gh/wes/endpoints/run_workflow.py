@@ -16,7 +16,7 @@ from typing import Dict
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 
-from wes_elixir.config.config_parser import get_conf
+from wes_elixir.config.config_parser import get_conf, get_conf_optional
 from wes_elixir.errors.errors import BadRequest
 from wes_elixir.tasks.tasks.run_workflow import task__run_workflow
 
@@ -437,6 +437,15 @@ def __process_workflow_attachments(data: Dict) -> Dict:
     return data
 
 
+# TODO move to util?
+#        or replace with toolz.itertoolz.concatv() ?
+#        (https://toolz.readthedocs.io/en/latest/api.html#toolz.itertoolz.concatv)
+#
+def concat(*lists):
+    
+    return sum(list(lists), [])
+
+
 def __run_workflow(
     config: Dict,
     document: Dict,
@@ -444,7 +453,7 @@ def __run_workflow(
 ) -> None:
     """Helper function `run_workflow()`."""
     tes_url = get_conf(config, 'tes', 'url')
-    remote_storage_url = get_conf(config, 'storage', 'remote_storage_url')
+    remote_storage_url = get_conf_optional(config, 'storage', 'remote_storage_url')
     run_id = document['run_id']
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
@@ -452,15 +461,20 @@ def __run_workflow(
     param_file_path = document['internal']['param_file_path']
 
     # Build command
-    command_list = [
-        'cwl-tes',
-        '--debug',
-        '--leave-outputs',
-        '--remote-storage-url', remote_storage_url,
-        '--tes', tes_url,
-        cwl_path,
-        param_file_path
-    ]
+    command_list = concat(
+
+          [ 'cwl-tes'
+          , '--debug'
+          , '--leave-outputs'
+          ]
+    
+        , [ '--remote-storage-url', remote_storage_url ] if remote_storage_url else []
+
+        , [ '--tes', tes_url
+          , cwl_path
+          , param_file_path
+          ]
+    )
 
     # Add authorization parameters
     if 'token' in kwargs:

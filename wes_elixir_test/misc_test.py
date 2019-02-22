@@ -7,6 +7,7 @@ from wes_elixir.database.register_mongodb import \
     create_mongo_client, getMongoUri
 from flask_pymongo import PyMongo
 from unittest.mock import patch
+from wes_elixir.ga4gh.wes.endpoints.run_workflow import __run_workflow as run_workflow
 
 
 class Test(unittest.TestCase):
@@ -33,6 +34,64 @@ class Test(unittest.TestCase):
         create_mongo_client(app, app.config)
 
         
+    @patch('wes_elixir.tasks.tasks.run_workflow.task__run_workflow.apply_async')
+    def test_run_workflow(self, applyAsyncMock):
+        
+        # Parse app configuration
+        config = parse_app_config(config_var='WES_CONFIG')
+        
+        # Deleting remote_storage_url
+        config.storage.pop('remote_storage_url')
+        
+        self.assertFalse('remote_storage_url' in config.storage)
+
+        '''
+        run_id =           document['run_id']
+        task_id =          document['task_id']
+        tmp_dir =          document['internal']['tmp_dir']
+        cwl_path =         document['internal']['cwl_path']
+        param_file_path =  document['internal']['param_file_path']
+        '''
+        run_workflow(config, {
+            
+             'run_id'   : 'run_id'
+            ,'task_id'  : 'task_id'
+            ,'internal' : {
+
+                 'tmp_dir'         : 'tmp_dir'
+                ,'cwl_path'        : 'cwl_path'
+                ,'param_file_path' : 'param_file_path'
+            }
+        })
+        
+        calls = applyAsyncMock.mock_calls
+        print(calls)
+        '''
+        [call(None, { 'command_list'   : ['cwl-tes', '--debug', '--leave-outputs', '--remote-storage-url', None, '--tes', 'http://192.168.99.100:31567', 'cwl_path', 'param_file_path']
+                    , 'tmp_dir'        : 'tmp_dir'
+                    }
+                    , soft_time_limit    = None
+                    , task_id            = 'task_id'
+             )]
+        '''
+
+        self.assertTrue(len(calls) == 1)
+        
+        call = calls[0]
+        
+        self.assertEquals( call[1][1]['command_list'], [
+            
+            'cwl-tes',
+            '--debug',
+            '--leave-outputs',
+#             '--remote-storage-url', None,
+            '--tes',
+            'http://192.168.99.100:31567',
+            'cwl_path',
+            'param_file_path'
+        ])
+
+
 #     @patch.dict('os.environ', {'MONGO_HOST': ':'})  # Error!!!
 #     @patch.dict('os.environ', {'MONGO_USERNAME': 'tfga:'})  # Different error (Username and password must be escaped according to RFC 3986, use urllib.parse.quote_plus().)
     def test_getMongoUri(self):
