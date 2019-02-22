@@ -34,16 +34,49 @@ class Test(unittest.TestCase):
         create_mongo_client(app, app.config)
 
         
-    @patch('wes_elixir.tasks.tasks.run_workflow.task__run_workflow.apply_async')
-    def test_run_workflow(self, applyAsyncMock):
+    def test_remote_storage_url_should_be_optional(self):
         
         # Parse app configuration
         config = parse_app_config(config_var='WES_CONFIG')
+        
+        # *With* 'remote_storage_url'--------------------------------------------------------------------------
+        
+        config.storage['remote_storage_url'] = 'ftp://remote.storage'
+        
+        self.assertCmdList(config, [
+            
+            'cwl-tes',
+            '--debug',
+            '--leave-outputs',
+            '--remote-storage-url', 'ftp://remote.storage',
+            '--tes',
+            'http://192.168.99.100:31567',
+            'cwl_path',
+            'param_file_path'
+        ])
+        
+        
+        # *Without* -------------------------------------------------------------------------------------------
         
         # Deleting remote_storage_url
         config.storage.pop('remote_storage_url')
         
         self.assertFalse('remote_storage_url' in config.storage)
+        
+        self.assertCmdList(config, [
+            
+            'cwl-tes',
+            '--debug',
+            '--leave-outputs',
+            '--tes',
+            'http://192.168.99.100:31567',
+            'cwl_path',
+            'param_file_path'
+        ])
+        
+        
+    @patch('wes_elixir.tasks.tasks.run_workflow.task__run_workflow.apply_async')        
+    def assertCmdList(self, config, expectedCmdList, applyAsyncMock):
 
         '''
         run_id =           document['run_id']
@@ -79,17 +112,7 @@ class Test(unittest.TestCase):
         
         call = calls[0]
         
-        self.assertEquals( call[1][1]['command_list'], [
-            
-            'cwl-tes',
-            '--debug',
-            '--leave-outputs',
-#             '--remote-storage-url', None,
-            '--tes',
-            'http://192.168.99.100:31567',
-            'cwl_path',
-            'param_file_path'
-        ])
+        self.assertEquals( call[1][1]['command_list'], expectedCmdList)
 
 
 #     @patch.dict('os.environ', {'MONGO_HOST': ':'})  # Error!!!
