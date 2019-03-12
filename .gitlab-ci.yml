@@ -7,15 +7,15 @@ stages:
   - deploy
 
 variables:
-  CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
-
+  # CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
+  CONTAINER_DEV_IMAGE: dolphyvn/wes-elixir
 build_dev:
   stage: build
   script:
-    - docker login -u dolphy -p $CI_JOB_TOKEN dockerhub.ebi.ac.uk:4567
+    # - docker login -u dolphy -p $CI_JOB_TOKEN dockerhub.ebi.ac.uk:4567
     - docker build --pull -t $CONTAINER_DEV_IMAGE .
     - docker push $CONTAINER_DEV_IMAGE
   only:
     - dev
   tags:
-    - hruk_docker
+    - hdruk_docker
