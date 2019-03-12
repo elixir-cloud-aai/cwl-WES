@@ -12,7 +12,7 @@ variables:
 build_dev:
   stage: build
   script:
-    # - docker login -u dolphy -p $CI_JOB_TOKEN dockerhub.ebi.ac.uk:4567
+    - docker login -u ${DOCKER_HUB_USER} -p $DOCKER_HUB_PASSWORD docker.com
     - docker build --pull -t $CONTAINER_DEV_IMAGE .
     - docker push $CONTAINER_DEV_IMAGE
   only:
