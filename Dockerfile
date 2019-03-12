@@ -1,6 +1,5 @@
 ##### BASE IMAGE #####
 FROM ubuntu:16.04
-
 ##### METADATA #####
 LABEL base.image="ubuntu:16.04"
 LABEL version="1.1"
