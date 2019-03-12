@@ -1,0 +1,19 @@
+image: docker:latest
+services:
+  - docker:dind
+
+stages:
+  - build
+  - deploy
+
+variables:
+  CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
+
+build_dev:
+  stage: build
+  script:
+    - docker login -u dolphy -p $CI_JOB_TOKEN dockerhub.ebi.ac.uk:4567
+    - docker build --pull -t $CONTAINER_DEV_IMAGE .
+    - docker push $CONTAINER_DEV_IMAGE
+  only:
+    - dev
