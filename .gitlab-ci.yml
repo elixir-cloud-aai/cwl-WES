@@ -17,3 +17,5 @@ build_dev:
     - docker push $CONTAINER_DEV_IMAGE
   only:
     - dev
+  tags:
+    - hruk_docker
