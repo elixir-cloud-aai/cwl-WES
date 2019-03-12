@@ -8,7 +8,7 @@ stages:
 
 variables:
   # CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
-  CONTAINER_DEV_IMAGE: dolphyvn/wes-elixir
+  CONTAINER_DEV_IMAGE: ebiuk/wes-elixir
 build_dev:
   stage: build
   script:
