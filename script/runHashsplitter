@@ -5,6 +5,7 @@ workflowUrl='https://github.com/fgypas/cwl-example-workflows/blob/master/hashspl
 
 params='{ "input": {   "class": "File",   "location": "https://github.com/common-workflow-language/cwl-tes/blob/master/tests/resources/test.txt" } }'
 
+url="${1-$(wesUrl)}"   # No args => $(wesUrl)
 
 curl -iv -X POST                                    \
      -H 'Content-Type: multipart/form-data'         \
@@ -13,5 +14,5 @@ curl -iv -X POST                                    \
      -F workflow_type=cwl                           \
      -F workflow_type_version=v1.0                  \
      -F "workflow_url=$workflowUrl"                 \
-     "$(wesUrl)/runs"
+     "$url/runs"
 
