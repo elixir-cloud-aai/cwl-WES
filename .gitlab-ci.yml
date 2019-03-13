@@ -1,4 +1,4 @@
-image: docker:latest
+image: docker:stable
 services:
   - docker:dind
 
@@ -8,14 +8,34 @@ stages:
 
 variables:
   # CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
-  CONTAINER_DEV_IMAGE: ebiuk/wes-elixir
+  CONTAINER_DEV_IMAGE: ebiacuk/wes-elixir:latest
 build_dev:
   stage: build
   script:
 
-    - docker build --pull -t $CONTAINER_DEV_IMAGE .
+    - docker build -t $CONTAINER_DEV_IMAGE .
     - docker login -u ${DOCKER_HUB_USER} -p $DOCKER_HUB_PASSWORD docker.io
     - docker push $CONTAINER_DEV_IMAGE
+  only:
+    - dev
+  tags:
+    - hdruk_docker
+
+
+k8s_deploy_dev:
+  image: ebiacuk/wes-elixir:kubectl
+  stage: deploy
+  script:
+    - mkdir -p ~/.kube
+    - echo "$KUBE_CONF" > ~/.kube/config
+    - export KUBECONFIG=~/.kube/config
+    - export KUBECONFIG=~/.kube/config kubectl get nodes
+    - kubectl get node
+    - echo $CI_COMMIT_REF_NAME
+    - kubectl -n tes patch deployment wes-elixir-dev -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
+    - kubectl -n tes patch deployment wes-celery-worker -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
+    - kubectl -n tes rollout status deployment wes-celery-worker
+    - kubectl -n tes rollout status deployment wes-elixir-dev 
   only:
     - dev
   tags:
