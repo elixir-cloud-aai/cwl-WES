@@ -8,7 +8,7 @@ stages:
 
 variables:
   # CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
-  CONTAINER_DEV_IMAGE: ebiacuk/wes-elixir:latest
+  CONTAINER_DEV_IMAGE: ebiacuk/wes-elixir:dev-v${CI_JOB_ID}
 build_dev:
   stage: build
   script:
@@ -18,6 +18,8 @@ build_dev:
     - docker push $CONTAINER_DEV_IMAGE
   only:
     - dev
+  only:
+    - working
   tags:
     - hdruk_docker
 
