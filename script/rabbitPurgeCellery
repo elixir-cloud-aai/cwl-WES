@@ -1,0 +1,4 @@
+
+
+sudo rabbitmqctl purge_queue celery
+
