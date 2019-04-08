@@ -36,8 +36,8 @@ k8s_deploy_dev:
     - export KUBECONFIG=~/.kube/config kubectl get nodes
     - kubectl get node
     - echo $CI_COMMIT_REF_NAME
-    - kubectl -n tes patch deployment wes-elixir-dev -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
-    - kubectl -n tes patch deployment wes-celery-worker -p "{\"spec\":{\"template\":{\"metadata\":{\"annotations\":{\"ci-last-updated\":\"$(date +'%s')\"}}}}}"
+    - kubectl -n tes set image deployment/wes-elixir-dev wes-elixir=$CONTAINER_DEV_IMAGE
+    - kubectl -n tes  set image deployment/wes-celery-worker wes-celery-worker=$CONTAINER_DEV_IMAGE
     - kubectl -n tes rollout status deployment wes-celery-worker
     - kubectl -n tes rollout status deployment wes-elixir-dev 
   # only:
