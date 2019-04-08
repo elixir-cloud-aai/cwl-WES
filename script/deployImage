@@ -1,0 +1,7 @@
+
+
+
+image="$1"
+
+kubectl -n tes set image deployment/wes-elixir-dev wes-elixir="$image"
+
