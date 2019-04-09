@@ -1,0 +1,895 @@
+/usr/local/bin/cwl-tes 0.2.0 with cwltool 1.0.20181217162649
+Resolved "/data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl" to "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl"
+[workflow ] initialized from file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl
+[workflow ] start
+[workflow ] {
+    "input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[workflow ] job step file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify not ready
+[workflow ] starting step whirlpool
+[job step whirlpool] job input {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#whirlpool/input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[job step whirlpool] evaluated job input to {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#whirlpool/input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[step whirlpool] start
+[job whirlpool] initializing from file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml as part of step whirlpool
+[job whirlpool] {
+    "input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[job whirlpool] path mappings is {
+    "file:///data/tmp/README.md": [
+        "/data/tmp/README.md",
+        "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md",
+        "File",
+        true
+    ]
+}
+[job whirlpool] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "openssl"
+    },
+    {
+        "position": [
+            -1000000,
+            1
+        ],
+        "datum": "dgst"
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "datum": "-sha512"
+    },
+    {
+        "position": [
+            1,
+            "input"
+        ],
+        "datum": {
+            "class": "File",
+            "location": "file:///data/tmp/README.md",
+            "size": 1341,
+            "basename": "README.md",
+            "nameroot": "README",
+            "nameext": ".md",
+            "path": "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md",
+            "dirname": "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7"
+        }
+    }
+]
+[job whirlpool] self.__dict__ in run() ----------------------
+{"basedir": "/data/output/W7OAI8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7f32327c5898>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7f32329a3cf8>>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml#output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "whirpool")]))])], <cwltool.builder.Builder object at 0x7f32327c5898>, compute_checksum=True, jobname="whirlpool", readers={"file:///data/tmp/README.md": CommentedMap([("class", "File"), ("location", "file:///data/tmp/README.md"), ("size", 1341), ("basename", "README.md"), ("nameroot", "README"), ("nameext", ".md"), ("path", "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md"), ("dirname", "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7")])}),
+ "command_line": ["openssl",
+                  "dgst",
+                  "-sha512",
+                  "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7f32327c9160>,
+ "generatefiles": {"basename": "7dddc11a-293b-4d32-8740-6231161e2184",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:7dddc11a-293b-4d32-8740-6231161e2184"},
+ "generatemapper": None,
+ "hints": [{"class": "DockerRequirement",
+            "dockerPull": "kubler/openssl"}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"input": {"basename": "README.md",
+                        "class": "File",
+                        "dirname": "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7",
+                        "location": "file:///data/tmp/README.md",
+                        "nameext": ".md",
+                        "nameroot": "README",
+                        "path": "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md",
+                        "size": 1341}},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7f32329a3cf8>>,
+ "name": "whirlpool",
+ "networkaccess": True,
+ "outdir": "/data/tmp/W7OAI8/tmppukojufq",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7f3232a1c7b8>>, functools.partial(<bound method WorkflowJob.receive_output of <cwltool.workflow.WorkflowJob object at 0x7f32327b0b70>>, <cwltool.workflow.WorkflowJobStep object at 0x7f32327b0c50>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#whirlpool/output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "whirpool")])), ("_tool_entry", CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml#output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "whirpool")]))]))])], <bound method JobExecutor.output_callback of <cwltool.executors.MultithreadedJobExecutor object at 0x7f3232abee48>>)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7f32327c91d0>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7f32327c53c8>,
+ "spec": {"arguments": ["-sha512"],
+          "baseCommand": ["openssl", "dgst"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "hash input through sha512",
+          "hints": [{"class": "DockerRequirement",
+                     "dockerPull": "kubler/openssl"}],
+          "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml",
+          "inputs": [{"doc": "original content",
+                      "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml#input",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "type": "File"}],
+          "outputs": [{"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml#output",
+                       "outputBinding": CommentedMap([("glob", "whirpool")]),
+                       "type": "File"}],
+          "stdout": "whirpool"},
+ "stagedir": "/data/tmp/W7OAI8/tmp7qct_kgg",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": "whirpool",
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/W7OAI8/tmpsth7micx",
+ "token": None}
+[job whirlpool] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="whirlpool", description="hash input through sha512", inputs=[Input(url="file:///data/tmp/README.md", path="/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md", type="FILE", name="input", description="cwl_input:input", content=None)], outputs=[Output(url="file:///data/tmp/W7OAI8/tmppukojufq/whirpool", path="/LLKnVR/whirpool", type="FILE", name="stdout", description=None), Output(url="file:///data/tmp/W7OAI8/tmppukojufq/", path="/LLKnVR", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="kubler/openssl", command=["openssl", "dgst", "-sha512", "/var/lib/cwl/stg64c3e29c-e8e7-4d87-b56b-82833162cef7/README.md"], workdir="/LLKnVR", stdin=None, stdout="/LLKnVR/whirpool", stderr=None, env={"HOME": "/LLKnVR", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-whirlpool.cwl.yml"}, logs=None, creation_time=None)
+[workflow ] starting step md5
+[job step md5] job input {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#md5/input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[job step md5] evaluated job input to {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#md5/input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[step md5] start
+[job md5] initializing from file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml as part of step md5
+[job md5] {
+    "input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[job md5] path mappings is {
+    "file:///data/tmp/README.md": [
+        "/data/tmp/README.md",
+        "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md",
+        "File",
+        true
+    ]
+}
+[job md5] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "openssl"
+    },
+    {
+        "position": [
+            -1000000,
+            1
+        ],
+        "datum": "dgst"
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "datum": "-md5"
+    },
+    {
+        "position": [
+            1,
+            "input"
+        ],
+        "datum": {
+            "class": "File",
+            "location": "file:///data/tmp/README.md",
+            "size": 1341,
+            "basename": "README.md",
+            "nameroot": "README",
+            "nameext": ".md",
+            "path": "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md",
+            "dirname": "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece"
+        }
+    }
+]
+[job md5] self.__dict__ in run() ----------------------
+[workflow ] starting step sha
+{"basedir": "/data/output/W7OAI8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7f32327d4d30>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7f323283f3c8>>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml#output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "md5")]))])], <cwltool.builder.Builder object at 0x7f32327d4d30>, compute_checksum=True, jobname="md5", readers={"file:///data/tmp/README.md": CommentedMap([("class", "File"), ("location", "file:///data/tmp/README.md"), ("size", 1341), ("basename", "README.md"), ("nameroot", "README"), ("nameext", ".md"), ("path", "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md"), ("dirname", "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece")])}),
+ "command_line": ["openssl",
+                  "dgst",
+                  "-md5",
+                  "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7f3231763358>,
+ "generatefiles": {"basename": "77a98514-5aaf-4c09-bc50-3bbbdb1ba661",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:77a98514-5aaf-4c09-bc50-3bbbdb1ba661"},
+ "generatemapper": None,
+ "hints": [{"class": "DockerRequirement",
+            "dockerPull": "kubler/openssl"},
+           {"class": "ResourceRequirement",
+            "coresMin": 1,
+            "outdirMin": 1,
+            "ramMin": 2}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"input": {"basename": "README.md",
+                        "class": "File",
+                        "dirname": "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece",
+                        "location": "file:///data/tmp/README.md",
+                        "nameext": ".md",
+                        "nameroot": "README",
+                        "path": "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md",
+                        "size": 1341}},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7f323283f3c8>>,
+ "name": "md5",
+ "networkaccess": True,
+ "outdir": "/data/tmp/W7OAI8/tmp_c6jbygt",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7f3232a1c710>>, functools.partial(<bound method WorkflowJob.receive_output of <cwltool.workflow.WorkflowJob object at 0x7f32327b0b70>>, <cwltool.workflow.WorkflowJobStep object at 0x7f32327b0cc0>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#md5/output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "md5")])), ("_tool_entry", CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml#output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "md5")]))]))])], <bound method JobExecutor.output_callback of <cwltool.executors.MultithreadedJobExecutor object at 0x7f3232abee48>>)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7f32317634a8>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7f32327d48d0>,
+ "spec": {"arguments": ["-md5"],
+          "baseCommand": ["openssl", "dgst"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "hash input through md5",
+          "hints": [{"class": "DockerRequirement",
+                     "dockerPull": "kubler/openssl"},
+                    {"class": "ResourceRequirement",
+                     "coresMin": 1,
+                     "outdirMin": 1,
+                     "ramMin": 2}],
+          "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml",
+          "inputs": [{"doc": "original content",
+                      "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml#input",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "type": "File"}],
+          "outputs": [{"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml#output",
+                       "outputBinding": CommentedMap([("glob", "md5")]),
+                       "type": "File"}],
+          "stdout": "md5"},
+ "stagedir": "/data/tmp/W7OAI8/tmpk7nz30ug",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": "md5",
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/W7OAI8/tmph5bu_cy4",
+ "token": None}
+[job step sha] job input {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#sha/input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[job md5] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="md5", description="hash input through md5", inputs=[Input(url="file:///data/tmp/README.md", path="/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md", type="FILE", name="input", description="cwl_input:input", content=None)], outputs=[Output(url="file:///data/tmp/W7OAI8/tmp_c6jbygt/md5", path="/LLKnVR/md5", type="FILE", name="stdout", description=None), Output(url="file:///data/tmp/W7OAI8/tmp_c6jbygt/", path="/LLKnVR", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="kubler/openssl", command=["openssl", "dgst", "-md5", "/var/lib/cwl/stg56f90fe0-6f13-4f07-8eac-592423257ece/README.md"], workdir="/LLKnVR", stdin=None, stdout="/LLKnVR/md5", stderr=None, env={"HOME": "/LLKnVR", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-md5.cwl.yml"}, logs=None, creation_time=None)
+[job step sha] evaluated job input to {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#sha/input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[step sha] start
+[job sha] initializing from file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml as part of step sha
+[job sha] {
+    "input": {
+        "class": "File",
+        "location": "file:///data/tmp/README.md",
+        "size": 1341,
+        "basename": "README.md",
+        "nameroot": "README",
+        "nameext": ".md"
+    }
+}
+[job sha] path mappings is {
+    "file:///data/tmp/README.md": [
+        "/data/tmp/README.md",
+        "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md",
+        "File",
+        true
+    ]
+}
+[job sha] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "openssl"
+    },
+    {
+        "position": [
+            -1000000,
+            1
+        ],
+        "datum": "dgst"
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "datum": "-sha"
+    },
+    {
+        "position": [
+            1,
+            "input"
+        ],
+        "datum": {
+            "class": "File",
+            "location": "file:///data/tmp/README.md",
+            "size": 1341,
+            "basename": "README.md",
+            "nameroot": "README",
+            "nameext": ".md",
+            "path": "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md",
+            "dirname": "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8"
+        }
+    }
+]
+[job sha] self.__dict__ in run() ----------------------
+[workflow ] job step file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify not ready
+[workflow ] job step file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify not ready
+{"basedir": "/data/output/W7OAI8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7f3231766fd0>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7f3232838a20>>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml#output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "sha")]))])], <cwltool.builder.Builder object at 0x7f3231766fd0>, compute_checksum=True, jobname="sha", readers={"file:///data/tmp/README.md": CommentedMap([("class", "File"), ("location", "file:///data/tmp/README.md"), ("size", 1341), ("basename", "README.md"), ("nameroot", "README"), ("nameext", ".md"), ("path", "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md"), ("dirname", "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8")])}),
+ "command_line": ["openssl",
+                  "dgst",
+                  "-sha",
+                  "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7f323176f7f0>,
+ "generatefiles": {"basename": "46bbdde7-f7a4-4a9a-b2fd-9c584a24d064",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:46bbdde7-f7a4-4a9a-b2fd-9c584a24d064"},
+ "generatemapper": None,
+ "hints": [{"class": "DockerRequirement",
+            "dockerPull": "kubler/openssl"}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"input": {"basename": "README.md",
+                        "class": "File",
+                        "dirname": "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8",
+                        "location": "file:///data/tmp/README.md",
+                        "nameext": ".md",
+                        "nameroot": "README",
+                        "path": "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md",
+                        "size": 1341}},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7f3232838a20>>,
+ "name": "sha",
+ "networkaccess": True,
+ "outdir": "/data/tmp/W7OAI8/tmplr_axmff",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7f3232834e80>>, functools.partial(<bound method WorkflowJob.receive_output of <cwltool.workflow.WorkflowJob object at 0x7f32327b0b70>>, <cwltool.workflow.WorkflowJobStep object at 0x7f32327b0d68>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#sha/output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "sha")])), ("_tool_entry", CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml#output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "sha")]))]))])], <bound method JobExecutor.output_callback of <cwltool.executors.MultithreadedJobExecutor object at 0x7f3232abee48>>)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7f323176f940>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7f32317662b0>,
+ "spec": {"arguments": ["-sha"],
+          "baseCommand": ["openssl", "dgst"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "hash input through sha",
+          "hints": [{"class": "DockerRequirement",
+                     "dockerPull": "kubler/openssl"}],
+          "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml",
+          "inputs": [{"doc": "original content",
+                      "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml#input",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "type": "File"}],
+          "outputs": [{"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml#output",
+                       "outputBinding": CommentedMap([("glob", "sha")]),
+                       "type": "File"}],
+          "stdout": "sha"},
+ "stagedir": "/data/tmp/W7OAI8/tmpjacdnorw",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": "sha",
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/W7OAI8/tmp9ow1ngut",
+ "token": None}
+[job sha] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="sha", description="hash input through sha", inputs=[Input(url="file:///data/tmp/README.md", path="/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md", type="FILE", name="input", description="cwl_input:input", content=None)], outputs=[Output(url="file:///data/tmp/W7OAI8/tmplr_axmff/sha", path="/LLKnVR/sha", type="FILE", name="stdout", description=None), Output(url="file:///data/tmp/W7OAI8/tmplr_axmff/", path="/LLKnVR", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="kubler/openssl", command=["openssl", "dgst", "-sha", "/var/lib/cwl/stgc7d1e5d5-7f25-4aeb-8a41-3c5a3bca50d8/README.md"], workdir="/LLKnVR", stdin=None, stdout="/LLKnVR/sha", stderr=None, env={"HOME": "/LLKnVR", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-sha.cwl.yml"}, logs=None, creation_time=None)
+[job md5] SUBMITTED TASK ----------------------
+[job whirlpool] SUBMITTED TASK ----------------------
+[job sha] SUBMITTED TASK ----------------------
+[job whirlpool] FINAL JOB STATE: COMPLETE ------------------
+[step whirlpool] produced output {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#whirlpool/output": {
+        "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+        "basename": "whirpool",
+        "nameroot": "whirpool",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+        "size": 201,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step whirlpool] completed success
+[job whirlpool] OUTPUTS ------------------
+{"output": {"basename": "whirpool",
+            "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+            "class": "File",
+            "http://commonwl.org/cwltool#generation": 0,
+            "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+            "nameext": "",
+            "nameroot": "whirpool",
+            "size": 201}}
+[job whirlpool] STARTING CLEAN UP ------------------
+[job whirlpool] Removing input staging directory /data/tmp/W7OAI8/tmp7qct_kgg
+[job whirlpool] Removing temporary directory /data/tmp/W7OAI8/tmpsth7micx
+[workflow ] job step file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify not ready
+[job md5] FINAL JOB STATE: COMPLETE ------------------
+[step md5] produced output {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#md5/output": {
+        "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+        "basename": "md5",
+        "nameroot": "md5",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+        "size": 102,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step md5] completed success
+[job md5] OUTPUTS ------------------
+{"output": {"basename": "md5",
+            "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+            "class": "File",
+            "http://commonwl.org/cwltool#generation": 0,
+            "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+            "nameext": "",
+            "nameroot": "md5",
+            "size": 102}}
+[job md5] STARTING CLEAN UP ------------------
+[job md5] Removing input staging directory /data/tmp/W7OAI8/tmpk7nz30ug
+[job md5] Removing temporary directory /data/tmp/W7OAI8/tmph5bu_cy4
+[workflow ] job step file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify not ready
+[job sha] FINAL JOB STATE: COMPLETE ------------------
+[step sha] produced output {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#sha/output": {
+        "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+        "basename": "sha",
+        "nameroot": "sha",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+        "size": 110,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step sha] completed success
+[job sha] OUTPUTS ------------------
+{"output": {"basename": "sha",
+            "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+            "class": "File",
+            "http://commonwl.org/cwltool#generation": 0,
+            "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+            "nameext": "",
+            "nameroot": "sha",
+            "size": 110}}
+[job sha] STARTING CLEAN UP ------------------
+[job sha] Removing input staging directory /data/tmp/W7OAI8/tmpjacdnorw
+[job sha] Removing temporary directory /data/tmp/W7OAI8/tmp9ow1ngut
+[workflow ] starting step unify
+[job step unify] job input {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/md5": {
+        "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+        "basename": "md5",
+        "nameroot": "md5",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+        "size": 102,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/sha": {
+        "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+        "basename": "sha",
+        "nameroot": "sha",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+        "size": 110,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/whirlpool": {
+        "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+        "basename": "whirpool",
+        "nameroot": "whirpool",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+        "size": 201,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[job step unify] evaluated job input to {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/md5": {
+        "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+        "basename": "md5",
+        "nameroot": "md5",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+        "size": 102,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/sha": {
+        "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+        "basename": "sha",
+        "nameroot": "sha",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+        "size": 110,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/whirlpool": {
+        "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+        "basename": "whirpool",
+        "nameroot": "whirpool",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+        "size": 201,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step unify] start
+[job unify] initializing from file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml as part of step unify
+[job unify] {
+    "md5": {
+        "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+        "basename": "md5",
+        "nameroot": "md5",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+        "size": 102,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "sha": {
+        "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+        "basename": "sha",
+        "nameroot": "sha",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+        "size": 110,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "whirlpool": {
+        "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+        "basename": "whirpool",
+        "nameroot": "whirpool",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+        "size": 201,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[job unify] path mappings is {
+    "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5": [
+        "/data/tmp/W7OAI8/tmp_c6jbygt/md5",
+        "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5",
+        "File",
+        true
+    ],
+    "file:///data/tmp/W7OAI8/tmplr_axmff/sha": [
+        "/data/tmp/W7OAI8/tmplr_axmff/sha",
+        "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha",
+        "File",
+        true
+    ],
+    "file:///data/tmp/W7OAI8/tmppukojufq/whirpool": [
+        "/data/tmp/W7OAI8/tmppukojufq/whirpool",
+        "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool",
+        "File",
+        true
+    ]
+}
+[job unify] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "cat"
+    },
+    {
+        "position": [
+            1,
+            "md5"
+        ],
+        "datum": {
+            "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+            "basename": "md5",
+            "nameroot": "md5",
+            "nameext": "",
+            "class": "File",
+            "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+            "size": 102,
+            "http://commonwl.org/cwltool#generation": 0,
+            "path": "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5",
+            "dirname": "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4"
+        }
+    },
+    {
+        "position": [
+            2,
+            "sha"
+        ],
+        "datum": {
+            "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+            "basename": "sha",
+            "nameroot": "sha",
+            "nameext": "",
+            "class": "File",
+            "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+            "size": 110,
+            "http://commonwl.org/cwltool#generation": 0,
+            "path": "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha",
+            "dirname": "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479"
+        }
+    },
+    {
+        "position": [
+            3,
+            "whirlpool"
+        ],
+        "datum": {
+            "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+            "basename": "whirpool",
+            "nameroot": "whirpool",
+            "nameext": "",
+            "class": "File",
+            "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+            "size": 201,
+            "http://commonwl.org/cwltool#generation": 0,
+            "path": "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool",
+            "dirname": "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf"
+        }
+    }
+]
+[job unify] self.__dict__ in run() ----------------------
+{"basedir": "/data/output/W7OAI8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7f323176ff98>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7f32329a3d68>>, [CommentedMap([("type", "File"), ("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml#output"), ("outputBinding", CommentedMap([("glob", "unify")]))])], <cwltool.builder.Builder object at 0x7f323176ff98>, compute_checksum=True, jobname="unify", readers={"file:///data/tmp/W7OAI8/tmp_c6jbygt/md5": {"location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5", "basename": "md5", "nameroot": "md5", "nameext": "", "class": "File", "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784", "size": 102, "http://commonwl.org/cwltool#generation": 0, "path": "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5", "dirname": "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4"}, "file:///data/tmp/W7OAI8/tmplr_axmff/sha": {"location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha", "basename": "sha", "nameroot": "sha", "nameext": "", "class": "File", "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c", "size": 110, "http://commonwl.org/cwltool#generation": 0, "path": "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha", "dirname": "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479"}, "file:///data/tmp/W7OAI8/tmppukojufq/whirpool": {"location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool", "basename": "whirpool", "nameroot": "whirpool", "nameext": "", "class": "File", "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962", "size": 201, "http://commonwl.org/cwltool#generation": 0, "path": "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool", "dirname": "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf"}}),
+ "command_line": ["cat",
+                  "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5",
+                  "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha",
+                  "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7f323176fdd8>,
+ "generatefiles": {"basename": "e9049610-250a-4d39-95d8-93b23ef86e6d",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:e9049610-250a-4d39-95d8-93b23ef86e6d"},
+ "generatemapper": None,
+ "hints": [{"class": "DockerRequirement",
+            "dockerPull": "frolvlad/alpine-bash"}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"md5": {"basename": "md5",
+                      "checksum": "sha1$d97e22139a690277872b2936913445ac3483b784",
+                      "class": "File",
+                      "dirname": "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4",
+                      "http://commonwl.org/cwltool#generation": 0,
+                      "location": "file:///data/tmp/W7OAI8/tmp_c6jbygt/md5",
+                      "nameext": "",
+                      "nameroot": "md5",
+                      "path": "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5",
+                      "size": 102},
+              "sha": {"basename": "sha",
+                      "checksum": "sha1$00b0c2f72d8073e5b1fbe04ad4a0697c2dac7b9c",
+                      "class": "File",
+                      "dirname": "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479",
+                      "http://commonwl.org/cwltool#generation": 0,
+                      "location": "file:///data/tmp/W7OAI8/tmplr_axmff/sha",
+                      "nameext": "",
+                      "nameroot": "sha",
+                      "path": "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha",
+                      "size": 110},
+              "whirlpool": {"basename": "whirpool",
+                            "checksum": "sha1$fe04a05f5422cae8b40a9b17d8a06bfb67e6b962",
+                            "class": "File",
+                            "dirname": "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf",
+                            "http://commonwl.org/cwltool#generation": 0,
+                            "location": "file:///data/tmp/W7OAI8/tmppukojufq/whirpool",
+                            "nameext": "",
+                            "nameroot": "whirpool",
+                            "path": "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool",
+                            "size": 201}},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7f32329a3d68>>,
+ "name": "unify",
+ "networkaccess": True,
+ "outdir": "/data/tmp/W7OAI8/tmpuwmrjrs5",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7f32327fe2e8>>, functools.partial(<bound method WorkflowJob.receive_output of <cwltool.workflow.WorkflowJob object at 0x7f32327b0b70>>, <cwltool.workflow.WorkflowJobStep object at 0x7f32327b0b38>, [CommentedMap([("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/output"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "unify")])), ("_tool_entry", CommentedMap([("type", "File"), ("id", "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml#output"), ("outputBinding", CommentedMap([("glob", "unify")]))]))])], <bound method JobExecutor.output_callback of <cwltool.executors.MultithreadedJobExecutor object at 0x7f3232abee48>>)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7f3231763f28>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7f323176ffd0>,
+ "spec": {"baseCommand": ["cat"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "unify hashed values into a single output",
+          "hints": [{"class": "DockerRequirement",
+                     "dockerPull": "frolvlad/alpine-bash"}],
+          "id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml",
+          "inputs": [{"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml#md5",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "type": "File"},
+                     {"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml#sha",
+                      "inputBinding": CommentedMap([("position", 2)]),
+                      "type": "File"},
+                     {"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml#whirlpool",
+                      "inputBinding": CommentedMap([("position", 3)]),
+                      "type": "File"}],
+          "outputs": [{"id": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml#output",
+                       "outputBinding": CommentedMap([("glob", "unify")]),
+                       "type": "File"}],
+          "stdout": "unify"},
+ "stagedir": "/data/tmp/W7OAI8/tmpwjfa6aba",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": "unify",
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/W7OAI8/tmpfvruiaby",
+ "token": None}
+[job unify] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="unify", description="unify hashed values into a single output", inputs=[Input(url="file:///data/tmp/W7OAI8/tmp_c6jbygt/md5", path="/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5", type="FILE", name="md5", description="cwl_input:md5", content=None), Input(url="file:///data/tmp/W7OAI8/tmplr_axmff/sha", path="/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha", type="FILE", name="sha", description="cwl_input:sha", content=None), Input(url="file:///data/tmp/W7OAI8/tmppukojufq/whirpool", path="/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool", type="FILE", name="whirlpool", description="cwl_input:whirlpool", content=None)], outputs=[Output(url="file:///data/tmp/W7OAI8/tmpuwmrjrs5/unify", path="/LLKnVR/unify", type="FILE", name="stdout", description=None), Output(url="file:///data/tmp/W7OAI8/tmpuwmrjrs5/", path="/LLKnVR", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="frolvlad/alpine-bash", command=["cat", "/var/lib/cwl/stgcd128fb9-296d-4c87-adb6-64516b24b4b4/md5", "/var/lib/cwl/stg8d6fc011-4cb7-4bc6-9a2b-5c9582505479/sha", "/var/lib/cwl/stg68c1c56b-afd4-40f7-aecc-4bc575c510cf/whirpool"], workdir="/LLKnVR", stdin=None, stdout="/LLKnVR/unify", stderr=None, env={"HOME": "/LLKnVR", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-unify.cwl.yml"}, logs=None, creation_time=None)
+[job unify] SUBMITTED TASK ----------------------
+[job unify] FINAL JOB STATE: COMPLETE ------------------
+[step unify] produced output {
+    "file:///data/output/W7OAI8/workflow_files/repo/hashsplitter-workflow.cwl#unify/output": {
+        "location": "file:///data/tmp/W7OAI8/tmpuwmrjrs5/unify",
+        "basename": "unify",
+        "nameroot": "unify",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$fa6af7f4f7fa2fe5b6734c670ee73253e415dd4d",
+        "size": 413,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step unify] completed success
+[workflow ] completed success
+[workflow ] {
+    "output": {
+        "location": "file:///data/tmp/W7OAI8/tmpuwmrjrs5/unify",
+        "basename": "unify",
+        "nameroot": "unify",
+        "nameext": "",
+        "class": "File",
+        "checksum": "sha1$fa6af7f4f7fa2fe5b6734c670ee73253e415dd4d",
+        "size": 413,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[job unify] OUTPUTS ------------------
+{"output": {"basename": "unify",
+            "checksum": "sha1$fa6af7f4f7fa2fe5b6734c670ee73253e415dd4d",
+            "class": "File",
+            "http://commonwl.org/cwltool#generation": 0,
+            "location": "file:///data/tmp/W7OAI8/tmpuwmrjrs5/unify",
+            "nameext": "",
+            "nameroot": "unify",
+            "size": 413}}
+[job unify] STARTING CLEAN UP ------------------
+[job unify] Removing input staging directory /data/tmp/W7OAI8/tmpwjfa6aba
+[job unify] Removing temporary directory /data/tmp/W7OAI8/tmpfvruiaby
+{
+    "output": {
+        "location": "file:///data/tmp/W7OAI8/tmpuwmrjrs5/unify",
+        "basename": "unify",
+        "class": "File",
+        "checksum": "sha1$fa6af7f4f7fa2fe5b6734c670ee73253e415dd4d",
+        "size": 413,
+        "path": "/data/tmp/W7OAI8/tmpuwmrjrs5/unify"
+    }
+}
+Final process status is success

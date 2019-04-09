@@ -25,6 +25,26 @@ class CeleryTaskMonitorTest(unittest.TestCase):
         self.assertEquals(outputs, {})   # FIXME
             
             
+    def test_parse_HashSplitter_output(self):
+        
+        outputs = parseOutputs('wes_elixir_test/resources/HashSplitter_output.txt')
+        
+        print(outputs)
+        
+        self.assertEquals(outputs, {
+            
+            'output': {
+                
+                'basename': 'unify',
+                'checksum': 'sha1$fa6af7f4f7fa2fe5b6734c670ee73253e415dd4d',
+                'class': 'File',
+                'location': 'file:///data/tmp/W7OAI8/tmpuwmrjrs5/unify',
+                'path': '/data/tmp/W7OAI8/tmpuwmrjrs5/unify',
+                'size': 413
+            }
+        })
+            
+            
         
         
 
