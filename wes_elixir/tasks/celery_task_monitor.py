@@ -28,6 +28,21 @@ logger = logging.getLogger(__name__)
 strf: str = '%Y-%m-%d %H:%M:%S.%f'
 
 
+def cwl_tes_outputs_parser(log: str) -> Dict:
+    """Parses outputs from cwl-tes log."""
+    # Find outputs object in log string
+    re_outputs = re.compile(
+        r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)',
+        re.MULTILINE
+    )
+    m = re_outputs.search(log)
+    if m:
+        return literal_eval(m.group(1))
+    else:
+        return dict()
+
+
+
 class TaskMonitor():
     """Celery task monitor."""
 
@@ -474,20 +489,6 @@ class TaskMonitor():
             )
 
         return document
-
-    @staticmethod
-    def __cwl_tes_outputs_parser(log: str) -> Dict:
-        """Parses outputs from cwl-tes log."""
-        # Find outputs object in log string
-        re_outputs = re.compile(
-            r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)',
-            re.MULTILINE
-        )
-        m = re_outputs.search(log)
-        if m:
-            return literal_eval(m.group(1))
-        else:
-            return dict()
 
     def __get_tes_task_logs(
         self,

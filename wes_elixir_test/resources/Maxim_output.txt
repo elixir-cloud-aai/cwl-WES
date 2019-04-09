@@ -1,0 +1,1601 @@
+/usr/local/bin/cwl-tes 0.2.0 with cwltool 1.0.20181217162649
+Resolved "/data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl" to "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl"
+URI prefix "edam" of "edam:format_1929" not recognized, are you missing a $namespaces section?
+https://schema.org/docs/!DOCTYPE html does not look like a valid URI, trying to serialize this will break.
+https://schema.org/docs/html lang="en" does not look like a valid URI, trying to serialize this will break.
+../../output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl:27:3: object id `../../output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches` previously defined
+../../output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl:102:5: Unknown hint http://galaxyproject.org/cwl#interface
+../../output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl:53:5: Unknown hint http://galaxyproject.org/cwl#interface
+[workflow ] initialized from file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl
+[workflow ] start
+[workflow ] {
+    "clan_info": {
+        "class": "File",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+        "size": 212,
+        "basename": "ribo.claninfo",
+        "nameroot": "ribo",
+        "nameext": ".claninfo"
+    },
+    "cores": 4,
+    "covariance_models": [
+        {
+            "class": "File",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm",
+            "size": 50024,
+            "basename": "tRNA5.c.cm",
+            "nameroot": "tRNA5.c",
+            "nameext": ".cm"
+        },
+        {
+            "class": "File",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm",
+            "size": 52396,
+            "basename": "mt-tmRNA.cm",
+            "nameroot": "mt-tmRNA",
+            "nameext": ".cm"
+        }
+    ],
+    "query_sequences": {
+        "class": "File",
+        "format": "http://edamontology.org/format_1929",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+        "size": 2979240,
+        "basename": "mrum-genome.fa",
+        "nameroot": "mrum-genome",
+        "nameext": ".fa"
+    },
+    "catOutputFileName": "cat_cmsearch_matches.tbl"
+}
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps not ready
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches not ready
+[workflow ] starting step cmsearch
+[step cmsearch] start
+[job cmsearch] initializing from file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl as part of step cmsearch
+[job cmsearch] {
+    "covariance_model_database": {
+        "class": "File",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm",
+        "size": 50024,
+        "basename": "tRNA5.c.cm",
+        "nameroot": "tRNA5.c",
+        "nameext": ".cm"
+    },
+    "cpu": 4,
+    "omit_alignment_section": true,
+    "only_hmm": true,
+    "query_sequences": {
+        "class": "File",
+        "format": "http://edamontology.org/format_1929",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+        "size": 2979240,
+        "basename": "mrum-genome.fa",
+        "nameroot": "mrum-genome",
+        "nameext": ".fa"
+    },
+    "search_space_size": 1000,
+    "cut_ga": false
+}
+[job cmsearch] path mappings is {
+    "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm": [
+        "/data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm",
+        "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm",
+        "File",
+        true
+    ],
+    "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa": [
+        "/data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+        "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa",
+        "File",
+        true
+    ]
+}
+[job cmsearch] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "cmsearch"
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "prefix": "--tblout",
+        "valueFrom": "$(inputs.query_sequences.basename).cmsearch_matches.tbl"
+    },
+    {
+        "position": [
+            0,
+            1
+        ],
+        "prefix": "-o",
+        "valueFrom": "$(inputs.query_sequences.basename).cmsearch.out"
+    },
+    {
+        "position": [
+            0,
+            "cpu"
+        ],
+        "prefix": "--cpu",
+        "datum": 4
+    },
+    {
+        "position": [
+            0,
+            "cut_ga"
+        ],
+        "prefix": "--cut_ga",
+        "datum": false
+    },
+    {
+        "position": [
+            0,
+            "omit_alignment_section"
+        ],
+        "prefix": "--noali",
+        "datum": true
+    },
+    {
+        "position": [
+            0,
+            "only_hmm"
+        ],
+        "prefix": "--hmmonly",
+        "datum": true
+    },
+    {
+        "position": [
+            0,
+            "search_space_size"
+        ],
+        "prefix": "-Z",
+        "datum": 1000
+    },
+    {
+        "position": [
+            1,
+            "covariance_model_database"
+        ],
+        "datum": {
+            "class": "File",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm",
+            "size": 50024,
+            "basename": "tRNA5.c.cm",
+            "nameroot": "tRNA5.c",
+            "nameext": ".cm",
+            "path": "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm",
+            "dirname": "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90"
+        }
+    },
+    {
+        "position": [
+            2,
+            "query_sequences"
+        ],
+        "datum": {
+            "class": "File",
+            "format": "http://edamontology.org/format_1929",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+            "size": 2979240,
+            "basename": "mrum-genome.fa",
+            "nameroot": "mrum-genome",
+            "nameext": ".fa",
+            "path": "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa",
+            "dirname": "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65"
+        }
+    }
+]
+[job cmsearch] self.__dict__ in run() ----------------------
+[step cmsearch] start
+{"basedir": "/data/output/YYERT8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7fea591bab00>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7fea5a7d4780>>, [CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#matches"), ("doc", "http://eddylab.org/infernal/Userguide.pdf#page=60"), ("label", "target hits table, format 2"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.query_sequences.basename).cmsearch_matches.tbl")]))]), CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#programOutput"), ("label", "direct output to file, not stdout"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.query_sequences.basename).cmsearch.out")]))])], <cwltool.builder.Builder object at 0x7fea591bab00>, compute_checksum=True, jobname="cmsearch", readers={"file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm": CommentedMap([("class", "File"), ("location", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm"), ("size", 50024), ("basename", "tRNA5.c.cm"), ("nameroot", "tRNA5.c"), ("nameext", ".cm"), ("path", "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm"), ("dirname", "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90")]), "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa": CommentedMap([("class", "File"), ("format", "http://edamontology.org/format_1929"), ("location", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa"), ("size", 2979240), ("basename", "mrum-genome.fa"), ("nameroot", "mrum-genome"), ("nameext", ".fa"), ("path", "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa"), ("dirname", "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65")])}),
+ "command_line": ["cmsearch",
+                  "--tblout",
+                  "mrum-genome.fa.cmsearch_matches.tbl",
+                  "-o",
+                  "mrum-genome.fa.cmsearch.out",
+                  "--cpu",
+                  "4",
+                  "--noali",
+                  "--hmmonly",
+                  "-Z",
+                  "1000",
+                  "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm",
+                  "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7fea591463c8>,
+ "generatefiles": {"basename": "2dbc55a0-a18f-491d-89c8-6b166f500622",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:2dbc55a0-a18f-491d-89c8-6b166f500622"},
+ "generatemapper": None,
+ "hints": [{"class": "SoftwareRequirement",
+            "packages": [{"package": "infernal",
+                          "specs": ["https://identifiers.org/rrid/RRID:SCR_011809"],
+                          "version": ["1.1.2"]}]},
+           {"class": "DockerRequirement",
+            "dockerPull": "quay.io/biocontainers/infernal:1.1.2--h470a237_1"},
+           {"class": "http://galaxyproject.org/cwl#interface",
+            "http://galaxyproject.org/cwl#inputs": [{"http://galaxyproject.org/cwl#format": "txt",
+                                                     "http://galaxyproject.org/cwl#name": "covariance_model_database",
+                                                     "http://galaxyproject.org/cwl#type": "data"},
+                                                    {"http://galaxyproject.org/cwl#name": "cpu",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "integer"},
+                                                    {"http://galaxyproject.org/cwl#name": "cut_ga",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "boolean"},
+                                                    {"http://galaxyproject.org/cwl#name": "omit_alignment_section",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "boolean"},
+                                                    {"http://galaxyproject.org/cwl#name": "only_hmm",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "boolean"},
+                                                    {"http://galaxyproject.org/cwl#format": "txt",
+                                                     "http://galaxyproject.org/cwl#name": "query_sequences",
+                                                     "http://galaxyproject.org/cwl#type": "data"},
+                                                    {"http://galaxyproject.org/cwl#default_value": 1000,
+                                                     "http://galaxyproject.org/cwl#name": "search_space_size",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "integer"}]}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"covariance_model_database": {"basename": "tRNA5.c.cm",
+                                            "class": "File",
+                                            "dirname": "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90",
+                                            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm",
+                                            "nameext": ".cm",
+                                            "nameroot": "tRNA5.c",
+                                            "path": "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm",
+                                            "size": 50024},
+              "cpu": 4,
+              "cut_ga": False,
+              "omit_alignment_section": True,
+              "only_hmm": True,
+              "query_sequences": {"basename": "mrum-genome.fa",
+                                  "class": "File",
+                                  "dirname": "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65",
+                                  "format": "http://edamontology.org/format_1929",
+                                  "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+                                  "nameext": ".fa",
+                                  "nameroot": "mrum-genome",
+                                  "path": "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa",
+                                  "size": 2979240},
+              "search_space_size": 1000},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7fea5a7d4780>>,
+ "name": "cmsearch",
+ "networkaccess": True,
+ "outdir": "/data/tmp/YYERT8/tmp8e8rmrys",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7fea5a5ea208>>, functools.partial(<bound method ReceiveScatterOutput.receive_scatter_output of <cwltool.workflow.ReceiveScatterOutput object at 0x7fea591baba8>>, 0)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7fea59146438>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [CommentedMap([("class", "ScatterFeatureRequirement")]),
+                  CommentedMap([("class", "InlineJavascriptRequirement")])],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7fea591bac18>,
+ "spec": {"$namespaces": {"edam": "http://edamontology.org/",
+                          "gx": "http://galaxyproject.org/cwl#",
+                          "s": "http://schema.org/"},
+          "$schemas": ["http://edamontology.org/EDAM_1.16.owl",
+                       "https://schema.org/docs/schema_org_rdfa.html"],
+          "arguments": [{"position": 0,
+                         "prefix": "--tblout",
+                         "valueFrom": "$(inputs.query_sequences.basename).cmsearch_matches.tbl"},
+                        {"position": 0,
+                         "prefix": "-o",
+                         "valueFrom": "$(inputs.query_sequences.basename).cmsearch.out"}],
+          "baseCommand": ["cmsearch"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "Infernal ("INFERence of RNA ALignment") is for searching DNA "
+                 "sequence databases for RNA structure and sequence "
+                 "similarities. It is an implementation of a special case of "
+                 "profile stochastic context-free grammars called covariance "
+                 "models (CMs). A CM is like a sequence profile, but it scores "
+                 "a combination of sequence consensus and RNA secondary "
+                 "structure consensus, so in many cases, it is more capable of "
+                 "identifying RNA homologs that conserve their secondary "
+                 "structure more than their primary sequence.
+"
+                 "Please visit http://eddylab.org/infernal/ for full "
+                 "documentation.
+"
+                 "Version 1.1.2 can be downloaded from "
+                 "http://eddylab.org/infernal/infernal-1.1.2.tar.gz
+",
+          "hints": [{"class": "SoftwareRequirement",
+                     "packages": [{"package": "infernal",
+                                   "specs": ["https://identifiers.org/rrid/RRID:SCR_011809"],
+                                   "version": ["1.1.2"]}]},
+                    {"class": "DockerRequirement",
+                     "dockerPull": "quay.io/biocontainers/infernal:1.1.2--h470a237_1"},
+                    {"class": "http://galaxyproject.org/cwl#interface",
+                     "http://galaxyproject.org/cwl#inputs": [{"http://galaxyproject.org/cwl#format": "txt",
+                                                              "http://galaxyproject.org/cwl#name": "covariance_model_database",
+                                                              "http://galaxyproject.org/cwl#type": "data"},
+                                                             {"http://galaxyproject.org/cwl#name": "cpu",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "integer"},
+                                                             {"http://galaxyproject.org/cwl#name": "cut_ga",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "boolean"},
+                                                             {"http://galaxyproject.org/cwl#name": "omit_alignment_section",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "boolean"},
+                                                             {"http://galaxyproject.org/cwl#name": "only_hmm",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "boolean"},
+                                                             {"http://galaxyproject.org/cwl#format": "txt",
+                                                              "http://galaxyproject.org/cwl#name": "query_sequences",
+                                                              "http://galaxyproject.org/cwl#type": "data"},
+                                                             {"http://galaxyproject.org/cwl#default_value": 1000,
+                                                              "http://galaxyproject.org/cwl#name": "search_space_size",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "integer"}]}],
+          "http://schema.org/author": "Michael Crusoe, Maxim Scheremetjew",
+          "http://schema.org/copyrightHolder": "EMBL - European Bioinformatics "
+                                               "Institute",
+          "http://schema.org/license": "https://www.apache.org/licenses/LICENSE-2.0",
+          "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl",
+          "inputs": [{"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#covariance_model_database",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "type": "File"},
+                     {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#cpu",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--cpu"},
+                      "label": "Number of parallel CPU workers to use for "
+                               "multithreads",
+                      "type": ["null", "int"]},
+                     {"default": False,
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#cut_ga",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--cut_ga"},
+                      "label": "use CM"s GA gathering cutoffs as reporting "
+                               "thresholds",
+                      "type": ["null", "boolean"]},
+                     {"doc": "This can greatly reduce the output volume.",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#omit_alignment_section",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--noali"},
+                      "label": "Omit the alignment section from the main "
+                               "output.",
+                      "type": ["null", "boolean"]},
+                     {"default": False,
+                      "doc": "Only filter stages F1 through F3 will be "
+                             "executed, using strict P-value
+"
+                             "thresholds (0.02 for F1, 0.001 for F2 and "
+                             "0.00001 for F3). Additionally
+"
+                             "a bias composition filter is used after the F1 "
+                             "stage (with P=0.02
+"
+                             "survival threshold). Any hit that survives all "
+                             "stages and has an HMM
+"
+                             "E-value or bit score above the reporting "
+                             "threshold will be output.
+",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#only_hmm",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--hmmonly"},
+                      "label": "Only use the filter profile HMM for searches, "
+                               "do not use the CM",
+                      "type": ["null", "boolean"]},
+                     {"format": "http://edamontology.org/format_1929",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#query_sequences",
+                      "inputBinding": CommentedMap([("position", 2)]),
+                      "streamable": True,
+                      "type": "File"},
+                     {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#search_space_size",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "-Z"},
+                      "label": "search space size in *Mb* to <x> for E-value "
+                               "calculations",
+                      "type": "int"}],
+          "label": "Search sequence(s) against a covariance model database",
+          "outputs": [{"doc": "http://eddylab.org/infernal/Userguide.pdf#page=60",
+                       "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#matches",
+                       "label": "target hits table, format 2",
+                       "outputBinding": {"glob": "$(inputs.query_sequences.basename).cmsearch_matches.tbl"},
+                       "type": "File"},
+                      {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#programOutput",
+                       "label": "direct output to file, not stdout",
+                       "outputBinding": {"glob": "$(inputs.query_sequences.basename).cmsearch.out"},
+                       "type": "File"}],
+          "requirements": [{"class": "InlineJavascriptRequirement"}]},
+ "stagedir": "/data/tmp/YYERT8/tmpl74208ef",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": None,
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/YYERT8/tmphb41m8af",
+ "token": None}
+[job cmsearch] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="cmsearch", description="Infernal ("INFERence of RNA ALignment") is for searching DNA sequence databases for RNA structure and sequence similarities. It is an implementation of a special case of profile stochastic context-free grammars called covariance models (CMs). A CM is like a sequence profile, but it scores a combination of sequence consensus and RNA secondary structure consensus, so in many cases, it is more capable of identifying RNA homologs that conserve their secondary structure more than their primary sequence.
+Please visit http://eddylab.org/infernal/ for full documentation.
+Version 1.1.2 can be downloaded from http://eddylab.org/infernal/infernal-1.1.2.tar.gz
+", inputs=[Input(url="file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/tRNA5.c.cm", path="/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm", type="FILE", name="covariance_model_database", description="cwl_input:covariance_model_database", content=None), Input(url="file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa", path="/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa", type="FILE", name="query_sequences", description="cwl_input:query_sequences", content=None)], outputs=[Output(url="file:///data/tmp/YYERT8/tmp8e8rmrys/", path="/bYalqn", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="quay.io/biocontainers/infernal:1.1.2--h470a237_1", command=["cmsearch", "--tblout", "mrum-genome.fa.cmsearch_matches.tbl", "-o", "mrum-genome.fa.cmsearch.out", "--cpu", "4", "--noali", "--hmmonly", "-Z", "1000", "/var/lib/cwl/stgd8c33b48-350c-4524-ac44-325edbba0c90/tRNA5.c.cm", "/var/lib/cwl/stga09668d2-e2eb-4b4c-b55b-3dd8b08f7d65/mrum-genome.fa"], workdir="/bYalqn", stdin=None, stdout=None, stderr=None, env={"HOME": "/bYalqn", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl"}, logs=None, creation_time=None)
+[job cmsearch_2] initializing from file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl as part of step cmsearch
+[job cmsearch_2] {
+    "covariance_model_database": {
+        "class": "File",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm",
+        "size": 52396,
+        "basename": "mt-tmRNA.cm",
+        "nameroot": "mt-tmRNA",
+        "nameext": ".cm"
+    },
+    "cpu": 4,
+    "omit_alignment_section": true,
+    "only_hmm": true,
+    "query_sequences": {
+        "class": "File",
+        "format": "http://edamontology.org/format_1929",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+        "size": 2979240,
+        "basename": "mrum-genome.fa",
+        "nameroot": "mrum-genome",
+        "nameext": ".fa"
+    },
+    "search_space_size": 1000,
+    "cut_ga": false
+}
+[job cmsearch_2] path mappings is {
+    "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm": [
+        "/data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm",
+        "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm",
+        "File",
+        true
+    ],
+    "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa": [
+        "/data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+        "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa",
+        "File",
+        true
+    ]
+}
+[job cmsearch_2] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "cmsearch"
+    },
+    {
+        "position": [
+            0,
+            0
+        ],
+        "prefix": "--tblout",
+        "valueFrom": "$(inputs.query_sequences.basename).cmsearch_matches.tbl"
+    },
+    {
+        "position": [
+            0,
+            1
+        ],
+        "prefix": "-o",
+        "valueFrom": "$(inputs.query_sequences.basename).cmsearch.out"
+    },
+    {
+        "position": [
+            0,
+            "cpu"
+        ],
+        "prefix": "--cpu",
+        "datum": 4
+    },
+    {
+        "position": [
+            0,
+            "cut_ga"
+        ],
+        "prefix": "--cut_ga",
+        "datum": false
+    },
+    {
+        "position": [
+            0,
+            "omit_alignment_section"
+        ],
+        "prefix": "--noali",
+        "datum": true
+    },
+    {
+        "position": [
+            0,
+            "only_hmm"
+        ],
+        "prefix": "--hmmonly",
+        "datum": true
+    },
+    {
+        "position": [
+            0,
+            "search_space_size"
+        ],
+        "prefix": "-Z",
+        "datum": 1000
+    },
+    {
+        "position": [
+            1,
+            "covariance_model_database"
+        ],
+        "datum": {
+            "class": "File",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm",
+            "size": 52396,
+            "basename": "mt-tmRNA.cm",
+            "nameroot": "mt-tmRNA",
+            "nameext": ".cm",
+            "path": "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm",
+            "dirname": "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b"
+        }
+    },
+    {
+        "position": [
+            2,
+            "query_sequences"
+        ],
+        "datum": {
+            "class": "File",
+            "format": "http://edamontology.org/format_1929",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+            "size": 2979240,
+            "basename": "mrum-genome.fa",
+            "nameroot": "mrum-genome",
+            "nameext": ".fa",
+            "path": "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa",
+            "dirname": "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85"
+        }
+    }
+]
+[job cmsearch_2] self.__dict__ in run() ----------------------
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps not ready
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches not ready
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps not ready
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches not ready
+{"basedir": "/data/output/YYERT8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7fea591baa20>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7fea5a7d4780>>, [CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#matches"), ("doc", "http://eddylab.org/infernal/Userguide.pdf#page=60"), ("label", "target hits table, format 2"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.query_sequences.basename).cmsearch_matches.tbl")]))]), CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#programOutput"), ("label", "direct output to file, not stdout"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.query_sequences.basename).cmsearch.out")]))])], <cwltool.builder.Builder object at 0x7fea591baa20>, compute_checksum=True, jobname="cmsearch_2", readers={"file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm": CommentedMap([("class", "File"), ("location", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm"), ("size", 52396), ("basename", "mt-tmRNA.cm"), ("nameroot", "mt-tmRNA"), ("nameext", ".cm"), ("path", "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm"), ("dirname", "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b")]), "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa": CommentedMap([("class", "File"), ("format", "http://edamontology.org/format_1929"), ("location", "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa"), ("size", 2979240), ("basename", "mrum-genome.fa"), ("nameroot", "mrum-genome"), ("nameext", ".fa"), ("path", "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa"), ("dirname", "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85")])}),
+ "command_line": ["cmsearch",
+                  "--tblout",
+                  "mrum-genome.fa.cmsearch_matches.tbl",
+                  "-o",
+                  "mrum-genome.fa.cmsearch.out",
+                  "--cpu",
+                  "4",
+                  "--noali",
+                  "--hmmonly",
+                  "-Z",
+                  "1000",
+                  "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm",
+                  "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7fea59162828>,
+ "generatefiles": {"basename": "cfb2d620-6793-40cf-8553-7bc15d00012a",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:cfb2d620-6793-40cf-8553-7bc15d00012a"},
+ "generatemapper": None,
+ "hints": [{"class": "SoftwareRequirement",
+            "packages": [{"package": "infernal",
+                          "specs": ["https://identifiers.org/rrid/RRID:SCR_011809"],
+                          "version": ["1.1.2"]}]},
+           {"class": "DockerRequirement",
+            "dockerPull": "quay.io/biocontainers/infernal:1.1.2--h470a237_1"},
+           {"class": "http://galaxyproject.org/cwl#interface",
+            "http://galaxyproject.org/cwl#inputs": [{"http://galaxyproject.org/cwl#format": "txt",
+                                                     "http://galaxyproject.org/cwl#name": "covariance_model_database",
+                                                     "http://galaxyproject.org/cwl#type": "data"},
+                                                    {"http://galaxyproject.org/cwl#name": "cpu",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "integer"},
+                                                    {"http://galaxyproject.org/cwl#name": "cut_ga",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "boolean"},
+                                                    {"http://galaxyproject.org/cwl#name": "omit_alignment_section",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "boolean"},
+                                                    {"http://galaxyproject.org/cwl#name": "only_hmm",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "boolean"},
+                                                    {"http://galaxyproject.org/cwl#format": "txt",
+                                                     "http://galaxyproject.org/cwl#name": "query_sequences",
+                                                     "http://galaxyproject.org/cwl#type": "data"},
+                                                    {"http://galaxyproject.org/cwl#default_value": 1000,
+                                                     "http://galaxyproject.org/cwl#name": "search_space_size",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "integer"}]}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"covariance_model_database": {"basename": "mt-tmRNA.cm",
+                                            "class": "File",
+                                            "dirname": "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b",
+                                            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm",
+                                            "nameext": ".cm",
+                                            "nameroot": "mt-tmRNA",
+                                            "path": "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm",
+                                            "size": 52396},
+              "cpu": 4,
+              "cut_ga": False,
+              "omit_alignment_section": True,
+              "only_hmm": True,
+              "query_sequences": {"basename": "mrum-genome.fa",
+                                  "class": "File",
+                                  "dirname": "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85",
+                                  "format": "http://edamontology.org/format_1929",
+                                  "location": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa",
+                                  "nameext": ".fa",
+                                  "nameroot": "mrum-genome",
+                                  "path": "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa",
+                                  "size": 2979240},
+              "search_space_size": 1000},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7fea5a7d4780>>,
+ "name": "cmsearch_2",
+ "networkaccess": True,
+ "outdir": "/data/tmp/YYERT8/tmpesf5g3nn",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7fea5a5ea208>>, functools.partial(<bound method ReceiveScatterOutput.receive_scatter_output of <cwltool.workflow.ReceiveScatterOutput object at 0x7fea591baba8>>, 1)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7fea591629b0>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [CommentedMap([("class", "ScatterFeatureRequirement")]),
+                  CommentedMap([("class", "InlineJavascriptRequirement")])],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7fea59146048>,
+ "spec": {"$namespaces": {"edam": "http://edamontology.org/",
+                          "gx": "http://galaxyproject.org/cwl#",
+                          "s": "http://schema.org/"},
+          "$schemas": ["http://edamontology.org/EDAM_1.16.owl",
+                       "https://schema.org/docs/schema_org_rdfa.html"],
+          "arguments": [{"position": 0,
+                         "prefix": "--tblout",
+                         "valueFrom": "$(inputs.query_sequences.basename).cmsearch_matches.tbl"},
+                        {"position": 0,
+                         "prefix": "-o",
+                         "valueFrom": "$(inputs.query_sequences.basename).cmsearch.out"}],
+          "baseCommand": ["cmsearch"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "Infernal ("INFERence of RNA ALignment") is for searching DNA "
+                 "sequence databases for RNA structure and sequence "
+                 "similarities. It is an implementation of a special case of "
+                 "profile stochastic context-free grammars called covariance "
+                 "models (CMs). A CM is like a sequence profile, but it scores "
+                 "a combination of sequence consensus and RNA secondary "
+                 "structure consensus, so in many cases, it is more capable of "
+                 "identifying RNA homologs that conserve their secondary "
+                 "structure more than their primary sequence.
+"
+                 "Please visit http://eddylab.org/infernal/ for full "
+                 "documentation.
+"
+                 "Version 1.1.2 can be downloaded from "
+                 "http://eddylab.org/infernal/infernal-1.1.2.tar.gz
+",
+          "hints": [{"class": "SoftwareRequirement",
+                     "packages": [{"package": "infernal",
+                                   "specs": ["https://identifiers.org/rrid/RRID:SCR_011809"],
+                                   "version": ["1.1.2"]}]},
+                    {"class": "DockerRequirement",
+                     "dockerPull": "quay.io/biocontainers/infernal:1.1.2--h470a237_1"},
+                    {"class": "http://galaxyproject.org/cwl#interface",
+                     "http://galaxyproject.org/cwl#inputs": [{"http://galaxyproject.org/cwl#format": "txt",
+                                                              "http://galaxyproject.org/cwl#name": "covariance_model_database",
+                                                              "http://galaxyproject.org/cwl#type": "data"},
+                                                             {"http://galaxyproject.org/cwl#name": "cpu",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "integer"},
+                                                             {"http://galaxyproject.org/cwl#name": "cut_ga",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "boolean"},
+                                                             {"http://galaxyproject.org/cwl#name": "omit_alignment_section",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "boolean"},
+                                                             {"http://galaxyproject.org/cwl#name": "only_hmm",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "boolean"},
+                                                             {"http://galaxyproject.org/cwl#format": "txt",
+                                                              "http://galaxyproject.org/cwl#name": "query_sequences",
+                                                              "http://galaxyproject.org/cwl#type": "data"},
+                                                             {"http://galaxyproject.org/cwl#default_value": 1000,
+                                                              "http://galaxyproject.org/cwl#name": "search_space_size",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "integer"}]}],
+          "http://schema.org/author": "Michael Crusoe, Maxim Scheremetjew",
+          "http://schema.org/copyrightHolder": "EMBL - European Bioinformatics "
+                                               "Institute",
+          "http://schema.org/license": "https://www.apache.org/licenses/LICENSE-2.0",
+          "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl",
+          "inputs": [{"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#covariance_model_database",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "type": "File"},
+                     {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#cpu",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--cpu"},
+                      "label": "Number of parallel CPU workers to use for "
+                               "multithreads",
+                      "type": ["null", "int"]},
+                     {"default": False,
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#cut_ga",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--cut_ga"},
+                      "label": "use CM"s GA gathering cutoffs as reporting "
+                               "thresholds",
+                      "type": ["null", "boolean"]},
+                     {"doc": "This can greatly reduce the output volume.",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#omit_alignment_section",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--noali"},
+                      "label": "Omit the alignment section from the main "
+                               "output.",
+                      "type": ["null", "boolean"]},
+                     {"default": False,
+                      "doc": "Only filter stages F1 through F3 will be "
+                             "executed, using strict P-value
+"
+                             "thresholds (0.02 for F1, 0.001 for F2 and "
+                             "0.00001 for F3). Additionally
+"
+                             "a bias composition filter is used after the F1 "
+                             "stage (with P=0.02
+"
+                             "survival threshold). Any hit that survives all "
+                             "stages and has an HMM
+"
+                             "E-value or bit score above the reporting "
+                             "threshold will be output.
+",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#only_hmm",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--hmmonly"},
+                      "label": "Only use the filter profile HMM for searches, "
+                               "do not use the CM",
+                      "type": ["null", "boolean"]},
+                     {"format": "http://edamontology.org/format_1929",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#query_sequences",
+                      "inputBinding": CommentedMap([("position", 2)]),
+                      "streamable": True,
+                      "type": "File"},
+                     {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#search_space_size",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "-Z"},
+                      "label": "search space size in *Mb* to <x> for E-value "
+                               "calculations",
+                      "type": "int"}],
+          "label": "Search sequence(s) against a covariance model database",
+          "outputs": [{"doc": "http://eddylab.org/infernal/Userguide.pdf#page=60",
+                       "id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#matches",
+                       "label": "target hits table, format 2",
+                       "outputBinding": {"glob": "$(inputs.query_sequences.basename).cmsearch_matches.tbl"},
+                       "type": "File"},
+                      {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl#programOutput",
+                       "label": "direct output to file, not stdout",
+                       "outputBinding": {"glob": "$(inputs.query_sequences.basename).cmsearch.out"},
+                       "type": "File"}],
+          "requirements": [{"class": "InlineJavascriptRequirement"}]},
+ "stagedir": "/data/tmp/YYERT8/tmpr8nfbg7e",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": None,
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/YYERT8/tmpe4wq1mbt",
+ "token": None}
+[job cmsearch_2] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="cmsearch_2", description="Infernal ("INFERence of RNA ALignment") is for searching DNA sequence databases for RNA structure and sequence similarities. It is an implementation of a special case of profile stochastic context-free grammars called covariance models (CMs). A CM is like a sequence profile, but it scores a combination of sequence consensus and RNA secondary structure consensus, so in many cases, it is more capable of identifying RNA homologs that conserve their secondary structure more than their primary sequence.
+Please visit http://eddylab.org/infernal/ for full documentation.
+Version 1.1.2 can be downloaded from http://eddylab.org/infernal/infernal-1.1.2.tar.gz
+", inputs=[Input(url="file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mt-tmRNA.cm", path="/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm", type="FILE", name="covariance_model_database", description="cwl_input:covariance_model_database", content=None), Input(url="file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/test-input/mrum-genome.fa", path="/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa", type="FILE", name="query_sequences", description="cwl_input:query_sequences", content=None)], outputs=[Output(url="file:///data/tmp/YYERT8/tmpesf5g3nn/", path="/bYalqn", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="quay.io/biocontainers/infernal:1.1.2--h470a237_1", command=["cmsearch", "--tblout", "mrum-genome.fa.cmsearch_matches.tbl", "-o", "mrum-genome.fa.cmsearch.out", "--cpu", "4", "--noali", "--hmmonly", "-Z", "1000", "/var/lib/cwl/stg312cece3-4d9c-4b02-b77f-f7cf1afbc89b/mt-tmRNA.cm", "/var/lib/cwl/stgd0d8ed5c-f4c1-478a-beb0-56910cfe4e85/mrum-genome.fa"], workdir="/bYalqn", stdin=None, stdout=None, stderr=None, env={"HOME": "/bYalqn", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/YYERT8/workflow_files/repo/tools/Infernal/cmsearch/infernal-cmsearch-v1.1.2.cwl"}, logs=None, creation_time=None)
+[job cmsearch_2] SUBMITTED TASK ----------------------
+[job cmsearch] SUBMITTED TASK ----------------------
+[job cmsearch_2] FINAL JOB STATE: COMPLETE ------------------
+[job cmsearch_2] OUTPUTS ------------------
+{"matches": {"basename": "mrum-genome.fa.cmsearch_matches.tbl",
+             "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+             "class": "File",
+             "http://commonwl.org/cwltool#generation": 0,
+             "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+             "nameext": ".tbl",
+             "nameroot": "mrum-genome.fa.cmsearch_matches",
+             "size": 1176},
+ "programOutput": {"basename": "mrum-genome.fa.cmsearch.out",
+                   "checksum": "sha1$5d0c8d0ca32228b6ac9aaf94878c5830a1cc8e06",
+                   "class": "File",
+                   "http://commonwl.org/cwltool#generation": 0,
+                   "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch.out",
+                   "nameext": ".out",
+                   "nameroot": "mrum-genome.fa.cmsearch",
+                   "size": 2126}}
+[job cmsearch_2] STARTING CLEAN UP ------------------
+[job cmsearch_2] Removing input staging directory /data/tmp/YYERT8/tmpr8nfbg7e
+[job cmsearch_2] Removing temporary directory /data/tmp/YYERT8/tmpe4wq1mbt
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps not ready
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches not ready
+[job cmsearch] FINAL JOB STATE: COMPLETE ------------------
+[step cmsearch] produced output {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#cmsearch/matches": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "http://commonwl.org/cwltool#generation": 0
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "http://commonwl.org/cwltool#generation": 0
+        }
+    ],
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#cmsearch/programOutput": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch.out",
+            "basename": "mrum-genome.fa.cmsearch.out",
+            "nameroot": "mrum-genome.fa.cmsearch",
+            "nameext": ".out",
+            "class": "File",
+            "checksum": "sha1$cd99a75f72885fa2852acdb09271c8e86a31127c",
+            "size": 6725,
+            "http://commonwl.org/cwltool#generation": 0
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch.out",
+            "basename": "mrum-genome.fa.cmsearch.out",
+            "nameroot": "mrum-genome.fa.cmsearch",
+            "nameext": ".out",
+            "class": "File",
+            "checksum": "sha1$5d0c8d0ca32228b6ac9aaf94878c5830a1cc8e06",
+            "size": 2126,
+            "http://commonwl.org/cwltool#generation": 0
+        }
+    ]
+}
+[step cmsearch] completed success
+[job cmsearch] OUTPUTS ------------------
+{"matches": {"basename": "mrum-genome.fa.cmsearch_matches.tbl",
+             "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+             "class": "File",
+             "http://commonwl.org/cwltool#generation": 0,
+             "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+             "nameext": ".tbl",
+             "nameroot": "mrum-genome.fa.cmsearch_matches",
+             "size": 8236},
+ "programOutput": {"basename": "mrum-genome.fa.cmsearch.out",
+                   "checksum": "sha1$cd99a75f72885fa2852acdb09271c8e86a31127c",
+                   "class": "File",
+                   "http://commonwl.org/cwltool#generation": 0,
+                   "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch.out",
+                   "nameext": ".out",
+                   "nameroot": "mrum-genome.fa.cmsearch",
+                   "size": 6725}}
+[job cmsearch] STARTING CLEAN UP ------------------
+[job cmsearch] Removing input staging directory /data/tmp/YYERT8/tmpl74208ef
+[job cmsearch] Removing temporary directory /data/tmp/YYERT8/tmphb41m8af
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps not ready
+[workflow ] starting step concatenate_matches
+[job step concatenate_matches] job input {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches/files": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "http://commonwl.org/cwltool#generation": 0
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "http://commonwl.org/cwltool#generation": 0
+        }
+    ],
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches/outputFileName": "cat_cmsearch_matches.tbl"
+}
+[job step concatenate_matches] evaluated job input to {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches/files": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "http://commonwl.org/cwltool#generation": 0
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "http://commonwl.org/cwltool#generation": 0
+        }
+    ],
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches/outputFileName": "cat_cmsearch_matches.tbl"
+}
+[step concatenate_matches] start
+[job concatenate_matches] initializing from file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl as part of step concatenate_matches
+[job concatenate_matches] {
+    "files": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "http://commonwl.org/cwltool#generation": 0
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "http://commonwl.org/cwltool#generation": 0
+        }
+    ],
+    "outputFileName": "cat_cmsearch_matches.tbl"
+}
+[job concatenate_matches] path mappings is {
+    "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl": [
+        "/data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+        "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl",
+        "File",
+        true
+    ],
+    "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl": [
+        "/data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+        "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl",
+        "File",
+        true
+    ]
+}
+[job concatenate_matches] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "cat"
+    },
+    {
+        "position": [
+            1,
+            "files"
+        ],
+        "datum": [
+            {
+                "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+                "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+                "nameroot": "mrum-genome.fa.cmsearch_matches",
+                "nameext": ".tbl",
+                "class": "File",
+                "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+                "size": 8236,
+                "http://commonwl.org/cwltool#generation": 0,
+                "path": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl",
+                "dirname": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350"
+            },
+            {
+                "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+                "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+                "nameroot": "mrum-genome.fa.cmsearch_matches",
+                "nameext": ".tbl",
+                "class": "File",
+                "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+                "size": 1176,
+                "http://commonwl.org/cwltool#generation": 0,
+                "path": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl",
+                "dirname": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f"
+            }
+        ]
+    },
+    {
+        "position": [
+            1,
+            "files",
+            0,
+            0,
+            "files",
+            "files"
+        ],
+        "datum": {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "http://commonwl.org/cwltool#generation": 0,
+            "path": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl",
+            "dirname": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350"
+        }
+    },
+    {
+        "position": [
+            1,
+            "files",
+            1,
+            0,
+            "files",
+            "files"
+        ],
+        "datum": {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "http://commonwl.org/cwltool#generation": 0,
+            "path": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl",
+            "dirname": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f"
+        }
+    }
+]
+[job concatenate_matches] self.__dict__ in run() ----------------------
+[workflow ] job step file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps not ready
+{"basedir": "/data/output/YYERT8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7fea591439b0>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7fea591d3f98>>, [CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl#result"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.outputFileName)"), ("outputEval", "${ self[0].format = inputs.files[0].format;
+   return self; }
+")]))])], <cwltool.builder.Builder object at 0x7fea591439b0>, compute_checksum=True, jobname="concatenate_matches", readers={"file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl": {"location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl", "basename": "mrum-genome.fa.cmsearch_matches.tbl", "nameroot": "mrum-genome.fa.cmsearch_matches", "nameext": ".tbl", "class": "File", "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340", "size": 8236, "http://commonwl.org/cwltool#generation": 0, "path": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl", "dirname": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350"}, "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl": {"location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl", "basename": "mrum-genome.fa.cmsearch_matches.tbl", "nameroot": "mrum-genome.fa.cmsearch_matches", "nameext": ".tbl", "class": "File", "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219", "size": 1176, "http://commonwl.org/cwltool#generation": 0, "path": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl", "dirname": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f"}}),
+ "command_line": ["cat",
+                  "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl",
+                  "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl"],
+ "environment": {},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7fea591b5710>,
+ "generatefiles": {"basename": "5d24fed5-9ad3-474c-8e57-1532bc815c16",
+                   "class": "Directory",
+                   "listing": [],
+                   "location": "_:5d24fed5-9ad3-474c-8e57-1532bc815c16"},
+ "generatemapper": None,
+ "hints": [{"class": "DockerRequirement",
+            "dockerPull": "alpine:3.7"}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"files": [{"basename": "mrum-genome.fa.cmsearch_matches.tbl",
+                         "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+                         "class": "File",
+                         "dirname": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350",
+                         "http://commonwl.org/cwltool#generation": 0,
+                         "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+                         "nameext": ".tbl",
+                         "nameroot": "mrum-genome.fa.cmsearch_matches",
+                         "path": "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl",
+                         "size": 8236},
+                        {"basename": "mrum-genome.fa.cmsearch_matches.tbl",
+                         "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+                         "class": "File",
+                         "dirname": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f",
+                         "http://commonwl.org/cwltool#generation": 0,
+                         "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+                         "nameext": ".tbl",
+                         "nameroot": "mrum-genome.fa.cmsearch_matches",
+                         "path": "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl",
+                         "size": 1176}],
+              "outputFileName": "cat_cmsearch_matches.tbl"},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7fea591d3f98>>,
+ "name": "concatenate_matches",
+ "networkaccess": True,
+ "outdir": "/data/tmp/YYERT8/tmpnwuwklm8",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7fea5a7d48d0>>, functools.partial(<bound method WorkflowJob.receive_output of <cwltool.workflow.WorkflowJob object at 0x7fea591b56a0>>, <cwltool.workflow.WorkflowJobStep object at 0x7fea591b5a58>, [CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches/result"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.outputFileName)"), ("outputEval", "${ self[0].format = inputs.files[0].format;
+   return self; }
+")])), ("_tool_entry", CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl#result"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "$(inputs.outputFileName)"), ("outputEval", "${ self[0].format = inputs.files[0].format;
+   return self; }
+")]))]))])], <bound method JobExecutor.output_callback of <cwltool.executors.MultithreadedJobExecutor object at 0x7fea5d967668>>)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7fea5914fac8>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [CommentedMap([("class", "ScatterFeatureRequirement")]),
+                  CommentedMap([("class", "InlineJavascriptRequirement")])],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7fea591baba8>,
+ "spec": {"$namespaces": CommentedMap([("s", "http://schema.org/")]),
+          "$schemas": ["https://schema.org/docs/schema_org_rdfa.html"],
+          "baseCommand": ["cat"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "The cat (short for “concatenate“) command is one of the most "
+                 "frequently used command in Linux/Unix like operating "
+                 "systems. cat command allows us to create single or multiple "
+                 "files, view contain of file, concatenate files and redirect "
+                 "output in terminal or files.
+",
+          "hints": [{"class": "DockerRequirement",
+                     "dockerPull": "alpine:3.7"}],
+          "http://schema.org/author": "Michael Crusoe, Maxim Scheremetjew",
+          "http://schema.org/copyrightHolder": "EMBL - European Bioinformatics "
+                                               "Institute",
+          "http://schema.org/license": "https://www.apache.org/licenses/LICENSE-2.0",
+          "id": "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl",
+          "inputs": [{"id": "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl#files",
+                      "inputBinding": CommentedMap([("position", 1)]),
+                      "streamable": True,
+                      "type": {"items": "File",
+                               "type": "array"}},
+                     {"id": "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl#outputFileName",
+                      "type": "string"}],
+          "label": "Redirecting Multiple Files Contain in a Single File",
+          "outputs": [{"id": "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl#result",
+                       "outputBinding": {"glob": "$(inputs.outputFileName)",
+                                         "outputEval": "${ self[0].format = "
+                                                       "inputs.files[0].format;
+"
+                                                       "   return self; }
+"},
+                       "type": "File"}],
+          "requirements": [{"class": "InlineJavascriptRequirement"}],
+          "stdout": "$(inputs.outputFileName)"},
+ "stagedir": "/data/tmp/YYERT8/tmpx5gblhv7",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": "cat_cmsearch_matches.tbl",
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/YYERT8/tmpfq5lpywg",
+ "token": None}
+[job concatenate_matches] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="concatenate_matches", description="The cat (short for “concatenate“) command is one of the most frequently used command in Linux/Unix like operating systems. cat command allows us to create single or multiple files, view contain of file, concatenate files and redirect output in terminal or files.
+", inputs=[Input(url="file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl", path="/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl", type="FILE", name="files[0]", description="cwl_input:files[0]", content=None), Input(url="file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl", path="/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl", type="FILE", name="files[1]", description="cwl_input:files[1]", content=None)], outputs=[Output(url="file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl", path="/bYalqn/cat_cmsearch_matches.tbl", type="FILE", name="stdout", description=None), Output(url="file:///data/tmp/YYERT8/tmpnwuwklm8/", path="/bYalqn", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="alpine:3.7", command=["cat", "/var/lib/cwl/stgf64718a2-25c9-42fa-a657-259487ce1350/mrum-genome.fa.cmsearch_matches.tbl", "/var/lib/cwl/stg846eb82f-5531-46ea-9228-3d35cc649b8f/mrum-genome.fa.cmsearch_matches.tbl"], workdir="/bYalqn", stdin=None, stdout="/bYalqn/cat_cmsearch_matches.tbl", stderr=None, env={"HOME": "/bYalqn", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/YYERT8/workflow_files/repo/utils/concatenate.cwl"}, logs=None, creation_time=None)
+[job concatenate_matches] SUBMITTED TASK ----------------------
+[job concatenate_matches] FINAL JOB STATE: COMPLETE ------------------
+[step concatenate_matches] produced output {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#concatenate_matches/result": {
+        "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "basename": "cat_cmsearch_matches.tbl",
+        "nameroot": "cat_cmsearch_matches",
+        "nameext": ".tbl",
+        "class": "File",
+        "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+        "size": 9412,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step concatenate_matches] completed success
+[job concatenate_matches] OUTPUTS ------------------
+{"result": {"basename": "cat_cmsearch_matches.tbl",
+            "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+            "class": "File",
+            "http://commonwl.org/cwltool#generation": 0,
+            "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+            "nameext": ".tbl",
+            "nameroot": "cat_cmsearch_matches",
+            "size": 9412}}
+[job concatenate_matches] STARTING CLEAN UP ------------------
+[job concatenate_matches] Removing input staging directory /data/tmp/YYERT8/tmpx5gblhv7
+[job concatenate_matches] Removing temporary directory /data/tmp/YYERT8/tmpfq5lpywg
+[workflow ] starting step remove_overlaps
+[job step remove_overlaps] job input {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps/clan_information": {
+        "class": "File",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+        "size": 212,
+        "basename": "ribo.claninfo",
+        "nameroot": "ribo",
+        "nameext": ".claninfo"
+    },
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps/cmsearch_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "basename": "cat_cmsearch_matches.tbl",
+        "nameroot": "cat_cmsearch_matches",
+        "nameext": ".tbl",
+        "class": "File",
+        "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+        "size": 9412,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[job step remove_overlaps] evaluated job input to {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps/clan_information": {
+        "class": "File",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+        "size": 212,
+        "basename": "ribo.claninfo",
+        "nameroot": "ribo",
+        "nameext": ".claninfo"
+    },
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps/cmsearch_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "basename": "cat_cmsearch_matches.tbl",
+        "nameroot": "cat_cmsearch_matches",
+        "nameext": ".tbl",
+        "class": "File",
+        "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+        "size": 9412,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step remove_overlaps] start
+[job remove_overlaps] initializing from file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl as part of step remove_overlaps
+[job remove_overlaps] {
+    "clan_information": {
+        "class": "File",
+        "location": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+        "size": 212,
+        "basename": "ribo.claninfo",
+        "nameroot": "ribo",
+        "nameext": ".claninfo"
+    },
+    "cmsearch_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "basename": "cat_cmsearch_matches.tbl",
+        "nameroot": "cat_cmsearch_matches",
+        "nameext": ".tbl",
+        "class": "File",
+        "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+        "size": 9412,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[job remove_overlaps] path mappings is {
+    "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo": [
+        "/data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+        "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo",
+        "File",
+        true
+    ],
+    "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl": [
+        "/data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "/bYalqn/cat_cmsearch_matches.tbl",
+        "File",
+        false
+    ]
+}
+[job remove_overlaps] command line bindings is [
+    {
+        "position": [
+            -1000000,
+            0
+        ],
+        "datum": "cmsearch-deoverlap.pl"
+    },
+    {
+        "position": [
+            0,
+            "clan_information"
+        ],
+        "prefix": "--clanin",
+        "datum": {
+            "class": "File",
+            "location": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+            "size": 212,
+            "basename": "ribo.claninfo",
+            "nameroot": "ribo",
+            "nameext": ".claninfo",
+            "path": "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo",
+            "dirname": "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c"
+        }
+    },
+    {
+        "position": [
+            1,
+            "cmsearch_matches"
+        ],
+        "valueFrom": "$(self.basename)",
+        "datum": {
+            "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+            "basename": "cat_cmsearch_matches.tbl",
+            "nameroot": "cat_cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+            "size": 9412,
+            "http://commonwl.org/cwltool#generation": 0,
+            "path": "/bYalqn/cat_cmsearch_matches.tbl",
+            "dirname": "/bYalqn"
+        }
+    }
+]
+[job remove_overlaps] self.__dict__ in run() ----------------------
+{"basedir": "/data/output/YYERT8/workflow_files",
+ "builder": <cwltool.builder.Builder object at 0x7fea59162be0>,
+ "client": HTTPClient(url="http://tesk-api.tes:8080", timeout=10, user=None, password=None, token=None),
+ "collect_outputs": functools.partial(<bound method CommandLineTool.collect_output_ports of <cwl_tes.tes.TESCommandLineTool object at 0x7fea591e4d68>>, [CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl#deoverlapped_matches"), ("doc", "http://eddylab.org/infernal/Userguide.pdf#page=60"), ("label", "target hits table, format 2"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "*.deoverlapped")]))])], <cwltool.builder.Builder object at 0x7fea59162be0>, compute_checksum=True, jobname="remove_overlaps", readers={"file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl": {"location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl", "basename": "cat_cmsearch_matches.tbl", "nameroot": "cat_cmsearch_matches", "nameext": ".tbl", "class": "File", "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41", "size": 9412, "http://commonwl.org/cwltool#generation": 0, "path": "/bYalqn/cat_cmsearch_matches.tbl", "dirname": "/bYalqn"}, "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo": CommentedMap([("class", "File"), ("location", "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo"), ("size", 212), ("basename", "ribo.claninfo"), ("nameroot", "ribo"), ("nameext", ".claninfo"), ("path", "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo"), ("dirname", "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c")])}),
+ "command_line": ["cmsearch-deoverlap.pl",
+                  "--clanin",
+                  "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo",
+                  "cat_cmsearch_matches.tbl"],
+ "environment": {"LC_ALL": "C"},
+ "exit_code": None,
+ "fs_access": <cwltool.stdfsaccess.StdFsAccess object at 0x7fea591689e8>,
+ "generatefiles": {"basename": "160b0acf-00c2-4e90-9195-b0991b0c172e",
+                   "class": "Directory",
+                   "listing": [{"basename": "cat_cmsearch_matches.tbl",
+                                "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+                                "class": "File",
+                                "dirname": "/bYalqn",
+                                "http://commonwl.org/cwltool#generation": 0,
+                                "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+                                "nameext": ".tbl",
+                                "nameroot": "cat_cmsearch_matches",
+                                "path": "/bYalqn/cat_cmsearch_matches.tbl",
+                                "size": 9412}],
+                   "location": "_:160b0acf-00c2-4e90-9195-b0991b0c172e"},
+ "generatemapper": None,
+ "hints": [{"class": "SoftwareRequirement",
+            "packages": [{"package": "cmsearch_tblout_deoverlap",
+                          "specs": ["https://github.com/nawrockie/cmsearch_tblout_deoverlap"],
+                          "version": ["0.02"]}]},
+           {"class": "DockerRequirement",
+            "dockerPull": "biocrusoe/cmsearch-deoverlap"},
+           {"class": "http://galaxyproject.org/cwl#interface",
+            "http://galaxyproject.org/cwl#inputs": [{"http://galaxyproject.org/cwl#format": "txt",
+                                                     "http://galaxyproject.org/cwl#name": "clan_information",
+                                                     "http://galaxyproject.org/cwl#optional": True,
+                                                     "http://galaxyproject.org/cwl#type": "data"},
+                                                    {"http://galaxyproject.org/cwl#format": "txt",
+                                                     "http://galaxyproject.org/cwl#name": "cmsearch_matches",
+                                                     "http://galaxyproject.org/cwl#type": "data"}]}],
+ "id": None,
+ "inplace_update": False,
+ "joborder": {"clan_information": {"basename": "ribo.claninfo",
+                                   "class": "File",
+                                   "dirname": "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c",
+                                   "location": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo",
+                                   "nameext": ".claninfo",
+                                   "nameroot": "ribo",
+                                   "path": "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo",
+                                   "size": 212},
+              "cmsearch_matches": {"basename": "cat_cmsearch_matches.tbl",
+                                   "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+                                   "class": "File",
+                                   "dirname": "/bYalqn",
+                                   "http://commonwl.org/cwltool#generation": 0,
+                                   "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+                                   "nameext": ".tbl",
+                                   "nameroot": "cat_cmsearch_matches",
+                                   "path": "/bYalqn/cat_cmsearch_matches.tbl",
+                                   "size": 9412}},
+ "make_path_mapper": <bound method TESCommandLineTool.make_path_mapper of <cwl_tes.tes.TESCommandLineTool object at 0x7fea591e4d68>>,
+ "name": "remove_overlaps",
+ "networkaccess": True,
+ "outdir": "/data/tmp/YYERT8/tmpkf4u0p4r",
+ "output_callback": functools.partial(<bound method WorkflowStep.receive_output of <cwltool.workflow.WorkflowStep object at 0x7fea591e4400>>, functools.partial(<bound method WorkflowJob.receive_output of <cwltool.workflow.WorkflowJob object at 0x7fea591b56a0>>, <cwltool.workflow.WorkflowJobStep object at 0x7fea591b5898>, [CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps/deoverlapped_matches"), ("doc", "http://eddylab.org/infernal/Userguide.pdf#page=60"), ("label", "target hits table, format 2"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "*.deoverlapped")])), ("_tool_entry", CommentedMap([("id", "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl#deoverlapped_matches"), ("doc", "http://eddylab.org/infernal/Userguide.pdf#page=60"), ("label", "target hits table, format 2"), ("type", "File"), ("outputBinding", CommentedMap([("glob", "*.deoverlapped")]))]))])], <bound method JobExecutor.output_callback of <cwltool.executors.MultithreadedJobExecutor object at 0x7fea5d967668>>)),
+ "outputs": None,
+ "parent_wf": None,
+ "pathmapper": <cwltool.pathmapper.PathMapper object at 0x7fea59168400>,
+ "permanentFailCodes": [],
+ "poll_interval": 1,
+ "poll_retries": 10,
+ "prov_obj": None,
+ "remote_storage_url": "",
+ "requirements": [CommentedMap([("class", "ScatterFeatureRequirement")]),
+                  {"class": "EnvVarRequirement",
+                   "envDef": [{"envName": "LC_ALL",
+                               "envValue": "C"}]},
+                  {"class": "InitialWorkDirRequirement",
+                   "listing": ["$(inputs.cmsearch_matches)"]},
+                  CommentedMap([("class", "InlineJavascriptRequirement")])],
+ "runtime_context": <cwltool.context.RuntimeContext object at 0x7fea591580f0>,
+ "spec": {"$namespaces": {"edam": "http://edamontology.org/",
+                          "gx": "http://galaxyproject.org/cwl#",
+                          "s": "http://schema.org/"},
+          "$schemas": ["http://edamontology.org/EDAM_1.16.owl",
+                       "https://schema.org/docs/schema_org_rdfa.html"],
+          "baseCommand": ["cmsearch-deoverlap.pl"],
+          "class": "CommandLineTool",
+          "cwlVersion": "v1.0",
+          "doc": "https://github.com/nawrockie/cmsearch_tblout_deoverlap/blob/master/00README.txt",
+          "hints": [{"class": "SoftwareRequirement",
+                     "packages": [{"package": "cmsearch_tblout_deoverlap",
+                                   "specs": ["https://github.com/nawrockie/cmsearch_tblout_deoverlap"],
+                                   "version": ["0.02"]}]},
+                    {"class": "DockerRequirement",
+                     "dockerPull": "biocrusoe/cmsearch-deoverlap"},
+                    {"class": "http://galaxyproject.org/cwl#interface",
+                     "http://galaxyproject.org/cwl#inputs": [{"http://galaxyproject.org/cwl#format": "txt",
+                                                              "http://galaxyproject.org/cwl#name": "clan_information",
+                                                              "http://galaxyproject.org/cwl#optional": True,
+                                                              "http://galaxyproject.org/cwl#type": "data"},
+                                                             {"http://galaxyproject.org/cwl#format": "txt",
+                                                              "http://galaxyproject.org/cwl#name": "cmsearch_matches",
+                                                              "http://galaxyproject.org/cwl#type": "data"}]}],
+          "http://schema.org/author": "Michael Crusoe, Maxim Scheremetjew",
+          "http://schema.org/copyrightHolder": "EMBL - European Bioinformatics "
+                                               "Institute",
+          "http://schema.org/license": "https://www.apache.org/licenses/LICENSE-2.0",
+          "id": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl",
+          "inputs": [{"doc": "Not all models provided need to be a member of a "
+                             "clan",
+                      "id": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl#clan_information",
+                      "inputBinding": {"position": 0,
+                                       "prefix": "--clanin"},
+                      "label": "clan information on the models provided",
+                      "type": ["null", "File"]},
+                     {"id": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl#cmsearch_matches",
+                      "inputBinding": {"position": 1,
+                                       "valueFrom": "$(self.basename)"},
+                      "type": "File"}],
+          "label": "Remove lower scoring overlaps from cmsearch --tblout "
+                   "files.",
+          "outputs": [{"doc": "http://eddylab.org/infernal/Userguide.pdf#page=60",
+                       "id": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl#deoverlapped_matches",
+                       "label": "target hits table, format 2",
+                       "outputBinding": {"glob": "*.deoverlapped"},
+                       "type": "File"}],
+          "requirements": [{"class": "EnvVarRequirement",
+                            "envDef": [{"envName": "LC_ALL",
+                                        "envValue": "C"}]},
+                           {"class": "InitialWorkDirRequirement",
+                            "listing": ["$(inputs.cmsearch_matches)"]},
+                           {"class": "InlineJavascriptRequirement"}]},
+ "stagedir": "/data/tmp/YYERT8/tmp2nm6kaxs",
+ "state": "UNKNOWN",
+ "stderr": None,
+ "stdin": None,
+ "stdout": None,
+ "successCodes": [],
+ "temporaryFailCodes": [],
+ "timelimit": None,
+ "tmpdir": "/data/tmp/YYERT8/tmpyd2b7lgp",
+ "token": None}
+[job remove_overlaps] CREATED TASK MSG----------------------
+Task(id=None, state=None, name="remove_overlaps", description="https://github.com/nawrockie/cmsearch_tblout_deoverlap/blob/master/00README.txt", inputs=[Input(url="file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/test-input/ribo.claninfo", path="/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo", type="FILE", name="clan_information", description="cwl_input:clan_information", content=None), Input(url="file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl", path="/bYalqn/cat_cmsearch_matches.tbl", type="FILE", name="cmsearch_matches", description="cwl_input:cmsearch_matches", content=None), Input(url="file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl", path="/bYalqn/cat_cmsearch_matches.tbl", type="FILE", name="cat_cmsearch_matches.tbl", description="InitialWorkDirRequirement:cwl_input:cat_cmsearch_matches.tbl", content=None)], outputs=[Output(url="file:///data/tmp/YYERT8/tmpkf4u0p4r/", path="/bYalqn", type="DIRECTORY", name="workdir", description=None)], resources=Resources(cpu_cores=None, ram_gb=None, disk_gb=None, preemptible=None, zones=None), executors=[Executor(image="biocrusoe/cmsearch-deoverlap", command=["cmsearch-deoverlap.pl", "--clanin", "/var/lib/cwl/stg070e681e-27d5-4cae-89df-d92b20fe558c/ribo.claninfo", "cat_cmsearch_matches.tbl"], workdir="/bYalqn", stdin=None, stdout=None, stderr=None, env={"LC_ALL": "C", "HOME": "/bYalqn", "TMPDIR": "/tmp"})], volumes=None, tags={"CWLDocumentId": "file:///data/output/YYERT8/workflow_files/repo/tools/cmsearch-deoverlap/cmsearch-deoverlap-v0.02.cwl"}, logs=None, creation_time=None)
+[job remove_overlaps] SUBMITTED TASK ----------------------
+[job remove_overlaps] FINAL JOB STATE: COMPLETE ------------------
+[step remove_overlaps] produced output {
+    "file:///data/output/YYERT8/workflow_files/repo/workflows/cmsearch-multimodel-wf.cwl#remove_overlaps/deoverlapped_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpkf4u0p4r/cat_cmsearch_matches.tbl.deoverlapped",
+        "basename": "cat_cmsearch_matches.tbl.deoverlapped",
+        "nameroot": "cat_cmsearch_matches.tbl",
+        "nameext": ".deoverlapped",
+        "class": "File",
+        "checksum": "sha1$4d88865ee67b33fbf3db268a211fce9dbff715dd",
+        "size": 7490,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[step remove_overlaps] completed success
+[workflow ] completed success
+[workflow ] {
+    "cmsearch_matches": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "http://commonwl.org/cwltool#generation": 0
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "nameroot": "mrum-genome.fa.cmsearch_matches",
+            "nameext": ".tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "http://commonwl.org/cwltool#generation": 0
+        }
+    ],
+    "concatenate_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "basename": "cat_cmsearch_matches.tbl",
+        "nameroot": "cat_cmsearch_matches",
+        "nameext": ".tbl",
+        "class": "File",
+        "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+        "size": 9412,
+        "http://commonwl.org/cwltool#generation": 0
+    },
+    "deoverlapped_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpkf4u0p4r/cat_cmsearch_matches.tbl.deoverlapped",
+        "basename": "cat_cmsearch_matches.tbl.deoverlapped",
+        "nameroot": "cat_cmsearch_matches.tbl",
+        "nameext": ".deoverlapped",
+        "class": "File",
+        "checksum": "sha1$4d88865ee67b33fbf3db268a211fce9dbff715dd",
+        "size": 7490,
+        "http://commonwl.org/cwltool#generation": 0
+    }
+}
+[job remove_overlaps] OUTPUTS ------------------
+{"deoverlapped_matches": {"basename": "cat_cmsearch_matches.tbl.deoverlapped",
+                          "checksum": "sha1$4d88865ee67b33fbf3db268a211fce9dbff715dd",
+                          "class": "File",
+                          "http://commonwl.org/cwltool#generation": 0,
+                          "location": "file:///data/tmp/YYERT8/tmpkf4u0p4r/cat_cmsearch_matches.tbl.deoverlapped",
+                          "nameext": ".deoverlapped",
+                          "nameroot": "cat_cmsearch_matches.tbl",
+                          "size": 7490}}
+[job remove_overlaps] STARTING CLEAN UP ------------------
+[job remove_overlaps] Removing input staging directory /data/tmp/YYERT8/tmp2nm6kaxs
+[job remove_overlaps] Removing temporary directory /data/tmp/YYERT8/tmpyd2b7lgp
+{
+    "cmsearch_matches": [
+        {
+            "location": "file:///data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "class": "File",
+            "checksum": "sha1$98248e0b675e90b31d93847b5991589cb921c340",
+            "size": 8236,
+            "path": "/data/tmp/YYERT8/tmp8e8rmrys/mrum-genome.fa.cmsearch_matches.tbl"
+        },
+        {
+            "location": "file:///data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl",
+            "basename": "mrum-genome.fa.cmsearch_matches.tbl",
+            "class": "File",
+            "checksum": "sha1$b02cf868bd19a9c7e4a0b06fab7a2ac1c223d219",
+            "size": 1176,
+            "path": "/data/tmp/YYERT8/tmpesf5g3nn/mrum-genome.fa.cmsearch_matches.tbl"
+        }
+    ],
+    "concatenate_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl",
+        "basename": "cat_cmsearch_matches.tbl",
+        "class": "File",
+        "checksum": "sha1$697e703df0c489b201febd08dafd26d6ebb59a41",
+        "size": 9412,
+        "path": "/data/tmp/YYERT8/tmpnwuwklm8/cat_cmsearch_matches.tbl"
+    },
+    "deoverlapped_matches": {
+        "location": "file:///data/tmp/YYERT8/tmpkf4u0p4r/cat_cmsearch_matches.tbl.deoverlapped",
+        "basename": "cat_cmsearch_matches.tbl.deoverlapped",
+        "class": "File",
+        "checksum": "sha1$4d88865ee67b33fbf3db268a211fce9dbff715dd",
+        "size": 7490,
+        "path": "/data/tmp/YYERT8/tmpkf4u0p4r/cat_cmsearch_matches.tbl.deoverlapped"
+    }
+}
+Final process status is success
