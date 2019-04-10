@@ -29,13 +29,25 @@ strf: str = '%Y-%m-%d %H:%M:%S.%f'
 
 
 def cwl_tes_outputs_parser(log: str) -> Dict:
-    """Parses outputs from cwl-tes log."""
-    # Find outputs object in log string
-    re_outputs = re.compile(
-        r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)',
-        re.MULTILINE
-    )
+    """
+    Parses outputs from cwl-tes log.
+    """
+        
+#     What I am looking for:
+#     
+#     {            # 1st column, on a line by itself
+#     
+#         [...]    # "the middle"
+#     
+#     }            # ditto
+#     Final process status is
+    
+    pattern = r'(?s)^(\{$.+)Final process status is'
+    
+    re_outputs = re.compile(pattern, re.MULTILINE)   # @UndefinedVariable
+    
     m = re_outputs.search(log)
+    
     if m:
         return literal_eval(m.group(1))
     else:
