@@ -1,0 +1,13 @@
+
+
+# 
+# Usage:
+#
+#   urlSet urlDocker
+#   urlSet urlEbi
+#   urlSet urlLocal
+# 
+
+target="$1"
+
+ln -sfv "$target" wesUrl
