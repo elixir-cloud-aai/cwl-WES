@@ -10,6 +10,9 @@ from unittest.mock import patch
 from wes_elixir.ga4gh.wes.endpoints.run_workflow import __run_workflow as run_workflow
 
 
+TES_URL = 'https://csc-tesk.c03.k8s-popup.csc.fi/'
+
+
 class Test(unittest.TestCase):
 
 
@@ -50,7 +53,7 @@ class Test(unittest.TestCase):
             '--leave-outputs',
             '--remote-storage-url', 'ftp://remote.storage',
             '--tes',
-            'http://192.168.99.100:31567',
+            TES_URL,
             'cwl_path',
             'param_file_path'
         ])
@@ -69,7 +72,7 @@ class Test(unittest.TestCase):
             '--debug',
             '--leave-outputs',
             '--tes',
-            'http://192.168.99.100:31567',
+            TES_URL,
             'cwl_path',
             'param_file_path'
         ])
