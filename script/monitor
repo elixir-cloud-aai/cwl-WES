@@ -13,7 +13,7 @@ cmd() {
 
 
 tmux new-session                "$(cmd 'Pods'           kubectl get pods  )"    \;    \
-     split-window -v -p 20      "$(cmd 'Wes status'     ./status "$runId" )"    \;    \
+     split-window -v -p 20      "$(cmd 'Wes status'     wes status        )"    \;    \
      select-pane -U                                                             \;    \
      split-window -h            "$(cmd "TESK tasks"     teskTasks         )"    \;    \
      attach
