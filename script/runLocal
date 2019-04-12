@@ -1,3 +1,6 @@
 
-PYTHONPATH="." python wes_elixir/app.py
+cd    /tmp
+mkdir tests/tmp/ tests/output/ --parents 
+
+PYTHONPATH="/home/tfga/workspace/WesElixir/" python /home/tfga/workspace/WesElixir/wes_elixir/app.py
 
