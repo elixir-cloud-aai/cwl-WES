@@ -303,7 +303,7 @@ class TaskMonitor():
             state = 'COMPLETE'
 
         # Extract run outputs
-        outputs = self.__cwl_tes_outputs_parser(log)
+        outputs = cwl_tes_outputs_parser(log)
 
         # Get task logs
         task_logs = self.__get_tes_task_logs(tes_ids=tes_ids)
