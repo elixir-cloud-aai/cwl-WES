@@ -16,12 +16,12 @@ build_dev:
     - docker build -t $CONTAINER_DEV_IMAGE .
     - docker login -u ${DOCKER_HUB_USER} -p $DOCKER_HUB_PASSWORD docker.io
     - docker push $CONTAINER_DEV_IMAGE
-  only:
-    - dev
   # only:
-  #   - working
-  # except:
-  #   - ^(?!dev).+
+  #   - dev
+  only:
+    - tags
+  except:
+    - ^(?!dev).+
   tags:
     - hdruk_docker
 
@@ -40,11 +40,11 @@ k8s_deploy_dev:
     - kubectl -n tes  set image deployment/wes-celery-worker wes-celery-worker=$CONTAINER_DEV_IMAGE
     - kubectl -n tes rollout status deployment wes-celery-worker
     - kubectl -n tes rollout status deployment wes-elixir-dev 
-  only:
-    - dev
   # only:
-  #   - working
-  # except:
-  #   - ^(?!dev).+
+  #   - dev
+  only:
+    - tags
+  except:
+    - ^(?!dev).+
   tags:
     - hdruk_docker
