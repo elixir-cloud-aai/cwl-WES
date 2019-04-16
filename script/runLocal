@@ -1,6 +1,8 @@
 
+projectDir="$(pwd)"
+
 cd    /tmp
 mkdir tests/tmp/ tests/output/ --parents 
 
-PYTHONPATH="/home/tfga/workspace/WesElixir/" python /home/tfga/workspace/WesElixir/wes_elixir/app.py
+PYTHONPATH="$projectDir" python "$projectDir/wes_elixir/app.py"
 
