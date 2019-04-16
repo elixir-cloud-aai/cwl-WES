@@ -37,3 +37,11 @@ RUN cd /app \
   && cd /app/src/py-tes \
   && python setup.py develop \
   && cd /
+
+# 
+# 'cwl-tes' pulls the wrong version of cwltool, so we have to override it here.
+# 
+# In its requirements.txt, it pins a specific version ('cwltool==1.0.20180912090223'), but in setup.py it says 'cwltool>=x' 
+# -- which makes pip pull the latest one. Which breaks things.
+# 
+RUN pip install cwltool==1.0.20181201184214
