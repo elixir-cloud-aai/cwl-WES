@@ -44,4 +44,4 @@ RUN cd /app \
 # In its requirements.txt, it pins a specific version ('cwltool==1.0.20180912090223'), but in setup.py it says 'cwltool>=x' 
 # -- which makes pip pull the latest one. Which breaks things.
 # 
-RUN pip install cwltool==1.0.20181201184214
+RUN pip install cwltool==1.0.20181217162649
