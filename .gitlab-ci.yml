@@ -19,7 +19,7 @@ build_dev:
   # only:
   #   - dev
   only:
-    - tags
+    - ^v.*$
   except:
     - ^(?!dev).+
   tags:
@@ -43,7 +43,7 @@ k8s_deploy_dev:
   # only:
   #   - dev
   only:
-    - tags
+    - ^v.*$
   except:
     - ^(?!dev).+
   tags:
