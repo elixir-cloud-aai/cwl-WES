@@ -2,6 +2,7 @@
 
 from ast import literal_eval
 from datetime import datetime
+import json
 import logging
 import os
 import re
@@ -49,7 +50,7 @@ def cwl_tes_outputs_parser(log: str) -> Dict:
     m = re_outputs.search(log)
     
     if m:
-        return literal_eval(m.group(1))
+        return json.loads(m.group(1))
     else:
         return dict()
 

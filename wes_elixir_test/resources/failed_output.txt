@@ -1,0 +1,8 @@
+[workflow ] completed permanentFail
+[workflow ] {
+    "output": null
+}
+{
+    "output": null
+}
+Final process status is permanentFail

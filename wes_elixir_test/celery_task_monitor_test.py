@@ -80,6 +80,12 @@ class CeleryTaskMonitorTest(unittest.TestCase):
                 'size': 413
             }
         })
+    def test_parse_failed_output(self):
+        outputs = parseOutputs('wes_elixir_test/resources/failed_output.txt')
+        print(outputs)
+        self.assertEquals(outputs, {
+         'output': None
+        })
             
             
         
