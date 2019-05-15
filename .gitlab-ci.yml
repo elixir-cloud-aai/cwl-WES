@@ -5,6 +5,7 @@ services:
 stages:
   - build
   - deploy
+  - deploy_ext05_rke
 
 variables:
   # CONTAINER_DEV_IMAGE: dockerhub.ebi.ac.uk:4567/hdr/wes-elixir
@@ -31,6 +32,27 @@ k8s_deploy_dev:
   script:
     - mkdir -p ~/.kube
     - echo "$KUBE_CONF" > ~/.kube/config
+    - export KUBECONFIG=~/.kube/config
+    - export KUBECONFIG=~/.kube/config kubectl get nodes
+    - kubectl get node
+    - echo $CI_COMMIT_REF_NAME
+    - kubectl -n tes set image deployment/wes-elixir-dev wes-elixir=$CONTAINER_DEV_IMAGE
+    - kubectl -n tes  set image deployment/wes-celery-worker wes-celery-worker=$CONTAINER_DEV_IMAGE
+    - kubectl -n tes rollout status deployment wes-celery-worker
+    - kubectl -n tes rollout status deployment wes-elixir-dev 
+
+  only:
+    - tags            # Triggered on *git* tags only
+
+  tags:
+    - hdruk_docker    # Use a *runner* tagged 'hdruk_docker'
+
+k8s_deploy_ext05_rke:
+  image: ebiacuk/wes-elixir:kubectl
+  stage: deploy_ext05_rke
+  script:
+    - mkdir -p ~/.kube
+    - echo "$EXT05_RKE_KUBE_CONF" > ~/.kube/config
     - export KUBECONFIG=~/.kube/config
     - export KUBECONFIG=~/.kube/config kubectl get nodes
     - kubectl get node
