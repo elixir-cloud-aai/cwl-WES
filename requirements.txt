@@ -15,7 +15,7 @@ click==6.7
 clickclick==1.2.2
 connexion==1.5.2
 cryptography==2.3.1
--e git+https://github.com/uniqueg/cwl-tes-temp.git@b46755b410fae8770ee54ddb0eb8e30f7ac075d7#egg=cwl-tes
+-e git+https://github.com/common-workflow-language/cwl-tes.git@4d7e2e572fabd9b67a9f19e94ede969c53ae8c5c#egg=cwl-tes
 -e git+https://github.com/common-workflow-language/cwltool.git@91e9e9f655fb149a2d3344a69883e147e94b2f50#egg=cwltool
 decorator==4.3.0
 Flask==1.0.2
