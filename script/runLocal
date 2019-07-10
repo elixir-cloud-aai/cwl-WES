@@ -1,8 +1,0 @@
-
-projectDir="$(pwd)"
-
-cd    /tmp
-mkdir tests/tmp/ tests/output/ --parents 
-
-PYTHONPATH="$projectDir" python "$projectDir/wes_elixir/app.py"
-

@@ -1,4 +1,0 @@
-
-
-kubectl -n tes get deployment/wes-elixir-dev -o json | jsonpath '$.spec.template.spec.containers[0].image'
-

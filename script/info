@@ -1,7 +1,0 @@
-
-
-
-id="$1"
-
-curl -X GET --header 'Accept: application/json' "$(wesUrl)/runs/$id" | less
-
