@@ -1,8 +1,8 @@
 ##### BASE IMAGE #####
-FROM ubuntu:16.04
+FROM python:3.6-slim-stretch
 
 ##### METADATA #####
-LABEL base.image="ubuntu:16.04"
+LABEL base.image="python:3.6-slim-stretch"
 LABEL version="1.1"
 LABEL software="WES-ELIXIR"
 LABEL software.version="1.0"
@@ -17,27 +17,20 @@ LABEL maintainer.location="Klingelbergstrasse 50/70, CH-4056 Basel, Switzerland"
 LABEL maintainer.lab="Zavolan Lab"
 LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 
-## Install system resources & dependencies
-RUN apt-get update \
-  && apt-get install -y build-essential checkinstall libreadline-gplv2-dev libncursesw5-dev libssl-dev libsqlite3-dev tk-dev libgdbm-dev libc6-dev libbz2-dev zlib1g-dev openssl libffi-dev python3-dev python3-setuptools git wget curl nodejs
+# Python UserID workaround for OpenShift/K8S
+ENV LOGNAME=ipython
+ENV USER=ipython
 
-## Install Python
-RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
-  && tar xJf Python-3.6.0.tar.xz \
-  && cd Python-3.6.0 \
-  && ./configure \
-  && make altinstall \
-  && ln -s /Python-3.6.0/python /usr/local/bin \
-  && cd .. \
-  && python -m pip install --upgrade pip setuptools wheel virtualenv
+# Install general dependencies
+RUN apt-get update && apt-get install -y nodejs openssl git build-essential python3-dev
 
 ## Set working directory
 WORKDIR /app
 
-## Copy app requirements
+## Copy Python requirements
 COPY ./requirements.txt /app/requirements.txt
 
-## Install app dependencies
+## Install Python dependencies
 RUN cd /app \
   && pip install -r requirements.txt \
   && cd /app/src/cwl-tes \

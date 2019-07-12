@@ -1,0 +1,90 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: wes-flask
+spec:
+  selector:
+    matchLabels:
+      app: wes-flask
+  template:
+    metadata:
+      labels:
+        app: wes-flask
+    spec:
+      initContainers:
+      - name: vol-init
+        image: busybox
+        command: [ 'mkdir' ]
+        args: [ '-p', '/data/db', '/data/output', '/data/tmp' ]
+        volumeMounts:
+        - mountPath: /data
+          name: wes-volume
+      containers:
+      - name: wes-flask
+        image: weselixir/elixir-wes-app:rc1
+        workingDir: '/app/wes_elixir'
+        command: [ 'gunicorn' ]
+        args: [ '-c', 'config.py', 'wsgi:app' ]
+        env:
+        - name: MONGO_HOST
+          value: mongodb
+        - name: MONGO_PORT
+          value: "27017"
+        - name: MONGO_USERNAME
+          valueFrom:
+            secretKeyRef:
+              key: database-user
+              name: mongodb
+        - name: MONGO_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: database-password
+              name: mongodb
+        - name: MONGO_DBNAME
+          value: wes-elixir-db
+        - name: RABBIT_HOST
+          value: rabbitmq-cluster
+        - name: RABBIT_PORT
+          value: "5672"
+        livenessProbe:
+          tcpSocket:
+            port: wes-port
+          initialDelaySeconds: 5
+          periodSeconds: 20
+        readinessProbe:
+          httpGet:
+            path: /ga4gh/wes/v1/service-info
+            port: wes-port
+          initialDelaySeconds: 3
+          periodSeconds: 3
+        resources:
+          requests:
+            memory: "512Mi"
+            cpu: "300m"
+          limits:
+            memory: "8Gi"
+            cpu: "2"
+        ports:
+        - containerPort: 8080
+          name: wes-port
+        volumeMounts:
+        - mountPath: /data
+          name: wes-volume
+        - mountPath: /app/wes_elixir/config/app_config.yaml
+          subPath: app_config.yaml
+          name: wes-config
+        - mountPath: /.netrc
+          subPath: .netrc
+          name: wes-netrc-secret
+      volumes:
+      - name: wes-volume
+        persistentVolumeClaim:
+          claimName: wes-volume
+      - name: wes-config
+        configMap:
+          defaultMode: 420
+          name: wes-config
+      - name: wes-netrc-secret
+        secret:
+          secretName: netrc

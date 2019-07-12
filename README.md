@@ -44,6 +44,10 @@ Hinxton, and WES-ELIXIR itself is being developed by ELIXIR Switzerland at the
 
 ## Installation
 
+### Kubernetes
+
+See instructions in [the deployment directory's README.md file](deployment/README.md).
+
 ### Docker
 
 #### Requirements (Docker)
@@ -87,13 +91,36 @@ password <PASSWORD>
 EOF
 ```
 
-Optional: edit default and override app config
+##### Optional: edit default and override app config
+
+* Via configuration files:
 
 ```bash
 vi wes_elixir/config/app_config.yaml
 vi wes_elixir/config/override/app_config.dev.yaml  # for development service
 vi wes_elixir/config/override/app_config.prod.yaml  # for production server
 ```
+
+* Via environment variables: 
+
+A few configuration settings can be overridden 
+by environment variables.
+
+```bash
+export <ENV_VAR_NAME>=<VALUE>
+```
+
+   * List of the available environment variables:
+
+| Variable       | Description             |
+|----------------|-------------------------|
+| MONGO_HOST     | MongoDB host endpoint   |
+| MONGO_PORT     | MongoDB service port    |
+| MONGO_DBNAME   | MongoDB database name   |
+| MONGO_USERNAME | MongoDB client username |
+| MONGO_PASSWORD | MongoDB client password |
+| RABBIT_HOST    | RabbitMQ host endpoint  |
+| RABBIT_PORT    | RabbitMQ service port   |
 
 Build container image
 

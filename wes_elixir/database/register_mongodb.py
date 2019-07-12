@@ -1,5 +1,7 @@
 """Function for Registering MongoDB with a Flask app instance."""
 
+import os
+
 import logging
 from typing import Dict
 
@@ -25,7 +27,7 @@ def register_mongodb(app: Flask) -> Flask:
     )
 
     # Add database
-    db = mongo.db[get_conf(config, 'database', 'name')]
+    db = mongo.db[os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name'))]
 
     # Add database collection for '/service-info'
     collection_service_info = mongo.db['service-info']
@@ -60,20 +62,32 @@ def create_mongo_client(
     app: Flask,
     config: Dict,
 ):
-    """Instantiate MongoDB client."""
-    uri = 'mongodb://{host}:{port}/{name}'.format(
-        host=get_conf(config, 'database', 'host'),
-        port=get_conf(config, 'database', 'port'),
-        name=get_conf(config, 'database', 'name'),
+    """Register MongoDB uri and credentials."""
+    if os.environ.get('MONGO_USERNAME') != '':
+        auth = '{username}:{password}@'.format(
+            username=os.environ.get('MONGO_USERNAME'),
+            password=os.environ.get('MONGO_PASSWORD'),
+        )
+    else:
+        auth = ''
+
+    app.config['MONGO_URI'] = 'mongodb://{auth}{host}:{port}/{dbname}'.format(
+        host=os.environ.get('MONGO_HOST', get_conf(config, 'database', 'host')),
+        port=os.environ.get('MONGO_PORT', get_conf(config, 'database', 'port')),
+        dbname=os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name')),
+        auth=auth
     )
-    mongo = PyMongo(app, uri=uri)
+
+    """Instantiate MongoDB client."""
+    mongo = PyMongo(app)
     logger.info(
         (
-            "Registered database '{name}' at URI '{uri}' with Flask "
+            "Registered database '{name}' at URI '{uri}':'{port}' with Flask "
             'application.'
         ).format(
-            name=get_conf(config, 'database', 'name'),
-            uri=uri,
+            name= os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name')),
+            uri=os.environ.get('MONGO_HOST', get_conf(config, 'database', 'host')),
+            port=os.environ.get('MONGO_PORT', get_conf(config, 'database', 'port'))
         )
     )
     return mongo

@@ -7,11 +7,17 @@
 
 ## Other contributors (in alphabetical order)
 
+* [Marius Dieckmann](https://github.com/MariusDieckmann)
+* [Susanne Domke](https://github.com/suedomke)
 * [Shubham Kapoor](https://github.com/shukapoo)
-* [Susheel Varma](https://github.com/susheel)
+* [Yacine Khettab](https://github.com/djixyacine)
+* [Risto Laurikainen](https://github.com/rlaurika)
+* [Jacek Lebioda](https://github.com/jLebioda)
 * [Kevin Sayers](https://github.com/KevinSayers)
 * [Jaroslaw Surkont](https://github.com/jsurkont)
+* [Marco Tangaro](https://github.com/mtangaro)
 * [Juha Törnroos](https://github.com/juhtornr)
+* [Susheel Varma](https://github.com/susheel)
 
 ## Acknowledgements
 
