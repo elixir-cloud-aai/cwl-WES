@@ -15,13 +15,13 @@ security:
         algorithm: RS256
         public_key: |-
             -----BEGIN PUBLIC KEY-----
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyUt09EkKGW30jpggX1PY
-            qrxuUw4Fo7a/uMiNvmy8CwBLfo+BgaI35Qi+ke/Dz9784CmNXjlIzNPFq+DUi+8p
-            BDGAJ5hznfEoQI2TDzdiG7uIART4AEpLo9xCKrL1al37jrDmvgk98gbumnHsWKQb
-            7KFRKHpIBvNVQ6v+z3nOQZ+fl1552S750ZSIfTXWXqlZohLVE9K8JwsM9i9z7h5E
-            BU2cJkxPbFoZEs6zGMFEOohiAA99Nm7cW/3m3dCn+Nm5TJadEt/xR08b2GXhcg+t
-            AC7qoBthpDFnUOrLbwvNWQIyE+Mch+z4+5LVTfElOGRem2tZaqYcMG/mY6EBra8p
-            UwIDAQAB
+            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVHPfUHVEzpgOnDNi3e2
+            pVsbK1hsINsTy/1mMT7sxDyP+1eQSjzYsGSUJ3GHq9LhiVndpwV8y7Enjdj0pury
+            wtwk/D8z9IIN36RJAh1yhFfbyhLPEZlCDdzxas5Dku9k0GrxQuV6i30Mid8OgRQ2
+            q3pmsks414Afy6xugC6u3inyjLzLPrhR0oRPTGdNMXJbGw4sVTjnh5AzTgX+GrQW
+            BHSjI7rMTcvqbbl7M8OOhE3MQ/gfVLXwmwSIoKHODC0RO+XnVhqd7Qf0teS1JiIL
+            KYLl5FS/7Uy2ClVrAYd2T6X9DIr/JlpRkwSD899pq6PR9nhKguipJE0qUXxamdY9
+            nwIDAQAB
             -----END PUBLIC KEY-----
         header_name: Authorization
         token_prefix: Bearer
