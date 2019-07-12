@@ -31,21 +31,25 @@ RUN wget https://www.python.org/ftp/python/3.6.0/Python-3.6.0.tar.xz \
   && cd .. \
   && python -m pip install --upgrade pip setuptools wheel virtualenv
 
+## Set working directory
+WORKDIR /app
+
 ## Copy app requirements
-COPY ./requirements.txt /app
+COPY ./requirements.txt /app/requirements.txt
 
 ## Install app dependencies
 RUN cd /app \
   && pip install -r requirements.txt \
   && cd /app/src/cwl-tes \
   && python setup.py develop \
-  && cd /app
+  && cd /
 
 ## Copy remaining app files
-COPY ./ .
+COPY ./ /app
 
 ## Install app
-RUN python setup.py develop \
+RUN cd /app \
+  && python setup.py develop \
   && cd /
 
 ## Copy FTP server credentials
