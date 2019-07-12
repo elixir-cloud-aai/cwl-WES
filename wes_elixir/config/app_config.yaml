@@ -23,6 +23,7 @@ security:
             KYLl5FS/7Uy2ClVrAYd2T6X9DIr/JlpRkwSD899pq6PR9nhKguipJE0qUXxamdY9
             nwIDAQAB
             -----END PUBLIC KEY-----
+
         header_name: Authorization
         token_prefix: Bearer
         identity_claim: sub
