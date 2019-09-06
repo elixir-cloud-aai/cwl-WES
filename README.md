@@ -50,7 +50,7 @@ See instructions in [the deployment directory's README.md file](deployment/READM
 
 ### Docker
 
-#### Requirements (Docker)
+#### Requirements
 
 Ensure you have the following software installed:
 
@@ -60,12 +60,14 @@ Ensure you have the following software installed:
 
 Note: These are the versions used for development/testing. Other versions may or may not work.
 
-#### Instructions (Docker)
+#### Instructions
+
+##### Set up environment
 
 Create data directory and required subdiretories
 
 ```bash
-mkdir -p data/db data/output data/tmp
+mkdir -p data/wes_elixir/db data/wes_elixir/output data/wes_elixir/tmp
 ```
 
 Clone repository
@@ -91,26 +93,29 @@ password <PASSWORD>
 EOF
 ```
 
-##### Optional: edit default and override app config
+> If you do not know what to put here, just creating an empty file `.netrc`
+> with, e.g., `touch .netrc` will be fine for testing purposes. Requirements
+> for this file will hopefully soon be entirely lifted.
+
+##### Edit/override app config (optional!)
 
 * Via configuration files:
 
 ```bash
 vi wes_elixir/config/app_config.yaml
 vi wes_elixir/config/override/app_config.dev.yaml  # for development service
-vi wes_elixir/config/override/app_config.prod.yaml  # for production server
+vi wes_elixir/config/override/app_config.prod.yaml  # for production service
 ```
 
-* Via environment variables: 
+* Via environment variables:
 
-A few configuration settings can be overridden 
-by environment variables.
+A few configuration settings can be overridden by environment variables.
 
 ```bash
 export <ENV_VAR_NAME>=<VALUE>
 ```
 
-   * List of the available environment variables:
+* List of the available environment variables:
 
 | Variable       | Description             |
 |----------------|-------------------------|
@@ -121,6 +126,8 @@ export <ENV_VAR_NAME>=<VALUE>
 | MONGO_PASSWORD | MongoDB client password |
 | RABBIT_HOST    | RabbitMQ host endpoint  |
 | RABBIT_PORT    | RabbitMQ service port   |
+
+###### Build & deploy
 
 Build container image
 
@@ -135,125 +142,22 @@ docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d  # for de
 docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d  # for production service
 ```
 
+###### Use service
+
 Visit Swagger UI
 
 ```bash
 firefox http://localhost:7777/ga4gh/wes/v1/ui
 ```
 
-### Non-dockerized
+Example values to start a simple CWL test workflow run:
 
-#### Requirements (non-dockerized)
+- `workflow_params`: `{"input":{"class":"File","path":"ftp://ftp-private.ebi.ac.uk/upload/foivos/test.txt"}}`
+- `workflow_type`: `CWL`
+- `workflow_type_version`: `v1.0`
+- `workflow_url`: `https://github.com/uniqueg/cwl-example-workflows/blob/master/hashsplitter-workflow.cwl`
 
-Ensure you have the following software installed:
-
-* curl (7.47.0)
-* Git (2.7.4)
-* MongoDB (4.0.1)
-* Python3 (3.5.2)
-* RabbitMQ (3.5.7)
-* virtualenv (16.0.0)
-
-Note: These are the versions used for development/testing. Other versions may or may not work.
-
-#### Instructions (non-dockerized)
-
-Ensure RabbitMQ is running (actual command is [OS-dependent](https://www.digitalocean.com/community/tutorials/how-to-install-and-manage-rabbitmq))
-
-```bash
-sudo service rabbitmq-server status
-```
-
-Start MongoDB daemon (actual command is [OS-dependent](https://docs.mongodb.com/manual/administration/install-community/))
-
-```bash
-sudo service mongod start
-```
-
-Place a `.netrc` file for access to a FTP server in your `$HOME` directory.
-Don't forget to replace `<USERNAME>` and `<PASSWORD>` with real values.
-
-```bash
-cat << EOF > "${HOME}/.netrc"
-machine ftp-private.ebi.ac.uk
-login <USERNAME>
-password <PASSWORD>
-EOF
-```
-
-Clone repository
-
-```bash
-git clone https://github.com/elixir-europe/WES-ELIXIR.git app
-```
-
-Traverse to project directory
-
-```bash
-cd app
-project_dir="$PWD"
-```
-
-Create and activate virtual environment
-
-```bash
-virtualenv -p `which python3` venv
-source venv/bin/activate
-```
-
-Install required packages
-
-```bash
-pip install -r requirements.txt
-```
-
-Install editable packages
-
-```bash
-cd "${project_dir}/venv/src/cwl-tes"
-python setup.py develop
-cd "${project_dir}/venv/src/cwltool"
-python setup.py develop
-cd "${project_dir}/venv/src/py-tes"
-python setup.py develop
-cd "$project_dir"
-```
-
-Install app
-
-```bash
-python setup.py develop
-```
-
-Optionally, override default config by setting environment variable and pointing it to a YAML config
-file. Ensure the file is accessible.
-
-```bash
-export WES_CONFIG=<path/to/override/config/file.yaml>
-```
-
-Start service
-
-```bash
-python wes_elixir/app.py
-```
-
-In another terminal, load virtual environment & start Celery worker for executing background tasks
-
-```bash
-# Traverse to project directory ("app") first
-source venv/bin/activate
-cd wes_elixir
-celery worker -A celery_worker -E --loglevel=info
-```
-
-Visit Swagger UI
-
-```bash
-firefox http://localhost:8888/ga4gh/wes/v1/ui
-```
-
-Note: If you have edited `WES_CONFIG`, ensure that host and port match the values specified in the config file.
+Leave the rest of the values empty and hit the `Try it out!` button.
 
 ## Q&A
 
@@ -261,7 +165,10 @@ Coming soon...
 
 ## Contributing
 
-**Join us at the [2018 BioHackathon in Paris](https://bh2018paris.info/), organized by [ELIXIR Europe](https://www.elixir-europe.org/) (November 12-16)!** Check out our [project description](https://github.com/elixir-europe/BioHackathon/tree/master/tools/Development%20of%20a%20GA4GH-compliant%2C%20language-agnostic%20workflow%20execution%20service).
+**Join us at the [2019 BioHackathon in Paris](https://www.biohackathon-europe.org/index.html), 
+organized by [ELIXIR Europe](https://www.elixir-europe.org/) (November 18-22)!** Check out our 
+[project 
+description](https://github.com/elixir-europe/BioHackathon-projects-2019/tree/master/projects/16).
 
 This project is a community effort and lives off your contributions, be it in the form of bug
 reports, feature requests, discussions, or fixes and other code changes. Please read [these
@@ -283,8 +190,8 @@ This project is covered by the [Apache License 2.0](https://www.apache.org/licen
 
 ## Contact
 
-The project is a collaborative effort under the umbrella of [ELIXIR
-Europe](https://www.elixir-europe.org/).
+The project is a collaborative effort under the umbrella of the [ELIXIR
+Cloud and AAI](https://elixir-europe.github.io/cloud/) group.
 
 Please contact the [project leader](mailto:alexander.kanitz@sib.swiss) for inquiries,
 proposals, questions etc. that are not covered by the [Q&A](#Q&A) and [Contributing](#Contributing)
@@ -292,10 +199,7 @@ sections.
 
 ## References
 
-* <https://www.elixir-europe.org/>
+* <https://elixir-europe.github.io/cloud/>
 * <https://www.ga4gh.org/>
 * <https://github.com/ga4gh/workflow-execution-service-schemas>
 
-See also [krini-cwl](https://git.scicore.unibas.ch/krini/krini-cwl/tree/dev) for an older,
-more rudimentary, yet functional TES-independent WES implementation that is part of the Krini
-project and leverages [Toil](https://github.com/DataBiosphere/toil).
