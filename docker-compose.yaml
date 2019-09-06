@@ -1,17 +1,18 @@
 version: '3.6'
 services:
 
-  celery-worker:
+  celery-worker-wes-elixir:
     image: wes-elixir:latest
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     links:
-      - rabbit
+      - mongo-wes-elixir
+      - rabbit-wes-elixir
     command: bash -c "cd /app/wes_elixir; celery worker -A celery_worker -E --loglevel=info"
     volumes:
-      - ../data:/data
+      - ../data/wes_elixir:/data
       - /wes/vol:/tmp
 
   wes-elixir:
@@ -19,21 +20,22 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    restart: always
+    restart: unless-stopped
     links:
-      - mongo
+      - mongo-wes-elixir
     command: bash -c "cd /app/wes_elixir; gunicorn -c config.py wsgi:app"
     volumes:
-      - ../data:/data
+      - ../data/wes_elixir:/data
 
-  rabbit:
+  rabbit-wes-elixir:
     image: "rabbitmq:3-management"
     hostname: "rabbit"
+    restart: unless-stopped
     links:
-      - mongo
+      - mongo-wes-elixir
 
-  mongo:
+  mongo-wes-elixir:
     image: mongo:3.2
-    restart: always
+    restart: unless-stopped
     volumes:
-      - ../data/db:/data/db
+      - ../data/wes_elixir/db:/data/db

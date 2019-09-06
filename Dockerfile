@@ -11,10 +11,10 @@ LABEL software.website="https://github.com/elixir-europe/WES-ELIXIR"
 LABEL software.documentation="https://github.com/elixir-europe/WES-ELIXIR"
 LABEL software.license="https://github.com/elixir-europe/WES-ELIXIR/blob/master/LICENSE"
 LABEL software.tags="General"
-LABEL maintainer="foivos.gypas@unibas.ch"
+LABEL maintainer="alexander.kanitz@alumni.ethz.ch"
 LABEL maintainer.organisation="Biozentrum, University of Basel"
 LABEL maintainer.location="Klingelbergstrasse 50/70, CH-4056 Basel, Switzerland"
-LABEL maintainer.lab="Zavolan Lab"
+LABEL maintainer.lab="ELIXIR Cloud & AAI"
 LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 
 # Python UserID workaround for OpenShift/K8S

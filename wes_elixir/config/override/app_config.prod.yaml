@@ -1,8 +1,8 @@
 # General server/service settings
 server:
-    port: 80
     debug: False
     environment: production
+    testing: False
     use_reloader: False
 
 # Security settings
@@ -11,7 +11,7 @@ security:
 
 # Database settings
 database:
-    host: 'mongo'
+    host: 'mongo-wes-elixir'
 
 # Storage
 storage:
@@ -20,8 +20,7 @@ storage:
 
 # Celery task queue
 celery:
-    broker_host: 'rabbit'
-    broker_port: 5672
+    broker_host: 'rabbit-wes-elixir'
 
 # OpenAPI specs
 

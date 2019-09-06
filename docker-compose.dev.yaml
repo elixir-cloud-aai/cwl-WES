@@ -1,7 +1,7 @@
 version: '3.6'
 services:
 
-  celery-worker:
+  celery-worker-wes-elixir:
     environment:
       - WES_CONFIG=/app/wes_elixir/config/override/app_config.dev.yaml
 
@@ -11,10 +11,10 @@ services:
     ports:
       - "7777:8080"
 
-  rabbit:
+  rabbit-wes-elixir:
     ports:
       - "5672:5672"
 
-  mongo:
+  mongo-wes-elixir:
     ports:
       - "27017:27017"

@@ -1,6 +1,4 @@
 # General server/service settings
-server:
-    port: 8080
 
 # Security settings
 security:
@@ -8,7 +6,7 @@ security:
 
 # Database settings
 database:
-    host: 'mongo'
+    host: 'mongo-wes-elixir'
     name: wes-elixir-db-dev
 
 # Storage
@@ -18,8 +16,7 @@ storage:
 
 # Celery task queue
 celery:
-    broker_host: 'rabbit'
-    broker_port: 5672
+    broker_host: 'rabbit-wes-elixir'
 
 # OpenAPI specs
 
