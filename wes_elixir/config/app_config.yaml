@@ -11,22 +11,17 @@ server:
 security:
     authorization_required: False
     jwt:
-        name: "ELIXIR AAI"
-        algorithm: RS256
-        public_key: |-
-            -----BEGIN PUBLIC KEY-----
-            MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAuVHPfUHVEzpgOnDNi3e2
-            pVsbK1hsINsTy/1mMT7sxDyP+1eQSjzYsGSUJ3GHq9LhiVndpwV8y7Enjdj0pury
-            wtwk/D8z9IIN36RJAh1yhFfbyhLPEZlCDdzxas5Dku9k0GrxQuV6i30Mid8OgRQ2
-            q3pmsks414Afy6xugC6u3inyjLzLPrhR0oRPTGdNMXJbGw4sVTjnh5AzTgX+GrQW
-            BHSjI7rMTcvqbbl7M8OOhE3MQ/gfVLXwmwSIoKHODC0RO+XnVhqd7Qf0teS1JiIL
-            KYLl5FS/7Uy2ClVrAYd2T6X9DIr/JlpRkwSD899pq6PR9nhKguipJE0qUXxamdY9
-            nwIDAQAB
-            -----END PUBLIC KEY-----
-
+        algorithms:
+          - RS256
+        claim_identity: sub
+        claim_issuer: iss
+        claim_key_id: kid
         header_name: Authorization
         token_prefix: Bearer
-        identity_claim: sub
+        validation_methods:
+          - userinfo
+          - public_key
+        validation_checks: any  # 'any' or 'all'
 
 # Database settings
 database:
