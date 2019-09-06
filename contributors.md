@@ -14,6 +14,7 @@
 * [Risto Laurikainen](https://github.com/rlaurika)
 * [Jacek Lebioda](https://github.com/jLebioda)
 * [Kevin Sayers](https://github.com/KevinSayers)
+* [Ralf Schmidt](https://github.com/koljaLanger)
 * [Jaroslaw Surkont](https://github.com/jsurkont)
 * [Marco Tangaro](https://github.com/mtangaro)
 * [Juha Törnroos](https://github.com/juhtornr)
