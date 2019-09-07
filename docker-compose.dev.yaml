@@ -18,3 +18,7 @@ services:
   mongo-wes-elixir:
     ports:
       - "27017:27017"
+
+  flower-wes-elixir:
+    ports:
+      - "5555:5555"
