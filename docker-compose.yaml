@@ -39,3 +39,10 @@ services:
     restart: unless-stopped
     volumes:
       - ../data/wes_elixir/db:/data/db
+
+  flower-wes-elixir:
+    image: mher/flower:0.9
+    restart: unless-stopped
+    links:
+      - celery-worker-wes-elixir
+    command: flower --broker=amqp://guest:guest@rabbit-wes-elixir:5672// --port=5555
