@@ -7,7 +7,7 @@ from wes_elixir.config.app_config import parse_app_config
 flask_config = parse_app_config(config_var='WES_CONFIG')
 
 # Gunicorn number of workers and threads
-workers = int(os.environ.get('GUNICORN_PROCESSES', '3'))
+workers = int(os.environ.get('GUNICORN_PROCESSES', '1'))
 threads = int(os.environ.get('GUNICORN_THREADS', '1'))
 
 forwarded_allow_ips = '*'
