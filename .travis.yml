@@ -1,31 +1,19 @@
 sudo: required
 
-dist: xenial
+dist: bionic
 
-service:
+services:
    - docker
 
 stages:
-  - if: branch = master
-    name: master build
-  - if: branch = dev
-    name: dev build
-  - name: branch build
+  - name: dev build
+    if: branch = dev
 
 jobs:
   include:
-  - stage: master build
-    script:
-      - version=0.1
-      - docker build -t weselixir/elixir-wes-app:"$version" -t weselixir/elixir-wes-app:master .
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push "$DOCKER_REPO_NAME":"$version"; fi
   - stage: dev build
     script:
-      - docker build -t weselixir/elixir-wes-app:dev -t weselixir/elixir-wes-app:build-"$TRAVIS_BUILD_NUMBER" .
+      - docker build -t elixircloud/wes-elixir:dev -t elixircloud/wes-elixir:build-"$TRAVIS_BUILD_NUMBER" .
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push "$DOCKER_REPO_NAME":build-"$TRAVIS_BUILD_NUMBER"; fi
-  - stage: branch build
-    script:
-      - docker build -t weselixir/elixir-wes-app-branched:build-"$TRAVIS_BUILD_NUMBER" .
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+
