@@ -1,7 +1,6 @@
 os:
 - linux
 dist: bionic
-language: python
 services:
 - docker
 stages:
@@ -9,7 +8,7 @@ stages:
 - name: deploy
 - name: test
 - name: publish
-  if: type != pull_request
+#  if: type != pull_request
 jobs:
   include:
   - stage: build
@@ -19,7 +18,7 @@ jobs:
   - stage: deploy
     name: Deploy application
     script:
-    - "docker-compose up -f docker-compose.yaml -f docker-compose.dev.yaml -d"
+    - "docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d"
   - stage: test
     name: Run integration tests
     script:
