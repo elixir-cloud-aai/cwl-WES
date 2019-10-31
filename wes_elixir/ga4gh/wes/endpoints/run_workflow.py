@@ -6,7 +6,6 @@ import re
 import shutil
 import string  # noqa: F401
 import subprocess
-import string  # noqa: F401
 
 from celery import uuid
 from json import (decoder, loads)
@@ -173,7 +172,7 @@ def __create_run_environment(
     run_id_length = get_conf(config, 'database', 'run_id', 'length')
 
     # Keep on trying until a unique run id was found and inserted
-    # TODO: If no more possible IDs => inf loop; fix (raise customerror; 500
+    # TODO: If no more possible IDs => inf loop; fix (raise custom error; 500
     #       to user)
     while True:
 
@@ -193,8 +192,8 @@ def __create_run_environment(
             # TODO: Think about permissions
             # TODO: Add working dir (currently one has to run the app from
             #       outermost dir)
-            os.mkdir(current_tmp_dir)
-            os.mkdir(current_out_dir)
+            os.makedirs(current_tmp_dir)
+            os.makedirs(current_out_dir)
 
         # Try new run id if directory already exists
         except FileExistsError:
@@ -383,7 +382,7 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         data['internal']['param_file_path'] = os.path.join(
             workflow_dir,
             '.'.join([
-                workflow_name_ext[0],
+                str(workflow_name_ext[0]),
                 'yml',
             ]),
         )
@@ -413,7 +412,7 @@ def __process_workflow_attachments(data: Dict) -> Dict:
                 workflow_dir,
                 'repo',
                 '.'.join([
-                    workflow_name_ext[0],
+                    str(workflow_name_ext[0]),
                     ext,
                 ]),
             )

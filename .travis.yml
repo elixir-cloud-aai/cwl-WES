@@ -1,19 +1,39 @@
-sudo: required
-
+os:
+  - linux
 dist: bionic
-
+language: python
 services:
-   - docker
-
+  - docker
+env:
+  global:
+  - secure: AJ/NAkh0Z00+SFDZFU/3R9wddyF2se3dB3br3qI3IqeRVDLU3X7A23O9WQXyZwvErNQtMHOQLW4hKJQYpRTGMqaQRpwTsOCzixuB5I+ZAXJkqROPnt809UMTF46tUURAqVcvhOMKPIzMAfVMVEcPBGQwbWEZyTvJJBWijRY9nJ0qVySdhujkH0N2a9NpEFlkwfYhuFEkltIopDHXRgm2nYTQG2KulFJiYJp7+6ckrTIIwNliY79lmAIskU6hf/e+4rWQXQXLVIontlNBj5JN6yQJF8Xhp4I2aT8z6EBTEhGv7tR0Xj7kiGCYgvd2L1o1bAHrScJEbXEjS8/h+md5hOttSMImUjsO3WSOG2p8majG1cm5OcDGd0WeuABUSdA5fp0Jcx2T+uERQh6XI5JLHO1Hf+GeOKGk8o5cdTmqKqhEPXNlECbrde4kyX2LVTN1qyDaBHOXNkNDRg9shPBUO3YSeXUesQzJhhB/crqlkGiufBDIow3L1/WHeFAZ3Gbjhkeecdge+wUFQD++arWcVZ8aBzAwBrkU+L24JtfgwoW4lcazrZTU1cdIBVluU1S7dk+aOj6OTauZQt+gZcqYiJU9ZQPqGHkkPxgLYUdsXRB5JvxuEmALYMAQooHW2OS3HVSjNge+U+5z94Ze40CY9vL2XmwZKrnR5C42Crbz3rc=
+  - secure: bI/oORaTOedVSnKymdpi0NJOLKaALVsZH8+DA6n2dHp5N/+p8S+f4nfuC+Fp411HgWxoe1jDeymfkXReHQyS7bz4nuULJSpqpCRVcjpd5hyVAflSUwwngVs10rNkv1rbtTTmzoPR3C91pCxP50JPjMgF5rZqz5UZ4VUA21DY1S+Kafcs/Q/Q0db/UCvSTLBFRdOqoMh0nTvCR1hAO+Gxo5TMB7E7U2QCXt2tVcGcBZXcS7sGdTsVmj+Gagdb0+yWHo4SPjyD0L026alHPgx7B0OE/DBvt13SvSQ46wRGGJjlV83FcpJFo2Beru7HaaJ5QGV48TEMGfu7fyNyTnS6emmBZLGbu5XraroKYCUHd2RK+CJ0GTzoVjE6R+jOh/RGRgoM8sIp5cyT/WStGLU05QXp+8RDrlnjuuDUkNDO0CmH9qE7MxV+Cqk+fisMNJHMZvI61nhGs9vYGxNbb7K3lmw3jXJtmvENl4YhTfa7eZZ88U6cxMrQGZh20zLUhhOqDY4YsDxkqcD8kNGq0wWv0eaOlO/tp3FpfVeD8bsEQ5RMcfgmSYdNNbV+nLzd5DMwcy2pKCHpDqiCQ18g5sC3NlN2opWGVe0hci90s1rAKM6kjhsY332BipDcQa12AlPbieD1vw2pJXXjeZtE3vAsUJrQkOfQfb8oSe2R8vBLeHo=
+#branches:
+#  only:
+#    - dev
 stages:
-  - name: dev build
-    if: branch = dev
-
+  - name: build
+  - name: deploy
+  - name: test
+  - name: publish
+    if: type != pull_request
 jobs:
   include:
-  - stage: dev build
-    script:
-      - docker build -t elixircloud/wes-elixir:dev -t elixircloud/wes-elixir:build-"$TRAVIS_BUILD_NUMBER" .
-      - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - if [ "$TRAVIS_PULL_REQUEST" = false ]; then docker push "$DOCKER_REPO_NAME":build-"$TRAVIS_BUILD_NUMBER"; fi
+    - stage: build
+      name: "Build application"
+      script:
+        - "docker-compose build"
+    - stage: deploy
+      name: "Deploy application"
+      script:
+        - "docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml -d"
+    - stage: test
+      name: "Run integration tests"
+      script:
+        - "test $(curl -sL -w '%{http_code}' -X GET --header 'Accept: application/json' 'http://localhost:7777/ga4gh/wes/v1/runs' -o /dev/null) == '200'"
+    - stage: publish
+      name: "Push image to registry"
+      script:
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push "$DOCKER_REPO_NAME":"$DOCKER_REPO_TAG"
 
