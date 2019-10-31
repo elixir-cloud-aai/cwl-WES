@@ -7,21 +7,21 @@ services:
 install:
 - pip --version
 stages:
-- name: test
+#- name: test
 - name: publish
 #  if: type != pull_request
 jobs:
   include:
-  - stage: test
-    name: Build, deploy and test application
-    script:
-    - "docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d"
-    - "test $(curl -sL -w '%{http_code}' -X GET --header 'Accept: application/json' 'http://localhost:7777/ga4gh/wes/v1/runs' -o /dev/null) == '200'"
+#  - stage: test
+#    name: Build, deploy and test application
+#    script:
+#    - "docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d"
+#    - "test $(curl -sL -w '%{http_code}' -X GET --header 'Accept: application/json' 'http://localhost:7777/ga4gh/wes/v1/runs' -o /dev/null) == '200'"
   - stage: publish
     name: Push image to registry
     env:
-    - secure: "RUwSveDgEEvMzPfMoDNYBLY5X+/ff/EXtbglR3j8cACL8rQb+m1WbVKP74jJwIz9UIskL8bShJ4VeL9p8NY4K50MD7VsQ/JC5UoD6dC0FCeQkRCGH6rOgrV7hYV7ZyOg+KPzFoJ3PY6S4bAy/UZGBdQECGlA25Go5MD7dVsg3g4ZrBxuSMQRn87ZhnWrIn9fWzlAOJ3CSo8hkOfOj6o5v6AQUF1FBCA6EVpW+qC+GBakBiFuER6FdPi8Xs/WnH9DHsfTwE73lm2WQAOtreOrWUJSCiZSdCubmy+ByBFptcRAcfyv1Y4flPfxu/YLltQgbAu7eWLseVUyfGkKmwDMKdLH9JpW0KlFKdw5wq7AzYFEGRygnjINisrUH7Ho9Vk1rutZUxTUEHZjJ28Chiv2sRx2+fq/0QEHiryXeg141aiGwVOK0zOzlNvc9A+IyPMXzxP9IsbPut+FvoFyv37hX5Zm43xY2QESD1q/oCEL/WFCX5cSxs2yAVy7oSol32n2oQ7ecG28k4W+QQPrQikdmBcbq2P/5gTrwfnutGzfsTmrgyr6yB4N8a8uPs1RjPbnP9oVb1vDG84VtAxRMeYRcgq3DnxuaW7CKpTA3lA32yqMpKzRzpN9pgmD4rV2YIJ/4MVd13Ltm56/hmaK/36hZ9ruOffvuOVq1378W62QACc="
-    - secure: "U7HaBm85hypgsETGs5gj6QLWb5DeifqHlsK5iolSWOuYJ8EeDPMaDUXJ2gwj43u6CfrsNUY66xCVrM9svrB1EndI1WwUN8BC/vvINOsYAU8Kf9UVW+Kouuuu4g5LSK2sGjHtknipLdnL2KIp6UG4AHYLDAT79eFvvpbp5KQr2SKIh0rmhX/V2/2yQeRxW5uMKiYQ3azskhnjUEVw4ubWwm8JwgF0LtvYGJV1gmxmLg7XGG55V20SNEmn+yd03XzyG9SwTHnS42i8wCpoc7snIQIRlts8xAgAyeN3iZaHgj//V+BwBAjPVJn1+RF/5Ihk3LZT9GeSgREmcP7q8BDlXKqSZpanCXHdyzQZ7RFeXAD+42eHTzeBRcNNFCTSmjUtYD5sRd5j3G1BZwNu5Eu/TVPjIvJPl+/w3tFhTbBaEoqUYOmIYgZtqpP6zYU+Y0yj31R//R3cWauo5fM8I7T1CepD8R4r8JCXjCUFlbltXPQMY4p0H3oamUYfY1GGdgeAE4bHXsbbhoKT6HIbPj0/7i0hHiyyidwbzIG1sO+LokamgGts9DjCH2q8gyeVa8o6SVELUTSfZJ5JLLdOHaUtpzXrnOcV8gofnVfCqdr5SfnnBaJgTvE1OvN1kXZCXNHPjLX4+Y8pj5+QKrLS6sWyAuwdfHXi7RFzKTj7uG9ix5Q="
+    - secure: "woVF7L1vADo4OqyKm7Kq8PC95Ej4L1q3R4Gf0Uh9p1tA81JMfD/3HDS5dG3OQvjoftcA7PqpFTrZq6GL1hR/bQqoQypHVNziH9PnDZFJPvxIYa8BUV7lknva4aSB6lcj4jmukHAnGNrusgSNXqcmFO0ziX4nyCNwcmXNGfRMKB3D25t0MAALtpSBYFovN1+7yijlklyjPCPUaEJ8Sj/HpohJ0CMye9f+dVE9RR5fDteLycHSRn2V2ftwmvu16vyI/sI9gdhYqamh18j8G9AULpeBWCdKpJ5+8nOnGwewRLCwnpClW6KEPtR95sk0qGiIs6rKigMbKuKmlgpbjh3T3vHfsvCVKpF1t+rAbFSWJy3RNv+Ru9zJ5Cl590v9DevRKfWyaJRiXdplEQRVgsMZdmfXaepZuNhYu113dw54QuVvQ5ceNS/MhR1QZs9Nkmv5LXwdvgxPn4seQM8G/uvYZS9cmyt+VkhMFkSBanRMxTafv0FAD4R+KgrHpvG8JjacwINAn7Ufy2YWMkVsolQGERH6LEo9BoxPW5SweKMoakx27K+mFKd63XwPzpwwv0zsKmPp6hBAZ7r4AnzrRVqJF7dGI9dXsFVNTTAT7+moQ7R9PI0WVNYL+ntafbd/q3/I5r2i/tuA2yr5l4oMgoOQAXB8/JuQ5uvjVudELPU1c9s="
+    - secure: "dhyNkYM5fPIcFSzrQ9k/nnOJOH3iOuWqu1Fu54IUCFDv89P7gNDkwCQAXH5hp8oipfNP0l4idOp0CmXWaAozFc67mP/tBN6A5D+zdfjjG3qhmFjlojpC1EtF7kvOvF8Wc9tCRi/J8qDiAGGqPPstxYfGD7jxUlDKeKlfgf9zhnnWQCM1kdnBqedLaEI6QIYdhpULa/8yMVLI3VOBE22FNZNc4Ftw7xDJFTMP1iW7k3DOe+gSR0bkBTwBj12rL/dCiEeYR/8UfZQJgmq4iZTI5s1EoHrqhnjp6xDxIaqmlWTkwTE6SpTm70Q7qvU0YLvwlKXmhclGmDmauxONzL+DJp0gPVT0N54pUZ6CfglxwJFAz3U8xRzi3vurcIC2hozKg67p8e6aohlJVYqook0APsK/q/z0kfvivMC9gP0HZIKUuSFvkbbwt6VAVjVmPhTbPew6pRsCmHrjntpWSfehaVAb8byKxul4BU3HnLTy+uf2RUJ9BfNjl7m7wCba+SwEU29/dow65JlLsCwUUHhEexXDRn9GO09Ci6OR+EhtCtsS7cXTS/1rOIaiUfvB7ciu5BjqdnSxJ1WkAEDaut32l4/1mfNfTg0eSmsHPs//oPsXb4NZU/f4oeXJvvVmG1PTx7mOwGnSokZT8iI+rk3ULCyf+lz0JNQy7Jx5mb+kEqI="
     script:
     - docker build -t "$DOCKER_REPO_NAME":"$DOCKER_REPO_TAG" .
     - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
