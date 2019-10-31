@@ -4,24 +4,15 @@ dist: bionic
 services:
 - docker
 stages:
-- name: build
-- name: deploy
 - name: test
 - name: publish
 #  if: type != pull_request
 jobs:
   include:
-  - stage: build
-    name: Build application
-    script:
-    - "docker-compose build"
-  - stage: deploy
-    name: Deploy application
-    script:
-    - "docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d"
   - stage: test
-    name: Run integration tests
+    name: Build, deploy and test application
     script:
+    - "docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up --build -d"
     - "test $(curl -sL -w '%{http_code}' -X GET --header 'Accept: application/json' 'http://localhost:7777/ga4gh/wes/v1/runs' -o /dev/null) == '200'"
   - stage: publish
     name: Push image to registry
@@ -29,5 +20,6 @@ jobs:
     - secure: k/4VtMHJca3cQzBSQqVnPZv8msWDzNsRmneVrtv9xlqVO0l9zLVJzbRm+ub+eJlP1AqFIz1m5Aw/6Pcn6DuYqLGVq1x4jIaMOng+X8SUP9DRWSZgkHsCojp008SL0l11f0WLCLNVRbJTcplvFE2ZWQJr7OallS2YI7US8w+CPElh1tPbomLTxGo36ZJD4pXjR7fWuqSkxYrVPO1IvMWMtKfM2YDLeInkF/IH8GYcV/8PbcGLX0j8vSwbXGWXmZ1QjrxkSR65YBTCtXgTPeUh3nMaa4S4JxyLyCCmknliSSVuhEYyBpu9w3vngypgHBx/16HsMiNd0WUrs/cEwIqP250mgDRyE7UNWUz0dLqGtc2k7K73rgfnYbhJ/IlVlFj4zTxRfzF7tESFa5iWL1k0WChlxZVw7ylC1Az1tVl87N+LknRTXvF6+F6HCNXEkPmX3FTLqnMUEjbfA2dZxwAlJ/NZrL1K1k3gtMTUznFQSV6d7hsjeocMe3G6yT0VEC6ymy+Zv/GwK63PVy96b92V9j8NNrEsf8yV0yFMGk9fQvvpvA74Txav1c9FXTzA7VEKF5veICR7ixIBtZLx7QlgQlN/4aHhTWx27Y16padeOQlNJMgd3vtEPTN8vUxyhvxdeo7CKYs7UkGMFDOuyUFEWMi+1/ErKrRRVIyb+oI8kfM=
     - secure: GPQN5rB3C1UXZuxHipTxk0SerBPIuyXFdvCm9+q40eInJYNq+vluw9AUUJk71y03xD0YlnRhHrX8Ic1EV5Q+VaFQpQ/CAuFwjRDYaEegxAjbwM040cz8oDCJzmkXWkofWJS447H/JB5oWOrIGeCFtJUWKzx2RSC55JiJg2Y2ncBIn3xRg1iS55hiaYe18Ubs/TfMjNqUUC4ec+fu0O7ucI9poxFI/Dn5nLQ26ma3yKLXDb1+vVuVYKE9lcqkR2cL8Fq11C3UG23kXnULpAKomgK/XQlXR4tNUN7A9j14LfWOf0EhsxW42Yq5L321oFeMjIrsbHejsHzY9NpHJZKNDLptIpMiFksZ3HQGoWqHkzhyCe/W2tLE3dWuiBs3r+LdgvT6S14yQ87e2u8PTR4vx63tWaue5D5Xo/JOvMYt8YiBBBuNsd5ERzQ27JhYGFWItmNoy73menYRK4acKvDB0ZYIlTOLhdOhcdu6FVosk28pklpEpz+VslJm8tVx8zZMnomRH2OUJIrQmtpaw326SxeUdRiXCOXISAM/1nHEplxNPz+HxjlZFmhfhRzkQP2yAWV1kdqZMkkGvgz894mYwPdxEbPeytRCHnNfWSaTmYeOcYT+5GX0fTcymJcKtWEm71zrcatobNUlmkGoSxsN8bWWwY9ySRvVVAiMsZRizdE=
     script:
-    - "echo \"$DOCKER_PASSWORD\" | docker login -u \"$DOCKER_USERNAME\" --password-stdin"
-    - "docker push \"$DOCKER_REPO_NAME\":\"$DOCKER_REPO_TAG\""
+    - docker build -t "$DOCKER_REPO_NAME":"$DOCKER_REPO_TAG" .
+    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+    - docker push "$DOCKER_REPO_NAME":"$DOCKER_REPO_TAG"
