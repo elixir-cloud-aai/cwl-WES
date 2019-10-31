@@ -11,7 +11,7 @@ security:
 
 # Database settings
 database:
-    host: 'mongo-wes-elixir'
+    host: 'mongo'
 
 # Storage
 storage:
@@ -20,7 +20,7 @@ storage:
 
 # Celery task queue
 celery:
-    broker_host: 'rabbit-wes-elixir'
+    broker_host: 'rabbit'
 
 # OpenAPI specs
 

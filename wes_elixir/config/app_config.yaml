@@ -59,7 +59,7 @@ api:
           swagger_ui: True
           swagger_json: True
     endpoint_params:
-        default_page_size: 10
+        default_page_size: 5
         timeout_cancel_run: 60
         timeout_run_workflow: Null
 
