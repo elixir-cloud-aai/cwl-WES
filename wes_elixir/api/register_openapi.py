@@ -39,13 +39,20 @@ def register_openapi(
             path = __add_security_definitions(in_file=path)
 
         # Generate API endpoints from OpenAPI spec
+        options = {
+            "swagger_ui": get_conf(spec, 'swagger_ui'),
+            "serve_spec": get_conf(spec, 'swagger_json'),
+        }
+        base_path = get_conf(spec, 'base_path')
+        if not base_path:
+            base_path = None
         try:
             app.add_api(
                 path,
                 strict_validation=get_conf(spec, 'strict_validation'),
                 validate_responses=get_conf(spec, 'validate_responses'),
-                swagger_ui=get_conf(spec, 'swagger_ui'),
-                swagger_json=get_conf(spec, 'swagger_json'),
+                options=options,
+                base_path=base_path,
             )
 
             logger.info("API endpoints specified in '{path}' added.".format(

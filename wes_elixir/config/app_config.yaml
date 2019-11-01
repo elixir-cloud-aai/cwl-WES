@@ -53,11 +53,22 @@ celery:
 # OpenAPI specs
 api:
     specs:
-        - path: '20181010.be85140.workflow_execution_service.swagger.yaml'
+        - name: 'WES'
+          path: '20181023.c5406f1-v1-0-0.workflow_execution_service.swagger.yaml'
           strict_validation: True
           validate_responses: True
           swagger_ui: True
           swagger_json: True
+          base_path: False
+        - name: 'stdout_stderr'
+          path: 'schema.stdout_stderr.openapi.yaml'
+          strict_validation: True
+          validate_responses: True
+          swagger_ui: True
+          swagger_json: True
+          base_path: '/wes-elixir/v1'
+    general_params:
+        time_format: "%Y-%m-%dT%H:%M:%SZ"
     endpoint_params:
         default_page_size: 5
         timeout_cancel_run: 60

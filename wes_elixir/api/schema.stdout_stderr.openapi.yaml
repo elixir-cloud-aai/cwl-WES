@@ -1,0 +1,163 @@
+openapi: 3.0.0
+info:
+  title: WES-ELIXIR STDOUT & STDERR OpenAPI specification
+  contact:
+    name: ELIXIR Cloud & AAI group
+    email: alexander.kanitz@alumni.ethz.ch
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0
+  version: 0.14.0
+servers:
+- url: /wes-elixir/v1
+paths:
+  /stdout/{run_id}:
+    get:
+      summary: |-
+        Retrieves the content of the indicated run's STDOUT stream and returns
+        it as plain text.
+      parameters:
+        - in: path
+          name: run_id
+          schema:
+            type: string
+          required: true
+          description: Run identifier.
+      operationId: get_stdout
+      responses:
+        200:
+          description: |-
+            STDOUT stream of indicated run as plain text.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "This is STDOUT."
+        400:
+          description: The request is malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: The request is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: The requester is not authorized to perform this action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-openapi-router-controller: api.controllers
+  /stderr/{run_id}:
+    get:
+      summary: |-
+        Retrieves the content of the indicated run's STDERR stream and returns
+        it as plain text.
+      operationId: get_stderr
+      parameters:
+        - in: path
+          name: run_id
+          schema:
+            type: string
+          required: true
+          description: Run identifier.
+      responses:
+        200:
+          description: |-
+            STDERR stream of indicated run as plain text.
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "This is STDERR."
+        400:
+          description: The request is malformed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        401:
+          description: The request is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        403:
+          description: The requester is not authorized to perform this action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        404:
+          description: The requested resource was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        500:
+          description: An unexpected error occurred.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      x-openapi-router-controller: api.controllers
+components:
+  schemas:
+    Error:
+      required:
+      - message
+      - reason
+      type: object
+      properties:
+        message:
+          type: string
+          description: |-
+            A human readable message providing more details about the error.
+          example:
+            Required parameter 'xyz' is missing.
+        reason:
+          type: string
+          description: |-
+            Unique identifier for this error, but *not* the HTTP response code
+            (e.g., name of exception).
+          example: ValueError
+      description: An individual error message.
+    ErrorResponse:
+      required:
+      - code
+      - errors
+      - message
+      type: object
+      properties:
+        code:
+          type: integer
+          description: HTTP status code (e.g., 400, 404).
+          format: int64
+          example: 400
+        errors:
+          type: array
+          description: List of associated errors and warnings.
+          items:
+            $ref: '#/components/schemas/Error'
+        message:
+          type: string
+          description: |-
+            A human readable message providing more details about the error.
+          example: The request could not be interpreted.
+      description: A response object for detailed error messages.

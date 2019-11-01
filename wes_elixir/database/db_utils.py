@@ -1,6 +1,6 @@
 """Utility functions for MongoDB document insertion, updates and retrieval."""
 
-from typing import (Any, List, Mapping, Optional)
+from typing import (Any, Dict, List, Mapping, Optional)
 
 from bson.objectid import ObjectId
 from pymongo.collection import ReturnDocument
@@ -69,8 +69,8 @@ def update_tes_task_state(
 ) -> Optional[Mapping[Any, Any]]:
     """Updates `state` field in TES task log and returns updated document."""
     return collection.find_one_and_update(
-        {'task_id': task_id, 'api.task_logs': {'$elemMatch': {'id': tes_id}}},
-        {'$set': {'api.task_logs.$.state': state}},
+        {'task_id': task_id, 'internal.tes_logs': {'$elemMatch': {'id': tes_id}}},
+        {'$set': {'internal.tes_logs.$.state': state}},
         return_document=ReturnDocument.AFTER
     )
 
@@ -78,12 +78,25 @@ def update_tes_task_state(
 def append_to_tes_task_logs(
     collection: Collection,
     task_id: str,
-    tes_log: str
+    task_log: Dict,
 ) -> Optional[Mapping[Any, Any]]:
     """Appends task log to TES task logs and returns updated document."""
     return collection.find_one_and_update(
         {'task_id': task_id},
-        {'$push': {'api.task_logs': tes_log}},
+        {'$push': {'internal.tes_logs': task_log}},
+        return_document=ReturnDocument.AFTER
+    )
+
+
+def append_to_wes_task_logs(
+    collection: Collection,
+    task_id: str,
+    task_log: Dict,
+) -> Optional[Mapping[Any, Any]]:
+    """Appends task log to WES task logs and returns updated document."""
+    return collection.find_one_and_update(
+        {'task_id': task_id},
+        {'$push': {'api.task_logs': task_log}},
         return_document=ReturnDocument.AFTER
     )
 
