@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.rabbitmq.appName }}
+spec:
+  selector:
+    app: {{ .Values.rabbitmq.appName }}
+  ports:
+  - port: 5672
+    targetPort: 5672

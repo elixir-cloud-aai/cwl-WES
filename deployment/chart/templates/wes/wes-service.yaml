@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.wes.appName }}
+spec:
+  selector:
+    app: {{ .Values.wes.appName }}
+  ports:
+  - port: 8080
+    targetPort: 8080
