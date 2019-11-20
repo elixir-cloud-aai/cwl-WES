@@ -35,17 +35,17 @@ spec:
           valueFrom:
             secretKeyRef:
               key: database-user
-              name: mongodb
+              name: {{ .Values.mongodb.appName }}
         - name: MONGO_PASSWORD
           valueFrom:
             secretKeyRef:
               key: database-password
-              name: mongodb
+              name:  {{ .Values.mongodb.appName }}
         - name: MONGO_DBNAME
           valueFrom:
             secretKeyRef:
               key: database-name
-              name: mongodb
+              name: {{ .Values.mongodb.appName }}
         - name: RABBIT_HOST
           value: {{ .Values.rabbitmq.appName}}
         - name: RABBIT_PORT

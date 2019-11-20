@@ -28,24 +28,24 @@ spec:
         args: [ '-c', 'config.py', 'wsgi:app' ]
         env:
         - name: MONGO_HOST
-          value: {{ .Values.mongodb.appName}}
+          value: {{ .Values.mongodb.appName }}
         - name: MONGO_PORT
           value: "27017" # template this
         - name: MONGO_USERNAME
           valueFrom:
             secretKeyRef:
               key: database-user
-              name: mongodb
+              name:  {{ .Values.mongodb.appName }}
         - name: MONGO_PASSWORD
           valueFrom:
             secretKeyRef:
               key: database-password
-              name: mongodb
+              name: {{ .Values.mongodb.appName }}
         - name: MONGO_DBNAME
           valueFrom:
             secretKeyRef:
               key: database-name
-              name: mongodb
+              name: {{ .Values.mongodb.appName }}
         - name: RABBIT_HOST
           value: {{ .Values.rabbitmq.appName}}
         - name: RABBIT_PORT
