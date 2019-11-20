@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.mongodb.appName }}
+  labels:
+    app: {{ .Values.mongodb.appName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.mongodb.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.mongodb.appName }}
+    spec:
+      containers:
+        - env:
+          - name: MONGODB_USER
+            valueFrom:
+              secretKeyRef:
+                key: database-user
+                name: {{ .Values.mongodb.appName }}
+          - name: MONGODB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-password
+                name: {{ .Values.mongodb.appName }}
+          - name: MONGODB_ADMIN_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: database-admin-password
+                name: {{ .Values.mongodb.appName }}
+          - name: MONGODB_DATABASE
+            valueFrom:
+              secretKeyRef:
+                key: database-name
+                name: {{ .Values.mongodb.appName }}
+          image: {{ .Values.mongodb.image }}
+          imagePullPolicy: IfNotPresent
+          livenessProbe:
+            failureThreshold: 3
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            successThreshold: 1
+            tcpSocket:
+              port: 27017
+            timeoutSeconds: 1
+          name: mongodb
+          ports:
+            - containerPort: 27017
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - /bin/sh
+                - '-i'
+                - '-c'
+                - >-
+                  mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p
+                  $MONGODB_PASSWORD --eval="quit()"
+            failureThreshold: 3
+            initialDelaySeconds: 3
+            periodSeconds: 10
+            successThreshold: 1
+            timeoutSeconds: 1
+          resources:
+            limits:
+              memory: 512Mi
+          volumeMounts:
+            - mountPath: /var/lib/mongodb/data
+              name: mongodb-data
+      volumes:
+        - name: mongodb-data
+          persistentVolumeClaim:
+            claimName: {{ .Values.mongodb.appName }}-volume

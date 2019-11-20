@@ -9,6 +9,10 @@
         - [MongoDB](#mongodb)
         - [RabbitMQ](#rabbitmq)
         - [WES](#wes)
+* [Helm deployment](#helm-deployment)
+    * [Helm Usage](#helm-usage)
+    * [Autocert](#autocert)
+    * [Helm TODO](#helm-todo)
 
 The files under this directory can be used to deploy WES on Kubernetes. The
 directory structure is as follows:
@@ -18,6 +22,14 @@ directory structure is as follows:
   - rabbitmq: YAML for deploying RabbitMQ (TODO)
   - wes: YAML for deploying WES Flask server and WES Celery worker
 - ingress: cluster specific config for ingress (e.g. OpenShift Route or NGINX ingress)
+* chart: Helm chart for deploying WES on OpenShift/Kubernetes
+  * templates/mongodb: WES specific helm chart template to deploy MongoDB
+  * templates/rabbitmq: WES specific helm chart template to deploy RabbitMQ
+  * templates/wes: Helm chart template for deploying WES (depends on
+    templates/mongodb and templates/rabbitmq)
+* autocert: Container image build scripts that provide automated fetch of
+  letsencryptit certificates their injection to Kubernetes secret objects and
+  OpenShift Route objects.
 
 ## Usage
 
@@ -170,3 +182,28 @@ deployed using:
 These deployments depend on setting up a shared ReadWriteMany volume between
 Flask and Celery (`wes-volume.yaml`) and a shared ConfigMap
 (`wes-configmap.yaml`).
+
+# Helm deployment
+
+The helm charts under deploy WES, MongoDB and RabbitMQ.  Tested with Helm
+v3.0.0.
+
+Once tested, these helm deployment charts should render the old deployment
+model under directories `common` and `ingress` obsolete.
+
+## Helm Usage
+
+In the directory `chart`, modify values.yaml or provide more values in external
+value file and execute
+```bash
+helm install <deploymentname> . -f <extra-values-yaml>
+```
+
+## Autocert
+
+The helm chart utilizes scheduled TLS certificate fetching from letsencryptit. 
+
+## Helm TODO
+
+* Test autocert with vanilla K8S
+
