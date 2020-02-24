@@ -1,0 +1,52 @@
+# Default values for Helm-based deployment of WES-ELIXIR.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+applicationDomain: c03.k8s-popup.csc.fi
+clusterType: openshift
+tlsSecret: mytls-secret
+
+autocert:
+  # autocert.createJob -- Actually create autocert cronjob
+  createJob: "true" 
+  # autocert.schedule -- How often to refresh certs
+  schedule: "0 0 1 */2 *"
+  # autocert.testCert -- use letsencryptit staging for testing not to exceed cert quota
+  testCert: "true"
+  image: elixircloud/autocert:devel
+  # autocert.apiServer -- where to reach k8s API server
+  apiServer: kubernetes.default.svc:443
+  # autocert.email -- which email to inject to the certificate
+  email: cert.author@cert.author.host.org
+
+flower:
+  appName: flower
+  basicAuth: admin:admin
+  image: endocode/flower
+
+wes:
+  appName: wes
+  image: elixircloud/wes-elixir:latest
+  netrcMachine: defaultmachine
+  netrcLogin: defaultnetrclogin
+  netrcPassword: defaultnetrcpassword
+  volumeSize: 1Gi
+
+celeryWorker:
+  appName: celery-worker
+  image: weselixir/elixir-wes-app:rc1
+
+mongodb:
+  appName: mongodb
+  databaseAdminPassword: adminpasswd
+  databaseName: wes-db
+  databasePassword: wes-db-passwd
+  databaseUser: wes-user
+  volumeSize: 1Gi
+  image: centos/mongodb-36-centos7
+
+rabbitmq:
+  appName: rabbitmq
+  volumeSize: 1Gi
+  image: rabbitmq:3-management
+

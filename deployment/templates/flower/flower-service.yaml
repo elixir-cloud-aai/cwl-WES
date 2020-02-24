@@ -1,0 +1,10 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.flower.appName }}
+spec:
+  selector:
+    app: {{ .Values.flower.appName }}
+  ports:
+  - port: 5555
+    targetPort: 5555

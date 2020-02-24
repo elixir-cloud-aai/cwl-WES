@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: wes-config
+  name: {{ .Values.wes.appName}}-config
 data:
   app_config.yaml: |
     # General server/service settings
@@ -35,9 +35,9 @@ data:
 
     # Database settings
     database:
-      host: 'mongodb'
+      host: {{ .Values.mongodb.appName}}
       port: 27017
-      name: wes-elixir-db
+      name: {{ .Values.mongodb.databaseName}}
       run_id:
         length: 6
         charset: string.ascii_uppercase + string.digits

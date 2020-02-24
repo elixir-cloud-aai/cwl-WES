@@ -1,0 +1,38 @@
+{{- if eq .Values.clusterType "openshift" }}
+apiVersion: route.openshift.io/v1
+kind: Route
+{{- else }}
+apiVersion: extensions/v1beta1
+kind: Ingress
+{{ end }}
+metadata:
+  labels:
+    app: {{ .Values.flower.appName }}
+  name: {{ .Values.flower.appName }}
+spec:
+{{- if eq .Values.clusterType "openshift" }}
+  host: {{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
+  port:
+    targetPort: 5555
+  tls:
+    termination: edge
+  to:
+    kind: Service
+    name: {{ .Values.flower.appName }}
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress: []
+{{- else }}
+  tls:
+  - hosts:
+      - {{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
+  rules:
+  - host: {{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
+    http:
+      paths:
+      - path: "/"
+        backend:
+          serviceName: {{ .Values.flower.appName }}
+          servicePort: 5555
+{{ end }}
