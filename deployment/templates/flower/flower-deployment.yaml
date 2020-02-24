@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.flower.appName }}
+  name: {{ .Values.flower.appName }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.flower.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.flower.appName }}
+    spec:
+      containers:
+      - image: {{ .Values.flower.image }}
+        command: ['flower']
+        args: ['--broker=amqp://guest:guest@rabbitmq:5672//', '--port=5555', '--basic_auth={{ .Values.flower.basicAuth }}']
+        name: flower

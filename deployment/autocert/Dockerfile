@@ -10,8 +10,9 @@ COPY route-patch-template.json /
 COPY entrypoint.sh /
 
 # Following two lines are for debugging purposes
-RUN chmod 774 /entrypoint.sh 
+RUN chmod 774 /entrypoint.sh
 RUN chmod 664 /secret-patch-template.json
 RUN chmod 775 /var/log/letsencrypt /etc/letsencrypt
 
 CMD ["/entrypoint.sh"]
+
