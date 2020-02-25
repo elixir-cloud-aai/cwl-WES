@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ .Values.wes.appName}}-flask
+  name: {{ .Values.wes.appName}}
 spec:
   selector:
     matchLabels:
@@ -21,7 +21,7 @@ spec:
         - mountPath: /data
           name: wes-volume
       containers:
-      - name: wes-flask
+      - name: wes
         image: {{ .Values.wes.image }}
         workingDir: '/app/wes_elixir'
         command: [ 'gunicorn' ]

@@ -15,7 +15,7 @@ spec:
         backend:
           serviceName: {{ .Values.wes.appName }}-certbot
           servicePort: 8080
-      - path: "/"
+      - path: "/ga4gh/wes/v1"
         backend:
           serviceName: {{ .Values.wes.appName }}
           servicePort: 8080
@@ -39,7 +39,7 @@ spec:
   tls:
     insecureEdgeTerminationPolicy: Redirect
     termination: edge
-  path: "/ga4gh"
+  path: "/ga4gh/wes/v1"
 status: 
   ingress: []
 {{ end }}
