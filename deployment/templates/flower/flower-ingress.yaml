@@ -11,7 +11,7 @@ metadata:
   name: {{ .Values.flower.appName }}
 spec:
 {{- if eq .Values.clusterType "openshift" }}
-  host: {{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
+  host: {{ .Values.wes.appName }}-{{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
   port:
     targetPort: 5555
   tls:
@@ -26,9 +26,9 @@ status:
 {{- else }}
   tls:
   - hosts:
-      - {{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
+      - {{ .Values.wes.appName }}-{{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
   rules:
-  - host: {{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
+  - host: {{ .Values.wes.appName }}-{{ .Values.flower.appName }}.{{ .Values.applicationDomain }}
     http:
       paths:
       - path: "/"
