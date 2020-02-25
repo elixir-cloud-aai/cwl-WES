@@ -2,6 +2,7 @@
 
 [![Apache License](https://img.shields.io/badge/license-Apache%202.0-orange.svg?style=flat&color=important)](http://www.apache.org/licenses/LICENSE-2.0)
 [![Build_status](https://travis-ci.com/elixir-cloud-aai/WES-ELIXIR.svg?branch=dev)](https://travis-ci.com/elixir-cloud-aai/WES-ELIXIR)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fwes.c03.k8s-popup.csc.fi%2Fga4gh%2Fwes%2Fv1%2Fui%2F)](https://wes.c03.k8s-popup.csc.fi/ga4gh/wes/v1/ui/)
 
 ## Synopsis
 
