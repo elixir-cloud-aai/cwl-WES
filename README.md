@@ -1,6 +1,7 @@
 # WES-ELIXIR
 
 [![Apache License](https://img.shields.io/badge/license-Apache%202.0-orange.svg?style=flat&color=important)](http://www.apache.org/licenses/LICENSE-2.0)
+[![Build_status](https://travis-ci.com/elixir-cloud-aai/WES-ELIXIR.svg?branch=dev)](https://travis-ci.com/elixir-cloud-aai/WES-ELIXIR)
 
 ## Synopsis
 
