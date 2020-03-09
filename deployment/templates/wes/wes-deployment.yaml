@@ -91,3 +91,6 @@ spec:
       - name: wes-netrc-secret # TODO
         secret:
           secretName: netrc
+          items:
+          - key: netrc
+            path: .netrc
