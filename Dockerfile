@@ -45,5 +45,7 @@ RUN cd /app \
   && python setup.py develop \
   && cd /
 
+RUN chmod g+w /app/wes_elixir/api/
+
 ## Copy FTP server credentials
 COPY .netrc /root
