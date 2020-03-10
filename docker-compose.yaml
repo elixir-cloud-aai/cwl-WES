@@ -1,46 +1,55 @@
 version: '3.6'
 services:
 
-  wes-elixir:
-    image: elixircloud/wes-elixir:latest
+  wes:
+    image: elixircloud/cwl-wes:latest
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
     links:
-      - mongo
-    command: bash -c "cd /app/wes_elixir; gunicorn -c config.py wsgi:app"
+      - mongodb
+    command: bash -c "cd /app/cwl_wes; gunicorn -c config.py wsgi:app"
     volumes:
-      - ../../data/wes_elixir:/data
+      - ../../data/cwl_wes:/data
+    ports:
+      - "7777:8080"
 
-  wes-elixir-worker:
-    image: elixircloud/wes-elixir:latest
+  wes-worker:
+    image: elixircloud/cwl-wes:latest
     restart: unless-stopped
     depends_on:
-      - wes-elixir
+      - wes
     links:
-      - mongo
-      - rabbit
-    command: bash -c "cd /app/wes_elixir; celery worker -A celery_worker -E --loglevel=info"
+      - mongodb
+      - rabbitmq
+    command: bash -c "cd /app/cwl_wes; celery worker -A celery_worker -E --loglevel=info"
     volumes:
-      - ../../data/wes_elixir:/data
+      - ../../data/cwl_wes:/data
 
-  rabbit:
+  rabbitmq:
     image: "rabbitmq:3-management"
-    hostname: "rabbit"
+    hostname: "rabbitmq"
     restart: unless-stopped
     links:
-      - mongo
+      - mongodb
+    ports:
+      - "5672:5672"
 
-  mongo:
+  mongodb:
     image: mongo:3.2
     restart: unless-stopped
     volumes:
-      - ../../data/wes_elixir/db:/data/db
+      - ../../data/cwl_wes/db:/data/db
+    ports:
+      - "27017:27017"
 
   flower:
     image: mher/flower:0.9
     restart: unless-stopped
     links:
-      - wes-elixir-worker
-    command: flower --broker=amqp://guest:guest@rabbit:5672// --port=5555
+      - wes-worker
+    command: flower --broker=amqp://guest:guest@rabbitmq:5672// --port=5555
+    ports:
+      - "5555:5555"
+
