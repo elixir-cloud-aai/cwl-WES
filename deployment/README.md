@@ -58,3 +58,4 @@ See [`values.yaml`](values.yaml) for default values.
 | wes.netrcMachine | string | host name of sFTP server |
 | wes.netrcPassword | string | password for accessing the sFTP server |
 | wes.volumeSize | string | size of volume reserved for the main application |
+

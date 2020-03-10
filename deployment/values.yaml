@@ -1,23 +1,18 @@
-# Default values for Helm-based deployment of WES-ELIXIR.
+# Default values for Helm-based deployment.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 applicationDomain: c03.k8s-popup.csc.fi
-clusterType: openshift
+clusterType: openshift  # either 'kubernetes' or 'openshift'
 tlsSecret: mytls-secret
 
 autocert:
-  # autocert.createJob -- Actually create autocert cronjob
-  createJob: "true" 
-  # autocert.schedule -- How often to refresh certs
-  schedule: "0 0 1 */2 *"
-  # autocert.testCert -- use letsencryptit staging for testing not to exceed cert quota
-  testCert: "true"
+  createJob: "true"  # actually create autocert cronjob
+  schedule: "0 0 1 */2 *"  # cronjob schedule
+  testCert: "true"  # use test certificates so as not to exceed quota
   image: elixircloud/autocert:devel
-  # autocert.apiServer -- where to reach k8s API server
-  apiServer: kubernetes.default.svc:443
-  # autocert.email -- which email to inject to the certificate
-  email: cert.author@cert.author.host.org
+  apiServer: kubernetes.default.svc:443  # address of k8s API server
+  email: cert.author@cert.author.host.org  # email to inject into certificate
 
 flower:
   appName: flower
@@ -25,8 +20,8 @@ flower:
   image: endocode/flower
 
 wes:
-  appName: wes
-  image: elixircloud/wes-elixir:latest
+  appName: cwlwes
+  image: elixircloud/cwl-wes:latest
   netrcMachine: defaultmachine
   netrcLogin: defaultnetrclogin
   netrcPassword: defaultnetrcpassword
@@ -34,14 +29,14 @@ wes:
 
 celeryWorker:
   appName: celery-worker
-  image: weselixir/elixir-wes-app:rc1
+  image: elixircloud/cwl-wes:latest
 
 mongodb:
   appName: mongodb
   databaseAdminPassword: adminpasswd
-  databaseName: wes-db
-  databasePassword: wes-db-passwd
-  databaseUser: wes-user
+  databaseName: cwlwes-db
+  databasePassword: cwlwes-db-passwd
+  databaseUser: cwlwes-user
   volumeSize: 1Gi
   image: centos/mongodb-36-centos7
 

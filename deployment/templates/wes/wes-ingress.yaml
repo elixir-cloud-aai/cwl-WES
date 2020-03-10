@@ -44,7 +44,7 @@ status:
   ingress: []
 {{ end }}
 
-### Autocert-bot 
+### Autocert-bot
 {{ if eq .Values.autocert.createJob "true" }} # Create autocert system
 
 {{ if eq .Values.clusterType "openshift" }}
