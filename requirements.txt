@@ -41,7 +41,7 @@ mistune==0.8.4
 mypy-extensions==0.4.1
 networkx==2.2
 prov==1.5.1
-psutil==5.4.7
+psutil==5.6.6
 py-tes==0.3.0
 pycparser==2.19
 PyJWT==1.6.4
