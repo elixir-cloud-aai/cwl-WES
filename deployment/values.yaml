@@ -2,7 +2,7 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-applicationDomain: c03.k8s-popup.csc.fi
+applicationDomain: csc-wes.rahtiapp.fi
 clusterType: openshift  # either 'kubernetes' or 'openshift'
 tlsSecret: mytls-secret
 

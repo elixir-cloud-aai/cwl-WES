@@ -89,6 +89,9 @@ spec:
         configMap:
           defaultMode: 420
           name: {{ .Values.wes.appName }}-config
+          items:
+          - key: app_config.yaml
+            path: app_config.yaml
       - name: wes-netrc-secret
         secret:
           secretName: netrc
