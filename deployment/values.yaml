@@ -1,4 +1,4 @@
-# Default values for Helm-based deployment of WES-ELIXIR.
+# Default values for Helm-based deployment.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
@@ -25,8 +25,8 @@ flower:
   image: endocode/flower
 
 wes:
-  appName: wes
-  image: elixircloud/wes-elixir:latest
+  appName: cwlwes
+  image: elixircloud/cwl-wes:latest
   netrcMachine: defaultmachine
   netrcLogin: defaultnetrclogin
   netrcPassword: defaultnetrcpassword
@@ -34,14 +34,14 @@ wes:
 
 celeryWorker:
   appName: celery-worker
-  image: weselixir/elixir-wes-app:rc1
+  image: elixircloud/cwl-wes:latest
 
 mongodb:
   appName: mongodb
   databaseAdminPassword: adminpasswd
-  databaseName: wes-db
-  databasePassword: wes-db-passwd
-  databaseUser: wes-user
+  databaseName: cwlwes-db
+  databasePassword: cwlwes-db-passwd
+  databaseUser: cwlwes-user
   volumeSize: 1Gi
   image: centos/mongodb-36-centos7
 
