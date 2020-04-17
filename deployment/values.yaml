@@ -3,21 +3,16 @@
 # Declare variables to be passed into your templates.
 
 applicationDomain: c03.k8s-popup.csc.fi
-clusterType: openshift
+clusterType: openshift  # either 'kubernetes' or 'openshift'
 tlsSecret: mytls-secret
 
 autocert:
-  # autocert.createJob -- Actually create autocert cronjob
-  createJob: "true" 
-  # autocert.schedule -- How often to refresh certs
-  schedule: "0 0 1 */2 *"
-  # autocert.testCert -- use letsencryptit staging for testing not to exceed cert quota
-  testCert: "true"
+  createJob: "true"  # actually create autocert cronjob
+  schedule: "0 0 1 */2 *"  # cronjob schedule
+  testCert: "true"  # use test certificates so as not to exceed quota
   image: elixircloud/autocert:devel
-  # autocert.apiServer -- where to reach k8s API server
-  apiServer: kubernetes.default.svc:443
-  # autocert.email -- which email to inject to the certificate
-  email: cert.author@cert.author.host.org
+  apiServer: kubernetes.default.svc:443  # address of k8s API server
+  email: cert.author@cert.author.host.org  # email to inject into certificate
 
 flower:
   appName: flower
