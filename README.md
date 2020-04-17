@@ -107,8 +107,6 @@ EOF
 
 ```bash
 vi wes_elixir/config/app_config.yaml
-vi wes_elixir/config/override/app_config.dev.yaml  # for development service
-vi wes_elixir/config/override/app_config.prod.yaml  # for production service
 ```
 
 * Via environment variables:
@@ -142,8 +140,7 @@ docker-compose build
 Run docker-compose services in detached/daemonized mode
 
 ```bash
-docker-compose -f docker-compose.yaml -f docker-compose.dev.yaml up -d  # for development service
-docker-compose -f docker-compose.yaml -f docker-compose.prod.yaml up -d  # for production service
+docker-compose up -d
 ```
 
 ###### Use service
