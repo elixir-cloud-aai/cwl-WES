@@ -4,15 +4,15 @@ with open('README.md', 'r') as fh:
     long_description = fh.read()
 
 setup(
-    name='wes-elixir',
-    version='0.14.0',
-    author='Elixir Europe',
+    name='cwl-wes',
+    version='0.15.0',
+    author='Elixir Cloud & AAI',
     author_email='alexander.kanitz@alumni.ethz.ch',
     description='Flask- and MongoDB-powered GA4GH WES server',
     long_description=long_description,
     long_description_content_type="text/markdown",
     license='Apache License 2.0',
-    url='https://github.com/elixir-europe/WES-ELIXIR.git',
+    url='https://github.com/elixir-cloud-aai/cwl-WES.git',
     packages=find_packages(),
     keywords=(
         'ga4gh wes workflow elixir rest restful api app server openapi '

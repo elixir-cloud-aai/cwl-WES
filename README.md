@@ -1,8 +1,8 @@
-# WES-ELIXIR
+# cwl-WES
 
 [![Apache License](https://img.shields.io/badge/license-Apache%202.0-orange.svg?style=flat&color=important)](http://www.apache.org/licenses/LICENSE-2.0)
-[![Build_status](https://travis-ci.com/elixir-cloud-aai/WES-ELIXIR.svg?branch=dev)](https://travis-ci.com/elixir-cloud-aai/WES-ELIXIR)
-[![Website](https://img.shields.io/website?url=https%3A%2F%2Fwes.c03.k8s-popup.csc.fi%2Fga4gh%2Fwes%2Fv1%2Fui%2F)](https://wes.c03.k8s-popup.csc.fi/ga4gh/wes/v1/ui/)
+[![Build_status](https://travis-ci.com/elixir-cloud-aai/cwl-WES.svg?branch=dev)](https://travis-ci.com/elixir-cloud-aai/cwl-WES)
+[![Website](https://img.shields.io/website?url=https%3A%2F%2Fcwlwes.c03.k8s-popup.csc.fi%2Fga4gh%2Fwes%2Fv1%2Fui%2F)](https://cwlwes.c03.k8s-popup.csc.fi/ga4gh/wes/v1/ui/)
 
 ## Synopsis
 
@@ -13,7 +13,7 @@
 
 ## Description
 
-WES-ELIXIR is an implementation of the
+cwl-WES (formerly: WES-ELIXIR) is an implementation of the
 [GA4GH WES OpenAPI specification](https://github.com/ga4gh/workflow-execution-service-schemas)
 based on [Flask](http://flask.pocoo.org/) and [Connexion](https://github.com/zalando/connexion).
 It allows clients/users to send workflows for execution, list current and previous workflow runs,
@@ -37,12 +37,12 @@ Note that the project is currently still under active development.
 Nevertheless, a largely [**FUNCTIONAL PROTOTYPE**](http://193.167.189.73:7777/ga4gh/wes/v1/ui/)
 is available as of October 2018, hosted at the [CSC](https://www.csc.fi/home) in Helsinki.
 
-WES-ELIXIR is part of [ELIXIR](https://www.elixir-europe.org/), a multinational effort at
+cwl-WES is part of [ELIXIR](https://www.elixir-europe.org/), a multinational effort at
 establishing and implementing FAIR data sharing and promoting reproducible data analyses and
 responsible data handling in the Life Sciences. Infrastructure and IT support are provided by
 ELIXIR Finland at the [CSC](https://www.csc.fi/home), the [TESK](https://github.com/EMBL-EBI-TSI/TESK)
 service is being developed and maintained by ELIXIR UK at the [EBI](https://www.ebi.ac.uk/) in
-Hinxton, and WES-ELIXIR itself is being developed by ELIXIR Switzerland at the
+Hinxton, and cwl-WES itself is being developed by ELIXIR Switzerland at the
 [Biozentrum](https://www.biozentrum.unibas.ch/) in Basel and the
 [Swiss Institute of Bioinformatics](https://www.sib.swiss/).
 
@@ -71,13 +71,13 @@ Note: These are the versions used for development/testing. Other versions may or
 Create data directory and required subdiretories
 
 ```bash
-mkdir -p data/wes_elixir/db data/wes_elixir/output data/wes_elixir/tmp
+mkdir -p data/cwl_wes/db data/cwl_wes/output data/cwl_wes/tmp
 ```
 
 Clone repository
 
 ```bash
-git clone https://github.com/elixir-europe/WES-ELIXIR.git app
+git clone https://github.com/elixir-cloud-aai/cwl-WES.git app
 ```
 
 Traverse to app directory
@@ -106,7 +106,7 @@ EOF
 * Via configuration files:
 
 ```bash
-vi wes_elixir/config/app_config.yaml
+vi cwl_wes/config/app_config.yaml
 ```
 
 * Via environment variables:

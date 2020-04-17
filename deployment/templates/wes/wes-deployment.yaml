@@ -23,7 +23,7 @@ spec:
       containers:
       - name: wes
         image: {{ .Values.wes.image }}
-        workingDir: '/app/wes_elixir'
+        workingDir: '/app/cwl_wes'
         command: [ 'gunicorn' ]
         args: [ '-c', 'config.py', 'wsgi:app' ]
         env:
@@ -74,7 +74,7 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: wes-volume
-        - mountPath: /app/wes_elixir/config/app_config.yaml
+        - mountPath: /app/cwl_wes/config/app_config.yaml
           subPath: app_config.yaml
           name: wes-config
         - mountPath: /.netrc

@@ -1,0 +1,95 @@
+# General server/service settings
+server:
+    host: '0.0.0.0'
+    port: 8080
+    debug: True
+    environment: development
+    testing: False
+    use_reloader: True
+
+# Security settings
+security:
+    authorization_required: False
+    jwt:
+        algorithms:
+          - RS256
+        claim_identity: sub
+        claim_issuer: iss
+        claim_key_id: kid
+        header_name: Authorization
+        token_prefix: Bearer
+        validation_methods:
+          - userinfo
+          - public_key
+        validation_checks: any  # 'any' or 'all'
+
+# Database settings
+database:
+    host: mongodb
+    port: 27017
+    name: cwl-wes-db
+    run_id:
+        length: 6
+        charset: string.ascii_uppercase + string.digits
+
+# Storage
+storage:
+    permanent_dir: '/data/output'
+    tmp_dir: '/data/tmp'
+    remote_storage_url: 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
+
+# Celery task queue
+celery:
+    broker_host: rabbitmq
+    broker_port: 5672
+    result_backend: 'rpc://'
+    include:
+        - cwl_wes.tasks.tasks.run_workflow
+        - cwl_wes.tasks.tasks.cancel_run
+    monitor:
+        timeout: 0.1
+    message_maxsize: 16777216
+
+# OpenAPI specs
+api:
+    specs:
+        - path: '20181010.be85140.workflow_execution_service.swagger.yaml'
+          strict_validation: True
+          validate_responses: True
+          swagger_ui: True
+          swagger_json: True
+    endpoint_params:
+        default_page_size: 5
+        timeout_cancel_run: 60
+        timeout_run_workflow: Null
+
+# WES service info settings
+service_info:
+    contact_info: 'https://github.com/elixir-cloud-aai/cwl-WES'
+    auth_instructions_url: 'https://www.elixir-europe.org/services/compute/aai'
+    supported_file_system_protocols:
+        - http
+    supported_wes_versions:
+        - 0.3.0
+    workflow_type_versions:
+        CWL:
+            workflow_type_version:
+                - v1.0
+    workflow_engine_versions:
+        cwl-tes: 0.2.0
+    default_workflow_engine_parameters:
+        - type: string
+          default_value: some_string
+        - type: int
+          default_value: '5'
+    tags:
+        known_tes_endpoints: 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
+        app_version: 0.15.0
+
+# TES server
+tes:
+    url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
+    timeout: 5
+    get_logs:
+        url_root: 'v1/tasks/'
+        query_params: '?view=FULL'

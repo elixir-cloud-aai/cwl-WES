@@ -20,7 +20,7 @@ channel soon.
 ## Reporting bugs
 
 Please use the project's
-[issue tracker](https://github.com/elixir-europe/WES-ELIXIR/issues) to report
+[issue tracker](https://github.com/elixir-cloud-aai/cwl-WES/issues) to report
 bugs. If you have no experience in filing bug reports, see e.g.,
 [these recommendations by the Mozilla Developer Network](https://developer.mozilla.org/en-US/docs/Mozilla/QA/Bug_writing_guidelines)
 first. Briefly, it is important that bug reports contain enough detail,
@@ -32,9 +32,10 @@ what you expect to happen, and what actually does happen.
 Kindly use pull requests to submit changes to the code base. But please note
 that this project is driven by a community that likes to act on consensus. So
 in your own best interest, before just firing off a pull request after a lot of
-work, please [open an issue](https://github.com/elixir-europe/WES-ELIXIR/issues)
-to **discuss your proposed changes first**. Afterwards, please stick to the
-following simple rules to make sure your pull request will indeed be merged:
+work, please [open an
+issue](https://github.com/elixir-cloud-aai/cwl-WES/issues) to **discuss your
+proposed changes first**. Afterwards, please stick to the following simple
+rules to make sure your pull request will indeed be merged:
 
 1. Do not change the API. The official [GA4GH
    repo](https://github.com/ga4gh/workflow-execution-service-schemas) is the
