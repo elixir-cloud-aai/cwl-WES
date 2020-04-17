@@ -9,6 +9,7 @@
 
 * [Marius Dieckmann](https://github.com/MariusDieckmann)
 * [Susanne Domke](https://github.com/suedomke)
+* [Alvaro Gonzalez](https://github.com/lvarin)
 * [Shubham Kapoor](https://github.com/shukapoo)
 * [Yacine Khettab](https://github.com/djixyacine)
 * [Risto Laurikainen](https://github.com/rlaurika)
