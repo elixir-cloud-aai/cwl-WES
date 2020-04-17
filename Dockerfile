@@ -40,10 +40,11 @@ RUN cd /app \
 ## Copy remaining app files
 COPY ./ /app
 
-## Install app
+## Install app & set write permissions for specs directory
 RUN cd /app \
   && python setup.py develop \
-  && cd /
+  && cd / \
+  && chmod g+w /app/wes_elixir/api/
 
 ## Copy FTP server credentials
 COPY .netrc /root
