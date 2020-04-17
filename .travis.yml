@@ -21,7 +21,7 @@ jobs:
     name: Build, deploy and test application
     script:
     # build and deploy application
-    - "docker-compose --build -d"
+    - "docker-compose up --build -d"
     # test if endpoint 'GET /runs' is accessible
     - "test $(curl -sL -w '%{http_code}' -X GET --header 'Accept: application/json' 'http://localhost:7777/ga4gh/wes/v1/runs' -o /dev/null) == '200'"
   - stage: publish
