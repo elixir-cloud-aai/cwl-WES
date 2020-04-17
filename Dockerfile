@@ -45,7 +45,7 @@ RUN cd /app \
   && python setup.py develop \
   && cd /
 
-## Allow modified specs to be written back
+## Allow modified specs to be written
 RUN chmod g+w /app/cwl_wes/api/
 
 ## Copy FTP server credentials

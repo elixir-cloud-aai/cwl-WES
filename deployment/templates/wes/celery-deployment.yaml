@@ -60,20 +60,20 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: wes-volume
-        - mountPath: /app/cwl_wes/config/app_config.yaml
-          subPath: app_config.yaml
-          name: wes-config
-        - mountPath: /.netrc 
+#        - mountPath: /app/cwl_wes/config/app_config.yaml
+#          subPath: app_config.yaml
+#          name: wes-config
+        - mountPath: /.netrc
           subPath: .netrc
           name: wes-netrc-secret
       volumes:
       - name: wes-volume
         persistentVolumeClaim:
           claimName: {{ .Values.wes.appName }}-volume
-      - name: wes-config
-        configMap:
-          defaultMode: 420
-          name: {{ .Values.wes.appName }}-config
+#      - name: wes-config
+#        configMap:
+#          defaultMode: 420
+#          name: {{ .Values.wes.appName }}-config
       - name: wes-netrc-secret
         secret:
           secretName: netrc
