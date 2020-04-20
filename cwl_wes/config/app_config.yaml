@@ -9,10 +9,13 @@ server:
 
 # Security settings
 security:
-    authorization_required: False
+    authorization_required: True
     jwt:
+        add_key_to_claims: True
         algorithms:
           - RS256
+        allow_expired: False
+        audience: null  # list of allowed audiences or 'null' (do not validate audience)
         claim_identity: sub
         claim_issuer: iss
         claim_key_id: kid
@@ -21,7 +24,7 @@ security:
         validation_methods:
           - userinfo
           - public_key
-        validation_checks: any  # 'any' or 'all'
+        validation_checks: all  # 'any' or 'all'
 
 # Database settings
 database:
