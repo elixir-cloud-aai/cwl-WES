@@ -9,7 +9,7 @@ server:
 
 # Security settings
 security:
-    authorization_required: True
+    authorization_required: False
     jwt:
         add_key_to_claims: True
         algorithms:
