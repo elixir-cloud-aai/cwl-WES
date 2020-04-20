@@ -462,15 +462,12 @@ def __run_workflow(
     ]
 
     # Add authorization parameters
-    if 'token' in kwargs:
+    if 'jwt' in kwargs \
+            and 'claims' in kwargs \
+            and 'public_key' in kwargs['claims']:
         auth_params = [
-            '--token-public-key', get_conf(
-                config,
-                'security',
-                'jwt',
-                'public_key'
-            ).encode('unicode_escape').decode('utf-8'),
-            '--token', kwargs['token'],
+            '--token-public-key', kwargs['claims']['public_key'],
+            '--token', kwargs['jwt'],
         ]
         command_list[2:2] = auth_params
 
