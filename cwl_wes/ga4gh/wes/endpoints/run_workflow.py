@@ -14,6 +14,7 @@ from random import choice
 from typing import Dict
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
+from werkzeug.utils import secure_filename
 
 from flask import request
 
@@ -56,6 +57,14 @@ def run_workflow(
 
     response = {'run_id': document['run_id']}
     return response
+
+
+def __secure_join(basedir: str, fname: str) -> str:
+    fname = secure_filename(fname)
+    if not fname:
+        # Replace by a random filename
+        fname = uuid()
+    return os.path.join(basedir, fname)
 
 
 def __immutable_multi_dict_to_nested_dict(
@@ -368,13 +377,13 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         if len(workflow_attachments) > 0:
             # Save workflow attachments to workflow directory.
             for attachment in workflow_attachments:
-                path = os.path.join(workflow_dir, attachment.filename)
+                path = __secure_join(workflow_dir, attachment.filename)
                 with open(path, "wb") as dest:
                     shutil.copyfileobj(attachment.stream, dest)
 
             # Adjust workflow_url to point to workflow directory.
             req_data = data['api']['request']
-            workflow_url = os.path.join(workflow_dir, req_data['workflow_url'])
+            workflow_url = __secure_join(workflow_dir, req_data['workflow_url'])
             if os.path.exists(workflow_url):
                 req_data['workflow_url'] = workflow_url
 
