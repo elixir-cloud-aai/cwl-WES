@@ -15,6 +15,8 @@ from typing import Dict
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 
+from flask import request
+
 from cwl_wes.config.config_parser import get_conf
 from cwl_wes.errors.errors import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
@@ -355,8 +357,26 @@ def __process_workflow_attachments(data: Dict) -> Dict:
             cwl_path
         )
 
-    # Else assume value of 'workflow_url' represents file on local file system
+    # Else assume value of 'workflow_url' represents file on local file system,
+    # or a file that was shipped to the server as a workflow attachment.
     else:
+        # Workflow attachments are grabbed directly from the Flask request
+        # object rather than letting connexion parse them, since current
+        # versions of connexion have a bug that prevents multiple file uploads
+        # with the same name (https://github.com/zalando/connexion/issues/992).
+        workflow_attachments = request.files.getlist("workflow_attachment")
+        if len(workflow_attachments) > 0:
+            # Save workflow attachments to workflow directory.
+            for attachment in workflow_attachments:
+                path = os.path.join(workflow_dir, attachment.filename)
+                with open(path, "wb") as dest:
+                    shutil.copyfileobj(attachment.stream, dest)
+
+            # Adjust workflow_url to point to workflow directory.
+            req_data = data['api']['request']
+            workflow_url = os.path.join(workflow_dir, req_data['workflow_url'])
+            if os.path.exists(workflow_url):
+                req_data['workflow_url'] = workflow_url
 
         # Set main CWL workflow file path
         data['internal']['cwl_path'] = os.path.abspath(
