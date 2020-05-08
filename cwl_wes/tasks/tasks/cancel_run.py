@@ -4,7 +4,7 @@ import logging
 from requests import HTTPError
 import tes
 import time
-from typing import List
+from typing import (List, Optional)
 
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app
@@ -31,31 +31,33 @@ def task__cancel_run(
     self,
     run_id: str,
     task_id: str,
+    token: Optional[str] = None,
 ) -> None:
     """Revokes worfklow task and tries to cancel all running TES tasks."""
+    config = current_app.config
+    # Create MongoDB client
+    mongo = create_mongo_client(
+        app=current_app,
+        config=config,
+    )
+    collection = mongo.db['runs']
+    # Set run state to 'CANCELING'
+    set_run_state(
+        collection=collection,
+        run_id=run_id,
+        task_id=task_id,
+        state='CANCELING',
+    )
+
     try:
-        config = current_app.config
-        # Create MongoDB client
-        mongo = create_mongo_client(
-            app=current_app,
-            config=config,
-        )
-        collection = mongo.db['runs']
-        # Set run state to 'CANCELING'
-        set_run_state(
-            collection=collection,
-            run_id=run_id,
-            task_id=task_id,
-            state='CANCELING',
-        )
         # Cancel individual TES tasks
         __cancel_tes_tasks(
             collection=collection,
             run_id=run_id,
             url=get_conf(config, 'tes', 'url'),
             timeout=get_conf(config, 'tes', 'timeout'),
+            token=token,
         )
-
     except SoftTimeLimitExceeded as e:
         set_run_state(
             collection=collection,
@@ -80,10 +82,15 @@ def __cancel_tes_tasks(
     collection: Collection,
     run_id: str,
     url: str,
-    timeout: int = 5
+    timeout: int = 5,
+    token: Optional[str] = None,
 ):
     """Cancel individual TES tasks."""
-    tes_client = tes.HTTPClient(url, timeout=timeout)
+    tes_client = tes.HTTPClient(
+        url=url,
+        timeout=timeout,
+        token=token,
+    )
     canceled: List = list()
     while True:
         task_ids = db_utils.find_tes_task_ids(

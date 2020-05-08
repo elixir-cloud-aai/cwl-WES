@@ -78,7 +78,7 @@ def update_tes_task_state(
 def append_to_tes_task_logs(
     collection: Collection,
     task_id: str,
-    tes_log: str
+    tes_log: Mapping,
 ) -> Optional[Mapping[Any, Any]]:
     """Appends task log to TES task logs and returns updated document."""
     return collection.find_one_and_update(

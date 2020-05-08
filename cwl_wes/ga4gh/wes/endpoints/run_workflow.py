@@ -509,6 +509,7 @@ def __run_workflow(
         {
             'command_list': command_list,
             'tmp_dir': tmp_dir,
+            'token': kwargs.get('jwt'),
         },
         task_id=task_id,
         soft_time_limit=timeout_duration,

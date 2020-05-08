@@ -27,10 +27,10 @@ def register_task_service(app: Flask) -> None:
             tes_config={
                 'url':
                     app.config['tes']['url'],
-                'logs_endpoint_root':
-                    app.config['tes']['get_logs']['url_root'],
-                'logs_endpoint_query_params':
-                    app.config['tes']['get_logs']['query_params'],
+                'query_params':
+                    app.config['tes']['status_query_params'],
+                'timeout':
+                    app.config['tes']['timeout']
             },
             timeout=app.config['celery']['monitor']['timeout'],
             authorization=app.config['security']['authorization_required'],
