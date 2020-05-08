@@ -20,6 +20,7 @@ LABEL maintainer.license="https://spdx.org/licenses/Apache-2.0"
 # Python UserID workaround for OpenShift/K8S
 ENV LOGNAME=ipython
 ENV USER=ipython
+ENV HOME=/tmp/user
 
 # Install general dependencies
 RUN apt-get update && apt-get install -y nodejs openssl git build-essential python3-dev
@@ -35,7 +36,8 @@ RUN cd /app \
   && pip install -r requirements.txt \
   && cd /app/src/cwl-tes \
   && python setup.py develop \
-  && cd /
+  && cd / \
+  && mkdir -p /tmp/user
 
 ## Copy remaining app files
 COPY ./ /app
@@ -44,7 +46,6 @@ COPY ./ /app
 RUN cd /app \
   && python setup.py develop \
   && cd / \
-  && chmod g+w /app/cwl_wes/api/
+  && chmod g+w /app/cwl_wes/api/ \
+  && chmod g+w -R /tmp/user
 
-## Copy FTP server credentials
-COPY .netrc /root

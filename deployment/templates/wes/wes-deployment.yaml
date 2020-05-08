@@ -75,7 +75,7 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: wes-volume
-        - mountPath: /.netrc
+        - mountPath: /tmp/user/.netrc
           subPath: .netrc
           name: wes-netrc-secret
       volumes:
