@@ -16,6 +16,7 @@ from celery.events import Event
 from celery.events.receiver import EventReceiver
 from kombu.connection import Connection  # noqa: F401
 from pymongo import collection as Collection
+import tes
 
 import cwl_wes.database.db_utils as db_utils
 
@@ -107,7 +108,7 @@ class TaskMonitor():
 
     def on_task_received(
         self,
-        event: Event
+        event: Event,
     ) -> None:
         """Event handler for received Celery tasks."""
         if not event['name'] == 'tasks.run_workflow':
@@ -174,7 +175,7 @@ class TaskMonitor():
 
     def on_task_started(
         self,
-        event: Event
+        event: Event,
     ) -> None:
         """Event handler for started Celery tasks."""
         if not self.collection.find_one({'task_id': event['uuid']}):
@@ -207,7 +208,7 @@ class TaskMonitor():
 
     def on_task_failed(
         self,
-        event: Event
+        event: Event,
     ) -> None:
         """Event handler for failed (system error) Celery tasks."""
         if not self.collection.find_one({'task_id': event['uuid']}):
@@ -232,7 +233,7 @@ class TaskMonitor():
 
     def on_task_succeeded(
         self,
-        event: Event
+        event: Event,
     ) -> None:
         """Event handler for successful, failed and canceled Celery
         tasks."""
@@ -240,7 +241,7 @@ class TaskMonitor():
             return None
         # Parse subprocess results
         try:
-            (returncode, log, tes_ids) = literal_eval(event['result'])
+            (returncode, log, tes_ids, token) = literal_eval(event['result'])
             log = os.linesep.join(log)
         except Exception as e:
             logger.exception(
@@ -279,7 +280,10 @@ class TaskMonitor():
         outputs = self.__cwl_tes_outputs_parser(log)
 
         # Get task logs
-        task_logs = self.__get_tes_task_logs(tes_ids=tes_ids)
+        task_logs = self.__get_tes_task_logs(
+            tes_ids=tes_ids,
+            token=token,
+        )
 
         # Update run document in database
         try:
@@ -311,13 +315,16 @@ class TaskMonitor():
 
     def on_task_tes_task_update(
         self,
-        event: Event
+        event: Event,
     ) -> None:
         """Event handler for TES task state changes."""
         # If TES task is new, add task log to database
         if not event['tes_state']:
+            tes_log = self.__get_tes_task_log(
+                tes_id=event['tes_id'],
+                token=event['token'],
+            )
             try:
-                tes_log = self.__get_tes_task_log(tes_id=event['tes_id'])
                 db_utils.append_to_tes_task_logs(
                     collection=self.collection,
                     task_id=event['uuid'],
@@ -491,28 +498,48 @@ class TaskMonitor():
 
     def __get_tes_task_logs(
         self,
-        tes_ids: List = list()
-    ) -> List:
+        tes_ids: List = list(),
+        token: Optional[str] = None,
+    ) -> List[Dict]:
         """Gets multiple task logs from TES instance."""
         task_logs = list()
         for tes_id in tes_ids:
-            task_logs.append(self.__get_tes_task_log(tes_id))
+            task_logs.append(
+                self.__get_tes_task_log(
+                    tes_id=tes_id,
+                    token=token,
+                )
+            )
         return task_logs
 
     def __get_tes_task_log(
         self,
-        tes_id: str
-    ) -> str:
+        tes_id: str,
+        token: Optional[str] = None,
+    ) -> Dict:
         """Gets task log from TES instance."""
-        # Build URL
-        base = self.tes_config['url']
-        root = self.tes_config['logs_endpoint_root']
-        suffix = ''.join(
-            [tes_id, self.tes_config['logs_endpoint_query_params']]
+        tes_client = tes.HTTPClient(
+            url=self.tes_config['url'],
+            timeout=self.tes_config['timeout'],
+            token=token,
         )
-        url = '/'.join(frag.strip('/') for frag in [base, root, suffix])
 
-        # Send GET request to URL to obtain task log
-        task_log = requests.get(url).json()
+        task_log = {}
+
+        try:
+            task_log = tes_client.get_task(
+                task_id=tes_id,
+                view=self.tes_config['query_params'],
+            )
+        except Exception as e:
+            # TODO: handle more robustly: only 400/Bad Request is okay;
+            # TODO: other errors (e.g. 500) should be dealt with
+            logger.warning(
+                "Could not obtain task log. Setting default. Original error "
+                f"message: {type(e).__name__}: {e}"
+            )
+            task_log = {}
+
+        logger.debug(f'Task log: {task_log}')
 
         return task_log

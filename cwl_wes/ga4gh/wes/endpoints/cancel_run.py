@@ -82,6 +82,7 @@ def cancel_run(
             {
                 'run_id': run_id,
                 'task_id': document['task_id'],
+                'token': kwargs.get('jwt'),
             },
             task_id=task_id,
             soft_time_limit=timeout_duration,

@@ -22,8 +22,9 @@ logger = logging.getLogger(__name__)
 def task__run_workflow(
     self,
     command_list: List,
-    tmp_dir: str
-) -> Tuple[int, List[str], List[str]]:
+    tmp_dir: str,
+    token: Optional[str] = None,
+) -> Tuple[int, List[str], List[str], Optional[str]]:
     """Adds workflow run to task queue."""
     # Execute task in background
     proc = subprocess.Popen(
@@ -34,16 +35,21 @@ def task__run_workflow(
         universal_newlines=True,
     )
     # Parse output in real-time
-    log, tes_ids = __process_cwl_logs(self, stream=proc.stdout)
+    log, tes_ids = __process_cwl_logs(
+        self,
+        stream=proc.stdout,
+        token=token,
+    )
 
     returncode = proc.wait()
 
-    return (returncode, log, tes_ids)
+    return (returncode, log, tes_ids, token)
 
 
 def __process_cwl_logs(
     task: celery.Task,
-    stream: TextIOWrapper
+    stream: TextIOWrapper,
+    token: Optional[str] = None,
 ) -> Tuple[List, List]:
     """Parses combinend cwl-tes STDOUT/STDERR and sends TES task IDs and state
     updates to broker."""
@@ -62,7 +68,7 @@ def __process_cwl_logs(
         lines = __handle_cwl_tes_log_irregularities(line)
         for line in lines:
             stream_container.append(line)
-            logger.info(line)
+            logger.info(f"[{task}] {line}")
             continue
 
         # Detect TES task state changes
@@ -75,6 +81,7 @@ def __process_cwl_logs(
                 __send_event_tes_task_update(
                     task,
                     tes_id=tes_id,
+                    token=token,
                 )
             # Handle state change
             elif tes_states[tes_id] != tes_state:
@@ -109,7 +116,7 @@ def __handle_cwl_tes_log_irregularities(line: str) -> List[str]:
 
 
 def __extract_tes_task_state_from_cwl_tes_log(
-    line: str
+    line: str,
 ) -> Tuple[Optional[str], Optional[str]]:
     """Extracts task ID and state from cwl-tes log."""
     task_id: Optional[str] = None
@@ -136,13 +143,15 @@ def __extract_tes_task_state_from_cwl_tes_log(
 def __send_event_tes_task_update(
     task: celery.Task,
     tes_id: str,
-    tes_state: Optional[str] = None
+    tes_state: Optional[str] = None,
+    token: Optional[str] = None,
 ) -> None:
     """Sends custom event to inform about TES task state change."""
     task.send_event(
         'task-tes-task-update',
         tes_id=tes_id,
         tes_state=tes_state,
+        token=token,
     )
 
     return None

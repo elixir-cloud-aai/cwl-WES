@@ -93,6 +93,4 @@ service_info:
 tes:
     url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
     timeout: 5
-    get_logs:
-        url_root: 'v1/tasks/'
-        query_params: '?view=FULL'
+    status_query_params: 'FULL'

@@ -58,7 +58,7 @@ ruamel.yaml==0.15.51
 scandir==1.9.0
 schema-salad==3.0.20181129082112
 shellescape==3.4.1
-six==1.11.0
+six==1.14.0
 subprocess32==3.5.2
 swagger-spec-validator==2.3.1
 typed-ast==1.1.0
