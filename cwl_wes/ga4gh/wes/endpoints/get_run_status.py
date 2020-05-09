@@ -5,7 +5,7 @@ import logging
 
 from typing import Dict
 
-from cwl_wes.config.config_parser import get_conf
+from foca.config.config_parser import get_conf
 from cwl_wes.errors.errors import WorkflowNotFound
 
 

@@ -5,7 +5,7 @@ import os
 from logging.config import dictConfig
 from typing import Optional
 
-from cwl_wes.config.config_parser import YAMLConfigParser
+from foca.config.config_parser import YAMLConfigParser
 
 
 # Get logger instance

@@ -6,7 +6,7 @@ from typing import Dict
 from celery import (Celery, uuid)
 from connexion.exceptions import Forbidden
 
-from cwl_wes.config.config_parser import get_conf
+from foca.config.config_parser import get_conf
 from cwl_wes.errors.errors import WorkflowNotFound
 from cwl_wes.ga4gh.wes.states import States
 from cwl_wes.tasks.tasks.cancel_run import task__cancel_run
