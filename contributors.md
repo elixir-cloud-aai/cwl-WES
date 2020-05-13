@@ -19,6 +19,7 @@
 * [Jaroslaw Surkont](https://github.com/jsurkont)
 * [Marco Tangaro](https://github.com/mtangaro)
 * [Juha Törnroos](https://github.com/juhtornr)
+* [Joris Vankerschaver](https://github.com/jvkersch)
 * [Susheel Varma](https://github.com/susheel)
 
 ## Acknowledgements
