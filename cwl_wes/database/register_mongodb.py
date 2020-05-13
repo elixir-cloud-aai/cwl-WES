@@ -8,7 +8,7 @@ from typing import Dict
 from flask import Flask
 from flask_pymongo import ASCENDING, PyMongo
 
-from cwl_wes.config.config_parser import get_conf
+from foca.config.config_parser import get_conf
 from cwl_wes.ga4gh.wes.endpoints.get_service_info import get_service_info
 
 
@@ -27,7 +27,8 @@ def register_mongodb(app: Flask) -> Flask:
     )
 
     # Add database
-    db = mongo.db[os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name'))]
+    db = mongo.db[os.environ.get(
+        'MONGO_DBNAME', get_conf(config, 'database', 'name'))]
 
     # Add database collection for '/service-info'
     collection_service_info = mongo.db['service-info']
@@ -36,9 +37,9 @@ def register_mongodb(app: Flask) -> Flask:
     # Add database collection for '/runs'
     collection_runs = mongo.db['runs']
     collection_runs.create_index([
-            ('run_id', ASCENDING),
-            ('task_id', ASCENDING),
-        ],
+        ('run_id', ASCENDING),
+        ('task_id', ASCENDING),
+    ],
         unique=True,
         sparse=True
     )
@@ -72,9 +73,12 @@ def create_mongo_client(
         auth = ''
 
     app.config['MONGO_URI'] = 'mongodb://{auth}{host}:{port}/{dbname}'.format(
-        host=os.environ.get('MONGO_HOST', get_conf(config, 'database', 'host')),
-        port=os.environ.get('MONGO_PORT', get_conf(config, 'database', 'port')),
-        dbname=os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name')),
+        host=os.environ.get('MONGO_HOST', get_conf(
+            config, 'database', 'host')),
+        port=os.environ.get('MONGO_PORT', get_conf(
+            config, 'database', 'port')),
+        dbname=os.environ.get('MONGO_DBNAME', get_conf(
+            config, 'database', 'name')),
         auth=auth
     )
 
@@ -85,9 +89,12 @@ def create_mongo_client(
             "Registered database '{name}' at URI '{uri}':'{port}' with Flask "
             'application.'
         ).format(
-            name= os.environ.get('MONGO_DBNAME', get_conf(config, 'database', 'name')),
-            uri=os.environ.get('MONGO_HOST', get_conf(config, 'database', 'host')),
-            port=os.environ.get('MONGO_PORT', get_conf(config, 'database', 'port'))
+            name=os.environ.get('MONGO_DBNAME', get_conf(
+                config, 'database', 'name')),
+            uri=os.environ.get('MONGO_HOST', get_conf(
+                config, 'database', 'host')),
+            port=os.environ.get('MONGO_PORT', get_conf(
+                config, 'database', 'port'))
         )
     )
     return mongo

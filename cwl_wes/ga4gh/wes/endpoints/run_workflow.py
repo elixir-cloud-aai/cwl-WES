@@ -15,7 +15,7 @@ from typing import Dict
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 
-from cwl_wes.config.config_parser import get_conf
+from foca.config.config_parser import get_conf
 from cwl_wes.errors.errors import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
 

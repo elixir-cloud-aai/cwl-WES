@@ -11,7 +11,7 @@ from flask import current_app
 from pymongo import collection as Collection
 
 from cwl_wes.celery_worker import celery
-from cwl_wes.config.config_parser import get_conf
+from foca.config.config_parser import get_conf
 import cwl_wes.database.db_utils as db_utils
 from cwl_wes.database.register_mongodb import create_mongo_client
 from cwl_wes.ga4gh.wes.states import States

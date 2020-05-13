@@ -8,7 +8,7 @@ import logging
 from flask import Flask
 from celery import Celery
 
-from cwl_wes.config.config_parser import (get_conf, get_conf_type)
+from foca.config.config_parser import (get_conf, get_conf_type)
 
 
 # Get logger instance

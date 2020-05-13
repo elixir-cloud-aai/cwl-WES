@@ -2,8 +2,8 @@
 
 from cwl_wes.api.register_openapi import register_openapi
 from cwl_wes.config.app_config import parse_app_config
-from cwl_wes.config.config_parser import (get_conf, get_conf_type)
-from cwl_wes.config.log_config import configure_logging
+from foca.config.config_parser import (get_conf, get_conf_type)
+from foca.config.log_config import configure_logging
 from cwl_wes.database.register_mongodb import register_mongodb
 from cwl_wes.errors.errors import register_error_handlers
 from cwl_wes.factories.connexion_app import create_connexion_app

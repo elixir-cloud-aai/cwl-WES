@@ -4,7 +4,7 @@ from typing import Dict
 
 from bson.objectid import ObjectId
 
-from cwl_wes.config.config_parser import get_conf
+from foca.config.config_parser import get_conf
 
 
 # Get logger instance
