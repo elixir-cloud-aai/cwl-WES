@@ -1,7 +1,7 @@
 {
   "apiVersion": "v1",
   "data": {
-    "app_config.yaml": "# General server/service settings\nserver:\n    debug: True\n\n# Security settings\nsecurity:\n    authorization_required: {{ .Values.authorization_required }}\n\n# Storage\nstorage:\n    permanent_dir: {{ .Values.storage.permanent_dir | quote }}\n    tmp_dir: {{ .Values.storage.tmp_dir | quote }}\n    remote_storage_url: {{ .Values.storage.remote_storage_url | quote }}\n\n# WES service info settings\nservice_info:\n    contact_info: {{ .Values.service_info.contact_info | quote }}\n    auth_instructions_url: {{ .Values.service_info.auth_instructions_url | quote }}\n    tags:\n        known_tes_endpoints: {{ .Values.service_info.tags.known_tes_endpoints | quote }}\n\n# TES server\ntes:\n    url: '{{ .Values.tes.url }}'\n"
+    "app_config.yaml": "# General server/service settings"
   },
   "kind": "ConfigMap",
   "metadata": {
