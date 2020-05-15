@@ -28,6 +28,8 @@ spec:
         command: [ 'gunicorn' ]
         args: [ '--log-level', 'debug', '-c', 'config.py', 'wsgi:app' ]
         env:
+        - name: WES_CONFIG
+          value: /etc/app_config/app_config.yaml
         - name: MONGO_HOST
           value: {{ .Values.mongodb.appName }}
         - name: MONGO_PORT
@@ -78,14 +80,21 @@ spec:
         - mountPath: /tmp/user/.netrc
           subPath: .netrc
           name: wes-netrc-secret
+        - mountPath: /etc/app_config
+          name: app-config
       volumes:
       - name: wes-volume
         persistentVolumeClaim:
           claimName: {{ .Values.wes.appName }}-volume
+
       - name: wes-netrc-secret
         secret:
           secretName: netrc
           items:
           - key: netrc
             path: .netrc
+      - configMap:
+          defaultMode: 420
+          name: app-config
+        name: app-config
 

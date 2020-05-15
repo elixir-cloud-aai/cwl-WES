@@ -16,6 +16,21 @@ an external value file, then execute:
 helm install <deployment-name> . -f <values-yaml>
 ```
 
+## Change application configuration
+
+It is possible to change the default configuration of the application by using a config map. In order to do so, a script is provided `utils/generate_configuration_map.sh`:
+
+```bash
+oc login (...)
+utils/generate_configuration_map.sh
+```
+
+By default it expects the current default configuration to be at `cwl_wes/config/app_config.yaml`, and the definition of the config map at `deployment/templates/wes/app-config.json`. It can be changed by:
+
+```bash
+utils/generate_configuration_map.sh <APP_CONFIG> [CONFIG_MAP_DEFINITION]
+```
+
 ## Autocert
 
 The helm chart utilizes scheduled TLS certificate fetching from [Let's
