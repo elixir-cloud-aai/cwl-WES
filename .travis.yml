@@ -29,7 +29,7 @@ jobs:
       name: Build, deploy, test and publish
       script:
         - mkdir -p ${DATA_DIR}/{db,output,tmp}  # create data directories
-        - docker build -t "{DOCKER_REPO_NAME}:${DOCKER_TAG}" .
+        - docker build -t "${DOCKER_REPO_NAME}:${DOCKER_TAG}" .
         - docker-compose up -d --build
         - sleep 30  # wait for services to start up
         - |
