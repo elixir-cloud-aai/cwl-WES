@@ -19,7 +19,7 @@ before_script:
     if [ "$TRAVIS_BRANCH" = "dev" ]; then
         export DOCKER_TAG="$(date '+%Y%m%d')"
     else
-        export DOCKER_TAG=${${TRAVIS_BRANCH//_/-}//\//-}
+        export DOCKER_TAG=${TRAVIS_BRANCH//_/-}
         export DOCKER_TAG=${DOCKER_TAG//\//-}
     fi
 
