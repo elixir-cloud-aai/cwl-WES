@@ -1,38 +1,51 @@
 os:
 - linux
 dist: bionic
-language: python
+language: minimal
+
 services:
 - docker
-install:
-# omit automatic installation of dependencies in virtualenv
-- pip --version
+
+if: type != pull_request  # do not build anything for PRs
+
 stages:
-- name: test
-- name: publish
-  # do not execute if PR branch
-  if: type != pull_request
-branches:
-  only:
-  - dev
+- name: build
+
+before_script:
+  - |
+    export DATA_DIR="${HOME}/data"
+    export SERVICE_INFO_ENDPOINT="http://localhost:7777/ga4gh/wes/v1/service-info"
+    export
+    if [ "$TRAVIS_BRANCH" = "dev" ]; then
+        export DOCKER_TAG="$(date '+%Y%m%d')"
+    else
+        export DOCKER_TAG=${${TRAVIS_BRANCH//_/-}//\//-}
+        export DOCKER_TAG=${DOCKER_TAG//\//-}
+    fi
+
 jobs:
   include:
-  - stage: test
-    name: Build, deploy and test application
-    script:
-    # build and deploy application
-    - "docker-compose up --build -d"
-    # test if endpoint 'GET /runs' is accessible
-    - "test $(curl -sL -w '%{http_code}' -X GET --header 'Accept: application/json' 'http://localhost:7777/ga4gh/wes/v1/runs' -o /dev/null) == '200'"
-  - stage: publish
-    name: Push image to registry
-    env:
-    - secure: "woVF7L1vADo4OqyKm7Kq8PC95Ej4L1q3R4Gf0Uh9p1tA81JMfD/3HDS5dG3OQvjoftcA7PqpFTrZq6GL1hR/bQqoQypHVNziH9PnDZFJPvxIYa8BUV7lknva4aSB6lcj4jmukHAnGNrusgSNXqcmFO0ziX4nyCNwcmXNGfRMKB3D25t0MAALtpSBYFovN1+7yijlklyjPCPUaEJ8Sj/HpohJ0CMye9f+dVE9RR5fDteLycHSRn2V2ftwmvu16vyI/sI9gdhYqamh18j8G9AULpeBWCdKpJ5+8nOnGwewRLCwnpClW6KEPtR95sk0qGiIs6rKigMbKuKmlgpbjh3T3vHfsvCVKpF1t+rAbFSWJy3RNv+Ru9zJ5Cl590v9DevRKfWyaJRiXdplEQRVgsMZdmfXaepZuNhYu113dw54QuVvQ5ceNS/MhR1QZs9Nkmv5LXwdvgxPn4seQM8G/uvYZS9cmyt+VkhMFkSBanRMxTafv0FAD4R+KgrHpvG8JjacwINAn7Ufy2YWMkVsolQGERH6LEo9BoxPW5SweKMoakx27K+mFKd63XwPzpwwv0zsKmPp6hBAZ7r4AnzrRVqJF7dGI9dXsFVNTTAT7+moQ7R9PI0WVNYL+ntafbd/q3/I5r2i/tuA2yr5l4oMgoOQAXB8/JuQ5uvjVudELPU1c9s="
-    - secure: "dhyNkYM5fPIcFSzrQ9k/nnOJOH3iOuWqu1Fu54IUCFDv89P7gNDkwCQAXH5hp8oipfNP0l4idOp0CmXWaAozFc67mP/tBN6A5D+zdfjjG3qhmFjlojpC1EtF7kvOvF8Wc9tCRi/J8qDiAGGqPPstxYfGD7jxUlDKeKlfgf9zhnnWQCM1kdnBqedLaEI6QIYdhpULa/8yMVLI3VOBE22FNZNc4Ftw7xDJFTMP1iW7k3DOe+gSR0bkBTwBj12rL/dCiEeYR/8UfZQJgmq4iZTI5s1EoHrqhnjp6xDxIaqmlWTkwTE6SpTm70Q7qvU0YLvwlKXmhclGmDmauxONzL+DJp0gPVT0N54pUZ6CfglxwJFAz3U8xRzi3vurcIC2hozKg67p8e6aohlJVYqook0APsK/q/z0kfvivMC9gP0HZIKUuSFvkbbwt6VAVjVmPhTbPew6pRsCmHrjntpWSfehaVAb8byKxul4BU3HnLTy+uf2RUJ9BfNjl7m7wCba+SwEU29/dow65JlLsCwUUHhEexXDRn9GO09Ci6OR+EhtCtsS7cXTS/1rOIaiUfvB7ciu5BjqdnSxJ1WkAEDaut32l4/1mfNfTg0eSmsHPs//oPsXb4NZU/f4oeXJvvVmG1PTx7mOwGnSokZT8iI+rk3ULCyf+lz0JNQy7Jx5mb+kEqI="
-    script:
-    # build and tag app image
-    - docker build -t "$DOCKER_REPO_NAME":"$DOCKER_REPO_TAG" .
-    # log in
-    - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-    # push image
-    - docker push "$DOCKER_REPO_NAME":"$DOCKER_REPO_TAG"
+    - stage: build
+      name: Build, deploy, test and publish
+      script:
+        - mkdir -p ${DATA_DIR}/{db,output,tmp}  # create data directories
+        - docker-compose up -d --build
+        - sleep 30  # wait for services to start up
+        - |
+          test $( \
+              curl \
+                  -sL \
+                  -o /dev/null \
+                  -w '%{http_code}' \
+                  -X GET \
+                  --header 'Accept: application/json' \
+                  "${SERVICE_INFO_ENDPOINT}" \
+          ) == '200' || travis_terminate 1
+        - docker-compose down
+        - |
+          if [ "$TRAVIS_BRANCH" = "dev" ]; then
+            docker tag "${DOCKER_REPO_NAME}:${DOCKER_TAG}" "${DOCKER_REPO_NAME}:latest"
+          fi
+        - echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin
+        - docker push "${DOCKER_REPO_NAME}"
+        - rm ${HOME}/.docker/config.json  # delete token
