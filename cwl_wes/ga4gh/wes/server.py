@@ -12,7 +12,7 @@ import cwl_wes.ga4gh.wes.endpoints.get_run_status as get_run_status
 import cwl_wes.ga4gh.wes.endpoints.list_runs as list_runs
 import cwl_wes.ga4gh.wes.endpoints.run_workflow as run_workflow
 import cwl_wes.ga4gh.wes.endpoints.get_service_info as get_service_info
-from cwl_wes.security.decorators import auth_token_optional
+from foca.security.decorators import param_pass
 
 
 # Get logger instance
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 # GET /runs/<run_id>
-@auth_token_optional
+@param_pass(current_app)
 def GetRunLog(run_id, *args, **kwargs):
     """Returns detailed run info."""
     response = get_run_log.get_run_log(
@@ -34,7 +34,7 @@ def GetRunLog(run_id, *args, **kwargs):
 
 
 # POST /runs/<run_id>/cancel
-@auth_token_optional
+@param_pass(current_app)
 def CancelRun(run_id, *args, **kwargs):
     """Cancels unfinished workflow run."""
     response = cancel_run.cancel_run(
@@ -49,7 +49,7 @@ def CancelRun(run_id, *args, **kwargs):
 
 
 # GET /runs/<run_id>/status
-@auth_token_optional
+@param_pass(current_app)
 def GetRunStatus(run_id, *args, **kwargs):
     """Returns run status."""
     response = get_run_status.get_run_status(
@@ -75,7 +75,7 @@ def GetServiceInfo(*args, **kwargs):
 
 
 # GET /runs
-@auth_token_optional
+@param_pass(current_app)
 def ListRuns(*args, **kwargs):
     """Lists IDs and status of all workflow runs."""
     response = list_runs.list_runs(
@@ -88,7 +88,7 @@ def ListRuns(*args, **kwargs):
 
 
 # POST /runs
-@auth_token_optional
+@param_pass(current_app)
 def RunWorkflow(*args, **kwargs):
     """Executes workflow."""
     response = run_workflow.run_workflow(
