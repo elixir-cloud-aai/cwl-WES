@@ -12,7 +12,7 @@ import cwl_wes.ga4gh.wes.endpoints.get_run_status as get_run_status
 import cwl_wes.ga4gh.wes.endpoints.list_runs as list_runs
 import cwl_wes.ga4gh.wes.endpoints.run_workflow as run_workflow
 import cwl_wes.ga4gh.wes.endpoints.get_service_info as get_service_info
-from foca.security.decorators import param_pass
+from foca.security.auth import param_pass
 
 
 # Get logger instance
@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 
 # GET /runs/<run_id>
-@param_pass(current_app)
+@param_pass(current_app.config)
 def GetRunLog(run_id, *args, **kwargs):
     """Returns detailed run info."""
     response = get_run_log.get_run_log(
