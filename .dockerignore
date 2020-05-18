@@ -1,0 +1,24 @@
+# Ignore Git- and GitHub-specific files and dirs
+.git
+.github
+.gitignore
+
+# Remove all docs but README.md from root directory
+*.md
+!README*.md
+
+# Ignore build-specific files and dirs
+**/*.egg-info
+src
+
+# Ignore deployment-specific files and dirs
+docker-compose.yaml
+deployment
+utils
+
+# Ignore security-related files and dirs
+**/.netrc
+
+# Ignore CI-related files and dirs
+.travis.yml
+
