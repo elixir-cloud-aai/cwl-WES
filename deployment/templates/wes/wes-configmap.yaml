@@ -1,0 +1,26 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: configmap-job-{{ .Values.wes.appName }}
+spec:
+  template:
+    spec:
+      containers:
+      - name: certbot
+        image: {{ .Values.wes.image }}
+        imagePullPolicy: Always
+        command: [ "/app/update-config-map.sh" ]
+        env:
+        - name: APISERVER
+          value: {{ .Values.autocert.apiServer }}
+        - name: CONFIG_MAP_NAME
+          value: app-config
+        - name: APP_CONFIG_PATH
+          value: /app/cwl_wes/config/app_config.yaml
+        - name: WES_APP_NAME
+          value: {{ .Values.wes.appName }}
+      restartPolicy: Never
+      serviceAccountName: {{ .Values.wes.appName }}-autocert
+status: {}
+
