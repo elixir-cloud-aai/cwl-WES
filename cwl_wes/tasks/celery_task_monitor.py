@@ -530,7 +530,7 @@ class TaskMonitor():
             task_log = tes_client.get_task(
                 task_id=tes_id,
                 view=self.tes_config['query_params'],
-            )
+            ).as_dict()
         except Exception as e:
             # TODO: handle more robustly: only 400/Bad Request is okay;
             # TODO: other errors (e.g. 500) should be dealt with
