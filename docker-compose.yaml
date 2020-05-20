@@ -11,7 +11,7 @@ services:
       - mongodb
     command: bash -c "cd /app/cwl_wes; gunicorn -c config.py wsgi:app"
     volumes:
-      - ../../data/cwl_wes:/data
+      - ../data/cwl_wes:/data
     ports:
       - "7777:8080"
 
@@ -25,7 +25,7 @@ services:
       - rabbitmq
     command: bash -c "cd /app/cwl_wes; celery worker -A celery_worker -E --loglevel=info"
     volumes:
-      - ../../data/cwl_wes:/data
+      - ../data/cwl_wes:/data
 
   rabbitmq:
     image: "rabbitmq:3-management"
@@ -40,7 +40,7 @@ services:
     image: mongo:3.2
     restart: unless-stopped
     volumes:
-      - ../../data/cwl_wes/db:/data/db
+      - ../data/cwl_wes/db:/data/db
     ports:
       - "27017:27017"
 
