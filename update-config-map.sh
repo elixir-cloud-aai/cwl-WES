@@ -1,4 +1,8 @@
 #!/bin/sh
+#
+# This script is meant to be run inside a Kubernetes pod
+#
+###############################################################################
 
 if [ -z "$CONFIG_MAP_NAME" -o -z "$APISERVER" -o -z "$APP_CONFIG_PATH" -o -z "$WES_APP_NAME" ];
 then
@@ -13,6 +17,14 @@ echo " APP CONFIG PATH: $APP_CONFIG_PATH"
 echo " WES APP NAME:    $WES_APP_NAME"
 
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+
+if [ -z "$NAMESPACE" ];
+then
+  echo "ERROR: Cannot get the namespace from '/var/run/secrets/kubernetes.io'" >&2
+  echo "This script is meant to be run inside a Kubernetes pod only." >&2
+  exit -1
+fi
+
 echo "Current Kubernetes namespace: $NAMESPACE"; echo
 
 echo " * Getting current default configuration"
