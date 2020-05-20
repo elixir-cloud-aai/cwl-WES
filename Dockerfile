@@ -23,7 +23,7 @@ ENV USER=ipython
 ENV HOME=/tmp/user
 
 # Install general dependencies
-RUN apt-get update && apt-get install -y nodejs openssl git build-essential python3-dev
+RUN apt-get update && apt-get install -y nodejs openssl git build-essential python3-dev curl jq
 
 ## Set working directory
 WORKDIR /app

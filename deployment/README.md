@@ -18,18 +18,9 @@ helm install <deployment-name> . -f <values-yaml>
 
 ## Change application configuration
 
-It is possible to change the default configuration of the application by using a config map. In order to do so, a script is provided `utils/generate_configuration_map.sh`:
+This helm chart will automatically create a config map called [app-config](/deployment/templates/wes/app-config.json). This is created using a `Job` that upon creation will run once and copy the default configuration file [app_config.yaml](/cwl_wes/config/app_config.yaml) into the aforementioned config map.
 
-```bash
-oc login (...)
-utils/generate_configuration_map.sh
-```
-
-By default it expects the current default configuration to be at `cwl_wes/config/app_config.yaml`, and the definition of the config map at `deployment/templates/wes/app-config.json`. It can be changed by:
-
-```bash
-utils/generate_configuration_map.sh <APP_CONFIG> [CONFIG_MAP_DEFINITION]
-```
+After changing the configuration, the pod running cwlwes must be reloded.
 
 ## Autocert
 
