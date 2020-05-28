@@ -25,7 +25,7 @@ kubectl create namespace <new-namespace-name>
 		1. ```storage.remote_storage_url```: The endpoint and folder of the FTP service that will be used for remote storage:
 		```ftp://endpoint//path```
 		2. ```tes.url```: The endpoint of your TES Service.
-4. **In to the [`deployment/`] folder** and issue the following command:
+4. Navigate into the **[`deployment/`](/deployment) directory** and issue the following command:
 ```bash
 helm install <name-of-your-deployment> . -f <values.yaml> -n <new-namespace-name>
 ```
