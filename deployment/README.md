@@ -1,26 +1,57 @@
-# Deployment instructions
+# Deployment instructions for Kubernetes
 
-Helm chart and config to deploy the WES service, MongoDB, Celery, RabbitMQ,
-Flower and Autocert. Tested with Helm v3.0.0.
+Installation via a Helm chart and configuration to deploy the WES service as well as MongoDB, Celery, RabbitMQ,
+Flower and Autocert. This was tested with Helm v3.0.0.
 
-## Usage
+## Prerequisites
+1. A working kubernetes cluster and access to the ```kubectl``` command.
+2. A dynamic storage provisioner ([StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/)) that can provide volumes in ReadWriteMany (RWX) access mode. You can find [a list of internal provisioners](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) that support this. We deployed cwl-WES successfully with an [external NFS volume provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs).
+3. If you are planning to use cwl-WES in FTP mode you need an FTP server that supports TLS encryption. 
+4. A working TES installation like [TESK](https://github.com/EMBL-EBI-TSI/TESK) or Funnel(https://github.com/ohsu-comp-bio/funnel) exposed via an endpoint. If you are planning to use cwl-WES in FTP mode, then your TES endpoint must also support FTP.
 
-First you must create a namespace in Kubernetes in which to deploy WES. The
-command below creates all deployments in the context of this namespace. How
-the namespace is created depends on the cluster, so it is not documented here.
-
-To deploy the application, first modify [`values.yaml`](values.yaml) or provide
-an external value file, then execute:
-
+## Deploying in FTP mode
+1. Create a new namespace in Kubernetes in which to deploy WES:
 ```bash
-helm install <deployment-name> . -f <values-yaml>
+kubectl create namespace <new-namespace-name>
+```
+2. Change the following values in [`values.yaml`](values.yaml) (for a detailed list of configuration values look further down):
+	1. ```clusterType```: Set to "kubernetes".
+	2. ```wes.netrcMachine```: the endpoint of your FTP service.
+	3. ```wes.netrcLogin```: the username of your FTP service.
+	4. ```wes.netrcPassword```: the password of your FTP service. 
+	It is important that your FTP login and password do not contain any special characters used in URLs like (#,&,?,etc) because they can cause errors to be produced.
+3. Change the application configuration:
+	1. Change the following values in [/cwl_wes/config/app_config.yaml](/cwl_wes/config/app_config.yaml):
+		1. ```storage.remote_storage_url```: The endpoint and folder of the FTP service that will be used for remote storage:
+		```ftp://endpoint//path```
+		2. ```tes.url```: The endpoint of your TES Service.
+4. **In to the [`deployment/`] folder** and issue the following command:
+```bash
+helm install <name-of-your-deployment> . -f <values.yaml> -n <new-namespace-name>
+```
+Helm should provision volumes for Rabbitmq, MongoDB and cwl-WES:
+```bash
+kubectl -n <new-namespace-name> get pvc 
+```
+Moreover you should see 5 new pods created in the new namespace (they should all settle in Running status after a while):
+```bash
+kubectl -n <new-namespace-name> get pods
 ```
 
-## Change application configuration
+## Deploy in shared-volume mode.
+TODO
 
-This helm chart will automatically create a config map called [app-config](/deployment/templates/wes/app-config.json). This is created using a `Job` that upon creation will run once and copy the default configuration file [app_config.yaml](/cwl_wes/config/app_config.yaml) into the aforementioned config map.
-
-After changing the configuration, the pod running cwlwes must be reloded.
+## Test using the hashspitter workflow:
+```bash
+curl -X POST \
+	 --header 'Content-Type: multipart/form-data' \
+	 --header 'Accept: application/json' \
+	 -F workflow_params='{"input":{"class":"File","path":"<add_a_path_to_a_file_here>"}}' \
+	 -F workflow_type='CWL' \
+	 -F workflow_type_version='v1.0'  \
+	 -F workflow_url='https://github.com/uniqueg/cwl-example-workflows/blob/master/hashsplitter-workflow.cwl' \
+	 '<wes_endpoint>/ga4gh/wes/v1/runs'
+```
 
 ## Autocert
 
@@ -31,7 +62,7 @@ Encrypt](https://letsencrypt.org/).
 
 - Test autocert with vanilla Kubernetes
 
-## Description of values
+## Description of values in [`values.yaml`](values.yaml)
 
 See [`values.yaml`](values.yaml) for default values.
 
