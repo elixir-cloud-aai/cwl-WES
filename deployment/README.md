@@ -7,7 +7,7 @@ Flower and Autocert. This was tested with Helm v3.0.0.
 1. A working kubernetes cluster and access to the ```kubectl``` command.
 2. A dynamic storage provisioner ([StorageClass](https://kubernetes.io/docs/concepts/storage/storage-classes/)) that can provide volumes in ReadWriteMany (RWX) access mode. You can find [a list of internal provisioners](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) that support this. We deployed cwl-WES successfully with an [external NFS volume provisioner](https://github.com/kubernetes-incubator/external-storage/tree/master/nfs).
 3. If you are planning to use cwl-WES in FTP mode you need an FTP server that supports TLS encryption. 
-4. A working TES installation like [TESK](https://github.com/EMBL-EBI-TSI/TESK) or Funnel(https://github.com/ohsu-comp-bio/funnel) exposed via an endpoint. If you are planning to use cwl-WES in FTP mode, then your TES endpoint must also support FTP.
+4. A working TES installation like [TESK](https://github.com/EMBL-EBI-TSI/TESK) or [Funnel](https://github.com/ohsu-comp-bio/funnel) exposed via an endpoint. If you are planning to use cwl-WES in FTP mode, then your TES endpoint must also support FTP.
 
 ## Deploying in FTP mode
 1. Create a new namespace in Kubernetes in which to deploy WES:
