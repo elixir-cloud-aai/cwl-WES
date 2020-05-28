@@ -27,7 +27,7 @@ kubectl create namespace <new-namespace-name>
 		2. ```tes.url```: The endpoint of your TES Service.
 4. Navigate into the **[`deployment/`](/deployment) directory** and issue the following command:
 ```bash
-helm install <name-of-your-deployment> . -f <values.yaml> -n <new-namespace-name>
+helm install <name-of-your-deployment> . -f values.yaml -n <new-namespace-name>
 ```
 Helm should provision volumes for Rabbitmq, MongoDB and cwl-WES:
 ```bash
