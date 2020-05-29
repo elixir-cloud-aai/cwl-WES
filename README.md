@@ -6,6 +6,8 @@
 
 ## Synopsis
 
+**TEST PR**
+
 Microservice implementing the [Global Alliance for Genomics and
 Health][org-ga4gh] (GA4GH) [Workflow Execution Service][res-ga4gh-wes] (WES)
 API specification for the execution of workflows written in the [Common
