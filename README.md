@@ -7,6 +7,7 @@
 ## Synopsis
 
 **TEST PR**
+**2nd committ**
 
 Microservice implementing the [Global Alliance for Genomics and
 Health][org-ga4gh] (GA4GH) [Workflow Execution Service][res-ga4gh-wes] (WES)
