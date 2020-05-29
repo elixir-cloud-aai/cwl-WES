@@ -6,7 +6,8 @@ language: minimal
 services:
 - docker
 
-if: type != pull_request  # do not build anything for PRs
+# build for all pushes & PRs coming from forks
+if: (type == push) OR (type == pull_request AND fork == true)
 
 stages:
 - name: build
