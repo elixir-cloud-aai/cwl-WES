@@ -6,10 +6,18 @@ language: minimal
 services:
 - docker
 
-if: type != pull_request  # do not build anything for PRs
+# build for all pushes, as well as PRs coming from forks
+# this ensures that the pipeline is triggered for internal pushes,
+# PRs from forks and pushes to existing PRs from forks
+if: (type == push) OR (type == pull_request AND fork == true)
 
 stages:
 - name: build
+- name: publish
+  # for security reasons, builds from forks won't be published until merged;
+  # also, environment variables defined in repository settings are not
+  # available to builds from PRs coming from external repos
+  if: fork == false
 
 before_script:
   - |
@@ -26,7 +34,7 @@ before_script:
 jobs:
   include:
     - stage: build
-      name: Build, deploy, test and publish
+      name: Build, deploy and test
       script:
         - mkdir -p ${DATA_DIR}/{db,output,tmp}  # create data directories
         - docker-compose up -d --build
@@ -42,8 +50,10 @@ jobs:
                   "${SERVICE_INFO_ENDPOINT}" \
           ) == '200' || travis_terminate 1
         - docker-compose down
+    - stage: publish
+      name: Build and publish
+        - docker build . -t "${DOCKER_REPO_NAME}:latest" -t "${DOCKER_REPO_NAME}:${DOCKER_TAG}"
         - echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin
-        - docker tag "${DOCKER_REPO_NAME}:latest" "${DOCKER_REPO_NAME}:${DOCKER_TAG}"
         - docker push "${DOCKER_REPO_NAME}:${DOCKER_TAG}"
         - if [ "$TRAVIS_BRANCH" = "dev" ]; then docker push "${DOCKER_REPO_NAME}:latest"; fi
         - rm ${HOME}/.docker/config.json  # delete token
