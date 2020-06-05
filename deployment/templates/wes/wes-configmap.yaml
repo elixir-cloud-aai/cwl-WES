@@ -21,6 +21,6 @@ spec:
         - name: WES_APP_NAME
           value: {{ .Values.wes.appName }}
       restartPolicy: Never
-      serviceAccountName: {{ .Values.wes.appName }}-autocert
+      serviceAccountName: {{ .Values.wes.appName }}-autoadmin
 status: {}
 

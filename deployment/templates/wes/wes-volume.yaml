@@ -3,6 +3,10 @@ kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
   name: {{ .Values.wes.appName }}-volume
+  {{ if eq .Values.clusterType "kubernetes" }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.wes.storageClass }}
+  {{ end }}
 spec:
   accessModes:
     - ReadWriteMany
