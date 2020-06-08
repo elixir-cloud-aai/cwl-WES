@@ -4,7 +4,7 @@ metadata:
   name: {{ .Values.mongodb.appName }}-volume
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Values.storageAccessMode }}
   resources:
     requests:
       storage: {{ .Values.mongodb.volumeSize }}
