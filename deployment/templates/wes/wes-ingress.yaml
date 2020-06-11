@@ -137,13 +137,6 @@ status: {}
 
 ---
 apiVersion: v1
-kind: ServiceAccount
-metadata:
-  creationTimestamp: null
-  name: {{ .Values.wes.appName }}-autoadmin
-
----
-apiVersion: v1
 kind: Secret
 metadata:
   name: {{ .Values.tlsSecret }}
