@@ -123,14 +123,14 @@ def __extract_tes_task_state_from_cwl_tes_log(
     task_state: Optional[str] = None
 
     # Extract new task ID
-    re_task_new = re.compile(r"^\[job \w*\] task id: (\S*)$")
+    re_task_new = re.compile(r"^\[job [\w\-]*\] task id: (\S*)$")
     m = re_task_new.match(line)
     if m:
         task_id = m.group(1)
 
     # Extract task ID and state
     re_task_state_poll = re.compile(
-        r'^\[job \w*\] POLLING "(\S*)", result: (\w*)'
+        r'^\[job [\w\-]*\] POLLING "(\S*)", result: (\w*)'
     )
     m = re_task_state_poll.match(line)
     if m:
