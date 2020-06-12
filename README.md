@@ -164,6 +164,39 @@ workflow_url: https://github.com/uniqueg/cwl-example-workflows/blob/master/hashs
 
 Leave the rest of the values empty and hit the `Try it out!` button.
 
+You can also use the service through `curl`. For example, to use the `GET /runs` endpoint:
+
+```console
+curl -X GET \
+    --header 'Accept: application/json' \
+    'http://localhost:7777/ga4gh/wes/v1/runs' 
+``` 
+
+###### Authorization
+
+Authorization for endpoint access can be enabled or disabled through the `app_config.yaml` file located in `cwl_wes/config`
+
+```yaml
+# Security settings
+security:
+    authorization_required: True
+```
+
+If authorization is enabled, you must be in possession of an [ELIXIR AAI authorization token][elixir-aai-token] in JWT form. If you want to utilize actual compute resources in the ELIXIR deployments, you have to be a member of the ELIXIR user group (Apply [here][elixir-user-group-apply]).
+
+For `curl` endpoint access, you only to add an `Authorization` header, followed be the `Bearer` prefix and your JWT token
+
+```console
+curl -X GET \
+    --header 'Accept: application/json' \
+    --header 'Authorization: Bearer <YOUR_TOKEN>'
+    'http://localhost:7777/ga4gh/wes/v1/runs' 
+``` 
+
+If you're using Swagger UI, you'll need to click on the **Authorize** button (on the right side of the top bar) of the Swagger UI website and the enter your JWT token in the `api_key` field, preceded by the `Bearer` prefix 
+
+![api_key](images/auth.png)
+
 ## Contributing
 
 This project is a community effort and lives off your contributions, be it in
@@ -201,6 +234,8 @@ question etc.
 [badge-url-health]: <https://csc-wes.rahtiapp.fi/ga4gh/wes/v1/ui/>
 [badge-url-license]: <http://www.apache.org/licenses/LICENSE-2.0>
 [docs-kubernetes]: deployment/README.md
+[elixir-aai-token]: https://perun.elixir-czech.cz/
+[elixir-user-group-apply]: https://perun.elixir-czech.cz/fed/registrar/?vo=elixir&group=ECP_CLN:OSS
 [license]: LICENSE
 [license-apache]: <https://www.apache.org/licenses/LICENSE-2.0>
 [org-elixir-cloud]: <https://github.com/elixir-cloud-aai/elixir-cloud-aai>
