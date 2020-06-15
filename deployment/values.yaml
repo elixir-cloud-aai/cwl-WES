@@ -7,6 +7,10 @@ clusterType: openshift  # either 'kubernetes' or 'openshift'
 tlsSecret: mytls-secret  # put name of tlsSecret
 storageAccessMode: ReadWriteOnce  # mongodb-pvc.yaml/rabbitmq-pvc.yaml, change to ReadWriteMany if storageClass can do RWX
 
+extra_config:
+  folder: /etc/app_config
+  file: app_config.yaml
+
 autocert:
   createJob: "true"  # actually create autocert cronjob, for K8S with autocert installed set to "false"
   schedule: "0 0 1 */2 *"  # cronjob schedule
@@ -63,5 +67,3 @@ ingress: # <- wes-ingress-kubernetes.yaml, only for system ingress for K8S, ensu
       ingressclass: "nginx"
       tlsacme: "\"true\""
       clusterissuer: "letsencrypt-prod"
-
-
