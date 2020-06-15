@@ -27,9 +27,10 @@ flower:
 wes:
   appName: cwlwes
   image: elixircloud/cwl-wes:latest
-  # netrcMachine: defaultmachine  # change this
-  # netrcLogin: defaultnetrclogin  # change this
-  # netrcPassword: defaultnetrcpassword  # change this
+  #netrc: # change this, add one entry per FTP/HTTP server
+  #- Machine: defaultmachine
+  #  Login: defaultnetrclogin
+  #  Password: defaultnetrcpassword
   storageClass: nfs-client  # <- wes-volume.yaml, only for K8S, a storageClass with readWriteMany capability is required
   volumeSize: 1Gi
 
