@@ -26,10 +26,10 @@ spec:
         imagePullPolicy: Always
         workingDir: '/app/cwl_wes'
         command: [ 'gunicorn' ]
-        args: [ '--log-level', 'debug', '-c', 'config.py', 'wsgi:app' ]
+        args: [ '--log-level', 'debug', '-c', 'config.py', 'wsgi:app', '--reload', '--reload-extra-file', '{{ .Values.extra_config.folder }}/{{ .Values.extra_config.file }}' ]
         env:
         - name: WES_CONFIG
-          value: /etc/app_config/app_config.yaml
+          value: {{ .Values.extra_config.folder }}/{{ .Values.extra_config.file }}
         - name: MONGO_HOST
           value: {{ .Values.mongodb.appName }}
         - name: MONGO_PORT
@@ -80,7 +80,7 @@ spec:
         - mountPath: /tmp/user/.netrc
           subPath: .netrc
           name: wes-netrc-secret
-        - mountPath: /etc/app_config
+        - mountPath: {{ .Values.extra_config.folder}}
           name: app-config
       volumes:
       - name: wes-volume
