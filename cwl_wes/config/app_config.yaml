@@ -77,6 +77,10 @@ service_info:
         - http
     supported_wes_versions:
         - 0.3.0
+    supported_access_methods:
+        - 'ftp'
+        - 'https'
+        - 'local'
     workflow_type_versions:
         CWL:
             workflow_type_version:

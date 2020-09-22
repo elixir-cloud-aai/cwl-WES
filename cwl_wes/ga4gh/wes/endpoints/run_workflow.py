@@ -21,6 +21,7 @@ from flask import request
 from foca.config.config_parser import get_conf
 from cwl_wes.errors.errors import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
+from cwl_wes.ga4gh.wes.endpoints.utils import __translate_drs_uris_to_access_links
 
 
 # Get logger instance
@@ -245,6 +246,9 @@ def __create_run_environment(
 
         # Exit loop
         break
+    
+    __translate_drs_uris_to_access_links(document['internal']['param_file_path'])
+    __translate_drs_uris_to_access_links(document['internal']['cwl_path'])
 
     return document
 
@@ -406,8 +410,13 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         )
     )
 
+
     # Try to get parameters from 'workflow_params' field
     if data['api']['request']['workflow_params']:
+
+        # Replace `DRS URIs` in 'workflow_params'
+        # replace_drs_uris(data['api']['request']['workflow_params'])
+
         data['internal']['param_file_path'] = os.path.join(
             workflow_dir,
             '.'.join([
