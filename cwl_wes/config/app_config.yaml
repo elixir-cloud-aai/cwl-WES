@@ -74,13 +74,11 @@ service_info:
     contact_info: 'https://github.com/elixir-cloud-aai/cwl-WES'
     auth_instructions_url: 'https://www.elixir-europe.org/services/compute/aai'
     supported_file_system_protocols:
-        - http
+        - ftp
+        - https
+        - local
     supported_wes_versions:
-        - 0.3.0
-    supported_access_methods:
-        - 'ftp'
-        - 'https'
-        - 'local'
+        - 1.0.0
     workflow_type_versions:
         CWL:
             workflow_type_version:

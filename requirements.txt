@@ -17,7 +17,7 @@ cryptography==2.3.1
 -e git+https://github.com/uniqueg/cwl-tes.git@57a193cabab2444bc9b661f83011837bd5ed571a#egg=cwl-tes
 cwltool==1.0.20181217162649
 decorator==4.3.0
-drs-cli==0.2.0
+drs-cli==0.2.1
 Flask==1.1.1
 Flask-Cors==3.0.6
 Flask-PyMongo==2.1.0
@@ -45,6 +45,7 @@ prov==1.5.1
 psutil==5.6.6
 py-tes==0.3.0
 pycparser==2.19
+pydantic==1.6.1
 PyJWT==1.6.4
 pylint==2.4.4
 pymongo==3.7.1
