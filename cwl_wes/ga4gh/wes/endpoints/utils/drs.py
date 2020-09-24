@@ -7,7 +7,7 @@ import os
 import re
 from requests.exceptions import ConnectionError
 import sys
-from typing import (Iterator, List)
+from typing import (Iterator, List, Match)
 
 from drs_cli.client import DRSClient
 from drs_cli.errors import (InvalidResponseError, InvalidURI)
@@ -75,7 +75,7 @@ def abs_paths(dir: str) -> Iterator[str]:
 
 
 def get_replacement_string(
-    match: re.Match,
+    match: Match,
     ref: str,
     supported_access_methods: List[str],
 ) -> str:
