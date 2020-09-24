@@ -8,10 +8,11 @@ import string  # noqa: F401
 import subprocess
 
 from celery import uuid
+from flask import current_app
 from json import (decoder, loads)
 from pymongo.errors import DuplicateKeyError
 from random import choice
-from typing import Dict
+from typing import (Dict, List)
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
@@ -21,6 +22,7 @@ from flask import request
 from foca.config.config_parser import get_conf
 from cwl_wes.errors.errors import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
+from cwl_wes.ga4gh.wes.endpoints.utils.drs import translate_drs_uris
 
 
 # Get logger instance
@@ -245,6 +247,21 @@ def __create_run_environment(
 
         # Exit loop
         break
+    
+    # translate DRS URIs to access URLs
+    supported_access_methods: List[str] = get_conf(
+        current_app.config,
+        'service_info',
+        'supported_file_system_protocols',
+    )
+    translate_drs_uris(
+        path=document['internal']['param_file_path'],
+        supported_access_methods=supported_access_methods,
+    )
+    translate_drs_uris(
+        path=document['internal']['cwl_path'],
+        supported_access_methods=supported_access_methods,
+    )
 
     return document
 
@@ -406,8 +423,13 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         )
     )
 
+
     # Try to get parameters from 'workflow_params' field
     if data['api']['request']['workflow_params']:
+
+        # Replace `DRS URIs` in 'workflow_params'
+        # replace_drs_uris(data['api']['request']['workflow_params'])
+
         data['internal']['param_file_path'] = os.path.join(
             workflow_dir,
             '.'.join([
