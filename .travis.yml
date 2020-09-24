@@ -52,6 +52,7 @@ jobs:
         - docker-compose down
     - stage: publish
       name: Build and publish
+      script:
         - docker build . -t "${DOCKER_REPO_NAME}:latest" -t "${DOCKER_REPO_NAME}:${DOCKER_TAG}"
         - echo "${DOCKER_TOKEN}" | docker login -u "${DOCKER_USER}" --password-stdin
         - docker push "${DOCKER_REPO_NAME}:${DOCKER_TAG}"
