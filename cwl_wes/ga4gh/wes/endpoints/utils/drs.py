@@ -24,6 +24,7 @@ logger = logging.getLogger(__name__)
 
 def translate_drs_uris(
     path: str,
+    file_types: List[str],
     supported_access_methods: List[str],
     port: Optional[int] = None,
     base_path: Optional[str] = None,
@@ -37,6 +38,7 @@ def translate_drs_uris(
 
     Arguments:
         path: File or directory containing files.
+        file_types: Extensions of files to scan.
         supported_access_methods: List of access methods/file transfer
             protocols supported by this service, provided in the order of
             preference.
@@ -54,10 +56,15 @@ def translate_drs_uris(
     _RE_OBJECT_ID = rf"(?P<drs_uri>drs:\/\/{_RE_DOMAIN}\/\S+)"
 
     # get absolute paths of file or directory (including subdirectories)
-    files = abs_paths(dir=path) if os.path.isdir(path) else [path]
+    logger.debug(f"Collecting file(s) for provided path '{path}'...")
+    files = abs_paths(
+        dir=path,
+        file_ext=file_types,
+    ) if os.path.isdir(path) else [path]
 
     # replace any DRS URIs in any file in place
     for _file in files:
+        logger.debug(f"Scanning file '{_file}' for DRS URIs...")
         with FileInput(_file, inplace=True) as _f:
             for line in _f:
                 sys.stdout.write(
@@ -76,18 +83,24 @@ def translate_drs_uris(
                 )
 
 
-def abs_paths(dir: str) -> Iterator[str]:
-    """Yields absolute paths of all files in directory and subdirectories.
+def abs_paths(
+    dir: str,
+    file_ext: List[str],
+) -> Iterator[str]:
+    """Yields absolute paths of files with the indicated file extensions in
+    specified directory and subdirectories.
 
     Arguments:
         dir: Directory to search files in.
+        file_ext: List of file extensions for files to return.
 
     Returns:
         Generator yielding absolute file paths.
     """
     for dirpath, _, files in os.walk(dir):
         for _file in files:
-            yield os.path.abspath(os.path.join(dirpath, _file))
+            if _file.endswith(tuple(file_ext)):
+                yield os.path.abspath(os.path.join(dirpath, _file))
 
 
 def get_replacement_string(
@@ -166,6 +179,7 @@ def get_access_url_from_drs(
             use_http=use_http,
         )
     except InvalidURI:
+        logger.error(f"The provided DRS URI '{drs_uri}' is invalid.")
         raise BadRequest
 
     # get DRS object
@@ -174,11 +188,15 @@ def get_access_url_from_drs(
             object_id=drs_uri
         )
     except (ConnectionError, InvalidResponseError):
+        logger.error(f"Could not connect to DRS host for DRS URI '{drs_uri}'.")
         raise InternalServerError
     if isinstance(object, Error):
         if object.status_code == 404:
+            logger.error(f"Could not access DRS host for DRS URI '{drs_uri}'.")
             raise BadRequest
+        # TODO: handle 401 & 403
         else:
+            logger.error(f"DRS returned error: {object}'.")
             raise InternalServerError
 
     # get access methods and access method types/protocols
@@ -189,12 +207,19 @@ def get_access_url_from_drs(
     # TODO: add support for access URL headers
     for supported_method in supported_access_methods:
         try:
-            return str(
+            access_url = str(
                 available_methods
                 [available_types.index(supported_method)].access_url.url
             )
+            logger.info(
+                f"Resolved DRS URI '{drs_uri}' to access link '{access_url}'."
+            )
+            return access_url
         except ValueError:
             continue
 
     # no method was found
+    logger.error(
+        f"Could not find a supported access URL for DRS URI '{drs_uri}'."
+    )
     raise BadRequest
