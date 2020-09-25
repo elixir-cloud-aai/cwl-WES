@@ -292,8 +292,6 @@ def __create_run_environment(
         use_http=use_http,
     )
 
-    logger.warning("ALL GOOD")
-    raise BadRequest
     return document
 
 
