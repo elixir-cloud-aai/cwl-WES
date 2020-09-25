@@ -249,6 +249,12 @@ def __create_run_environment(
         break
     
     # translate DRS URIs to access URLs
+    file_types: List[str] = get_conf_type(
+        current_app.config,
+        'drs',
+        'file_types',
+        types=(list),
+    )
     supported_access_methods: List[str] = get_conf_type(
         current_app.config,
         'service_info',
@@ -260,21 +266,22 @@ def __create_run_environment(
         'drs',
         'port',
     )
+    base_path: Optional[str] = get_conf(
+        current_app.config,
+        'drs',
+        'base_path',
+    )
     use_http: bool = get_conf(
         current_app.config,
         'drs',
         'use_http',
     )
     translate_drs_uris(
-        path=document['internal']['param_file_path'],
+        path=document['internal']['workflow_files'],
+        file_types=file_types,
         supported_access_methods=supported_access_methods,
         port=port,
-        use_http=use_http,
-    )
-    translate_drs_uris(
-        path=document['internal']['cwl_path'],
-        supported_access_methods=supported_access_methods,
-        port=port,
+        base_path=base_path,
         use_http=use_http,
     )
 
@@ -329,7 +336,7 @@ def __process_workflow_attachments(data: Dict) -> Dict:
     )
 
     # Create directory for storing workflow files
-    workflow_dir = os.path.abspath(
+    data['internal']['workflow_files'] = workflow_dir = os.path.abspath(
         os.path.join(
             data['internal']['out_dir'], 'workflow_files'
         )
