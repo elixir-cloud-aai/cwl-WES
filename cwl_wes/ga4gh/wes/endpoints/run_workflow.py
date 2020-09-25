@@ -12,14 +12,14 @@ from flask import current_app
 from json import (decoder, loads)
 from pymongo.errors import DuplicateKeyError
 from random import choice
-from typing import (Dict, List)
+from typing import (Dict, List, Optional)
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
 
 from flask import request
 
-from foca.config.config_parser import get_conf
+from foca.config.config_parser import (get_conf, get_conf_type)
 from cwl_wes.errors.errors import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
 from cwl_wes.ga4gh.wes.endpoints.utils.drs import translate_drs_uris
@@ -249,18 +249,33 @@ def __create_run_environment(
         break
     
     # translate DRS URIs to access URLs
-    supported_access_methods: List[str] = get_conf(
+    supported_access_methods: List[str] = get_conf_type(
         current_app.config,
         'service_info',
         'supported_file_system_protocols',
+        types=(list),
+    )
+    port: Optional[int] = get_conf(
+        current_app.config,
+        'drs',
+        'port',
+    )
+    use_http: bool = get_conf(
+        current_app.config,
+        'drs',
+        'use_http',
     )
     translate_drs_uris(
         path=document['internal']['param_file_path'],
         supported_access_methods=supported_access_methods,
+        port=port,
+        use_http=use_http,
     )
     translate_drs_uris(
         path=document['internal']['cwl_path'],
         supported_access_methods=supported_access_methods,
+        port=port,
+        use_http=use_http,
     )
 
     return document

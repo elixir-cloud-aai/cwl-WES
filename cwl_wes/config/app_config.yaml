@@ -99,3 +99,9 @@ tes:
     url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
     timeout: 5
     status_query_params: 'FULL'
+
+# DRS integration
+drs:
+    port: Null  # use this port for resolving DRS URIs; set to `Null` to use default (443)
+    base_path: Null  # use this base path for resolving DRS URIs; set to `Null` to use default (`ga4gh/drs/v1`)
+    use_http: False  # use `http` for resolving DRS URIs; set to `False` to use default (`https`)

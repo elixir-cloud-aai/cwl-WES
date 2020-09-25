@@ -34,7 +34,12 @@ def run_server():
     # Register OpenAPI specs
     connexion_app = register_openapi(
         app=connexion_app,
-        specs=get_conf_type(config, 'api', 'specs', types=(list)),
+        specs=get_conf_type(
+            config,
+            'api',
+            'specs',
+            types=(list),
+        ),
         add_security_definitions=get_conf(
             config,
             'security',
