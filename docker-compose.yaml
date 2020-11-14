@@ -13,7 +13,7 @@ services:
     volumes:
       - ../data/cwl_wes:/data
     ports:
-      - "7777:8080"
+      - "8080:8080"
 
   wes-worker:
     image: elixircloud/cwl-wes:latest
