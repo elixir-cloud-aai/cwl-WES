@@ -22,7 +22,6 @@ stages:
 before_script:
   - |
     export DATA_DIR="${HOME}/data"
-    export SERVICE_INFO_ENDPOINT="http://localhost:7777/ga4gh/wes/v1/service-info"
     export
     if [ "$TRAVIS_BRANCH" = "dev" ]; then
         export DOCKER_TAG="$(date '+%Y%m%d')"
@@ -47,7 +46,7 @@ jobs:
                   -w '%{http_code}' \
                   -X GET \
                   --header 'Accept: application/json' \
-                  "${SERVICE_INFO_ENDPOINT}" \
+                  "${PROBE_ENDPOINT}" \
           ) == '200' || travis_terminate 1
         - docker-compose down
     - stage: publish
