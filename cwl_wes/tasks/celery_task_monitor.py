@@ -487,7 +487,7 @@ class TaskMonitor():
         """Parses outputs from cwl-tes log."""
         # Find outputs object in log string
         re_outputs = re.compile(
-            r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)',
+            r'(^\{$\n^ {4}"\S+": [\[\{]$\n(^ {4,}.*$\n)*^ {4}[\]\}]$\n^\}$\n)',
             re.MULTILINE
         )
         m = re_outputs.search(log)
