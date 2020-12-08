@@ -503,7 +503,7 @@ class TaskMonitor():
         """This function parses outputs from the cwl-tes log"""
         """The outputs JSON starts at the line before last in the logs"""
         """So unless the outputs are empty ({}), parse upward,"""
-        """Until you find the beginning of the JSON"""
+        """until you find the beginning of the JSON containing the outputs"""
         
         indices=range(len(log)-1,-1,-1)
 
