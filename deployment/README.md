@@ -130,3 +130,4 @@ See [`values.yaml`](values.yaml) for default values.
 | wes.netrcPassword | string | password for accessing the sFTP server |
 | wes.storageClass | string | type of storageClass for WES, must have RWX capability |
 | wes.volumeSize | string | size of volume reserved for the main application |
+| wes.redirect | boolean | Activate/deactivate the '/' to '/ga4gh/wes/v1/ui/' redirection |
