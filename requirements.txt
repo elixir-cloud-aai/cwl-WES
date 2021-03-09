@@ -1,5 +1,4 @@
 attrs==18.2.0
-bson==0.5.10
 celery==4.1.1
 connexion==1.5.2
 cryptography==3.2
@@ -16,7 +15,7 @@ kombu==4.2.1
 py-tes==0.3.0
 pydantic
 PyJWT==1.6.4
-pymongo==3.7.1
+pymongo==3.7.2
 python-dateutil==2.6.1
 PyYAML==5.3
 requests==2.20.0
