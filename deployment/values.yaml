@@ -6,13 +6,10 @@ applicationDomain: c03.k8s-popup.csc.fi  # change to wes server
 clusterType: openshift  # either 'kubernetes' or 'openshift'
 tlsSecret: mytls-secret  # put name of tlsSecret
 storageAccessMode: ReadWriteOnce  # mongodb-pvc.yaml/rabbitmq-pvc.yaml, change to ReadWriteMany if storageClass can do RWX
-<<<<<<< HEAD
 
 extra_config:
   folder: /etc/app_config
   file: app_config.yaml
-=======
->>>>>>> refs/remotes/origin/dev
 
 autocert:
   createJob: "true"  # actually create autocert cronjob, for K8S with autocert installed set to "false"
@@ -30,16 +27,10 @@ flower:
 wes:
   appName: cwlwes
   image: elixircloud/cwl-wes:latest
-<<<<<<< HEAD
   #netrc: # change this, add one entry per FTP/HTTP server
   #- Machine: defaultmachine
   #  Login: defaultnetrclogin
   #  Password: defaultnetrcpassword
-=======
-  netrcMachine: defaultmachine  # change this
-  netrcLogin: defaultnetrclogin  # change this
-  netrcPassword: defaultnetrcpassword  # change this
->>>>>>> refs/remotes/origin/dev
   storageClass: nfs-client  # <- wes-volume.yaml, only for K8S, a storageClass with readWriteMany capability is required
   volumeSize: 1Gi
 
@@ -76,8 +67,3 @@ ingress: # <- wes-ingress-kubernetes.yaml, only for system ingress for K8S, ensu
       ingressclass: "nginx"
       tlsacme: "\"true\""
       clusterissuer: "letsencrypt-prod"
-<<<<<<< HEAD
-=======
-
-
->>>>>>> refs/remotes/origin/dev
