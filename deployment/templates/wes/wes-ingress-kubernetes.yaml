@@ -8,7 +8,10 @@ metadata:
     kubernetes.io/ingress.class: {{ .Values.ingress.tls_letsencrypt.annotations.ingressclass }}
     kubernetes.io/tls-acme: {{ .Values.ingress.tls_letsencrypt.annotations.tlsacme }}
     cert-manager.io/cluster-issuer: {{ .Values.ingress.tls_letsencrypt.annotations.clusterissuer }}
+<<<<<<< HEAD
     nginx.ingress.kubernetes.io/app-root: "/ga4gh/wes/v1/ui/"
+=======
+>>>>>>> refs/remotes/origin/dev
   {{ end }}
 spec: {{ if .Values.tlsSecret }}
   tls:
