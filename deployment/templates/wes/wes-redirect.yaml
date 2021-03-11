@@ -1,4 +1,4 @@
-{{ if eq .Values.wes.redirect true }}
+{{ if and (eq .Values.wes.redirect true) (eq .Values.clusterType "openshift") }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -97,7 +97,6 @@ status:
 
 ---
 
-{{ if eq .Values.clusterType "openshift" }}
 apiVersion: route.openshift.io/v1
 kind: Route
 metadata:
@@ -117,6 +116,5 @@ spec:
   wildcardPolicy: None
 status:
   ingress: []
-{{ end }}
 
 {{ end }}
