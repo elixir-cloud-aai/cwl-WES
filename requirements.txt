@@ -1,5 +1,4 @@
 attrs==18.2.0
-bson==0.5.10
 celery==4.1.1
 connexion==1.5.2
 cryptography==3.2
