@@ -33,6 +33,8 @@ wes:
   #  Password: defaultnetrcpassword
   storageClass: nfs-client  # <- wes-volume.yaml, only for K8S, a storageClass with readWriteMany capability is required
   volumeSize: 1Gi
+  redirect: false
+  # Activate/deactivate the '/' to '/ga4gh/wes/v1/ui/' redirection
 
 celeryWorker:
   appName: celery-worker
