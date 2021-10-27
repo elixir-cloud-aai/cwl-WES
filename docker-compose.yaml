@@ -45,7 +45,7 @@ services:
       - "27017:27017"
 
   flower:
-    image: mher/flower:0.9
+    image: mher/flower:0.9.7
     restart: unless-stopped
     links:
       - wes-worker
