@@ -4,7 +4,7 @@ import logging
 
 from celery import current_app as celery_app
 from connexion import request
-from flask import current_app
+from flask import current_app, cross_origin
 
 import cwl_wes.ga4gh.wes.endpoints.cancel_run as cancel_run
 import cwl_wes.ga4gh.wes.endpoints.get_run_log as get_run_log
@@ -89,6 +89,7 @@ def ListRuns(*args, **kwargs):
 
 # POST /runs
 @auth_token_optional
+@cross_origin
 def RunWorkflow(*args, **kwargs):
     """Executes workflow."""
     response = run_workflow.run_workflow(
