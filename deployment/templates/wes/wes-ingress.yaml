@@ -58,7 +58,11 @@ status:
   loadBalancer: {}
 
 ---
+{{ if ne .Values.clusterType "kubernetes" }}
+apiVersion: batch/v1beta1
+{{ else }}
 apiVersion: batch/v1
+{{ end }}
 kind: CronJob
 metadata:
   name: {{ .Values.wes.appName }}-certbot
