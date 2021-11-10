@@ -73,7 +73,7 @@ api:
 service_info:
     contact_info: 'https://github.com/elixir-cloud-aai/cwl-WES'
     auth_instructions_url: 'https://www.elixir-europe.org/services/compute/aai'
-    supported_file_system_protocols:
+    supported_filesystem_protocols:
         - ftp
         - https
         - local
