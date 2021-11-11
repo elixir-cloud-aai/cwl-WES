@@ -242,6 +242,7 @@ class TaskMonitor():
         # Parse subprocess results
         try:
             (returncode, log, tes_ids, token) = literal_eval(event['result'])
+            log_list=log
             log = os.linesep.join(log)
         except Exception as e:
             logger.exception(
@@ -277,7 +278,8 @@ class TaskMonitor():
             state = 'COMPLETE'
 
         # Extract run outputs
-        outputs = self.__cwl_tes_outputs_parser(log)
+        #outputs = self.__cwl_tes_outputs_parser(log)
+        outputs = self.__cwl_tes_outputs_parser_list(log_list)
 
         # Get task logs
         task_logs = self.__get_tes_task_logs(
@@ -487,7 +489,7 @@ class TaskMonitor():
         """Parses outputs from cwl-tes log."""
         # Find outputs object in log string
         re_outputs = re.compile(
-            r'(^\{$\n^ {4}"\S+": \{$\n(^ {4,}.*$\n)*^ {4}\}$\n^\}$\n)',
+            r'(^\{$\n^ {4}"\S+": [\[\{]$\n(^ {4,}.*$\n)*^ {4}[\]\}]$\n^\}$\n)',
             re.MULTILINE
         )
         m = re_outputs.search(log)
@@ -495,6 +497,39 @@ class TaskMonitor():
             return literal_eval(m.group(1))
         else:
             return dict()
+    
+    @staticmethod
+    def __cwl_tes_outputs_parser_list(log: List) -> Dict:
+        """This function parses outputs from the cwl-tes log"""
+        """The outputs JSON starts at the line before last in the logs"""
+        """So unless the outputs are empty ({}), parse upward,"""
+        """until you find the beginning of the JSON containing the outputs"""
+        
+        indices=range(len(log)-1,-1,-1)
+
+        start=-1
+        end=-1
+        for index in indices:
+            if log[index].rstrip()=='{}':
+                return dict()
+            elif log[index].rstrip()=='}':
+                end=index
+                break
+        
+        # No valid JSON was found and the previous loop
+        # reached the end of the log
+        if end==0:
+            return dict()
+        
+        indices=range(end-1,-1,-1)
+        for index in indices:
+            if log[index].rstrip()=='{':
+                start=index
+                break
+
+        json=os.linesep.join(log[start:end+1])
+
+        return literal_eval(json)
 
     def __get_tes_task_logs(
         self,

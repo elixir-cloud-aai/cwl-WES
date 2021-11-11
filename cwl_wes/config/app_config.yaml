@@ -1,4 +1,7 @@
 # General server/service settings
+#
+# Any change in this file will be detected by gunicorn and the configuration will be reloaded.
+#
 server:
     host: '0.0.0.0'
     port: 8080
@@ -70,10 +73,12 @@ api:
 service_info:
     contact_info: 'https://github.com/elixir-cloud-aai/cwl-WES'
     auth_instructions_url: 'https://www.elixir-europe.org/services/compute/aai'
-    supported_file_system_protocols:
-        - http
+    supported_filesystem_protocols:
+        - ftp
+        - https
+        - local
     supported_wes_versions:
-        - 0.3.0
+        - 1.0.0
     workflow_type_versions:
         CWL:
             workflow_type_version:
@@ -94,3 +99,13 @@ tes:
     url: 'https://csc-tesk.c03.k8s-popup.csc.fi/'
     timeout: 5
     status_query_params: 'FULL'
+
+# DRS integration
+drs:
+    port: Null  # use this port for resolving DRS URIs; set to `Null` to use default (443)
+    base_path: Null  # use this base path for resolving DRS URIs; set to `Null` to use default (`ga4gh/drs/v1`)
+    use_http: False  # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
+    file_types:  # extensions of files to scan for DRS URI resolution
+        - cwl
+        - yaml
+        - yml

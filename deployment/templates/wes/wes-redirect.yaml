@@ -1,0 +1,120 @@
+{{ if and (eq .Values.wes.redirect true) (eq .Values.clusterType "openshift") }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: nginx-redirect
+  name: nginx-redirect
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-redirect
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: nginx-redirect
+    spec:
+      containers:
+      - image: lvarin/nginx-okd:latest
+        imagePullPolicy: Always
+        name: nginx-redirect
+        ports:
+        - containerPort: 8081
+          protocol: TCP
+        resources:
+          requests:
+            cpu: 100m
+            memory: 200Mi
+        terminationMessagePath: /dev/termination-log
+        terminationMessagePolicy: File
+        volumeMounts:
+        - mountPath: /etc/nginx/conf.d/
+          name: nginx-redirect
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - configMap:
+          defaultMode: 420
+          name: nginx-redirect
+        name: nginx-redirect
+status: {}
+
+---
+
+apiVersion: v1
+data:
+  default.conf: |-
+    server {
+        listen 8081;
+        server_name  localhost;
+
+        rewrite ^/$ /ga4gh/wes/v1/ui/  permanent;
+        port_in_redirect off;
+
+        location / {
+            root   /usr/share/nginx/html;
+            index  index.html index.htm;
+        }
+
+        # redirect server error pages to the static page /50x.html
+        #
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   /usr/share/nginx/html;
+        }
+
+    }
+kind: ConfigMap
+metadata:
+  name: nginx-redirect
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: nginx-redirect
+  name: nginx-redirect
+spec:
+  ports:
+  - name: 8081-tcp
+    port: 8081
+    protocol: TCP
+    targetPort: 8081
+  selector:
+    app: nginx-redirect
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}
+
+---
+
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: nginx-redirect
+spec:
+  host: {{ .Values.wes.appName }}.{{ .Values.applicationDomain }}
+  path: /
+  port:
+    targetPort: 8081-tcp
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  to:
+    kind: Service
+    name: nginx-redirect
+    weight: 100
+  wildcardPolicy: None
+status:
+  ingress: []
+
+{{ end }}

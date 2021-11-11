@@ -164,6 +164,59 @@ workflow_url: https://github.com/uniqueg/cwl-example-workflows/blob/master/hashs
 
 Leave the rest of the values empty and hit the `Try it out!` button.
 
+You can also use the service through `curl`. For example, to send a request to
+the `GET /runs` endpoint:
+
+```console
+curl -X GET \
+    --header 'Accept: application/json' \
+    'http://localhost:7777/ga4gh/wes/v1/runs' 
+``` 
+
+###### Authorization
+
+All endpoints except for `GET /service-info` can be configured to require the
+presence of a valid JWT Bearer token in a request's header. This can be enabled
+by setting the following paraneter in the [app configuration][config-app] to
+`True`:
+
+```yaml
+# Security settings
+security:
+    authorization_required: True
+```
+
+To send authorized requests, you **must** be in possession of a valid JWT
+Bearer token. The app was developed against JWTs issues by 
+[ELIXIR AAI][elixir-aai], although JWTs issued by other identity providers may
+work.
+
+If you want to utilize actual compute resources in any of the ELIXIR test
+deployments, you **must** be a member of a specific ELIXIR user group. You can
+apply [here][elixir-user-group-apply] to be added to that group (ELIXIR AAI
+only!). When applying, please include a brief description of why you would like
+to make use of our test deployments and please note that they are for fair use
+only (please don't try to run your production workflows on them or we will need
+to re-think our strategy of offering free resources for testing/developing).
+
+To access protected endpoints via `curl`, you only need to add an `Authorization`
+header to your request, followed by the `Bearer` prefix and your JWT token, like
+so:
+
+```console
+curl -X GET \
+    --header 'Accept: application/json' \
+    --header 'Authorization: Bearer <YOUR_TOKEN>' \
+    'http://localhost:7777/ga4gh/wes/v1/runs' 
+``` 
+
+If you are making use of the Swagger UI, you will need to click on the
+**Authorize** button (which appears on the right-hand side of the top bar upon
+enabling the `authorization_required` option) of the Swagger UI website and
+enter your JWT token in the `api_key` field, preceded by the `Bearer` prefix: 
+
+![api_key](images/auth.png)
+
 ## Contributing
 
 This project is a community effort and lives off your contributions, be it in
@@ -200,7 +253,10 @@ question etc.
 [badge-url-ci]: <https://travis-ci.com/elixir-cloud-aai/cwl-WES>
 [badge-url-health]: <https://csc-wes.rahtiapp.fi/ga4gh/wes/v1/ui/>
 [badge-url-license]: <http://www.apache.org/licenses/LICENSE-2.0>
+[config-app]: cwl_wes/config/app_config.yaml
 [docs-kubernetes]: deployment/README.md
+[elixir-aai]: https://perun.elixir-czech.cz/
+[elixir-user-group-apply]: https://perun.elixir-czech.cz/fed/registrar/?vo=elixir&group=ECP_CLN:OSS
 [license]: LICENSE
 [license-apache]: <https://www.apache.org/licenses/LICENSE-2.0>
 [org-elixir-cloud]: <https://github.com/elixir-cloud-aai/elixir-cloud-aai>

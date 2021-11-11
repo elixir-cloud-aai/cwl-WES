@@ -14,6 +14,18 @@ spec:
       labels:
         app: {{ .Values.mongodb.appName }}
     spec:
+      {{ if eq .Values.clusterType "kubernetes" }}
+      initContainers:
+        - name: volume-permissions
+          image: busybox
+          imagePullPolicy: {{ .Values.mongodb.pullPolicy | quote }}
+          command: ["chown", "-R", "{{ .Values.mongodb.securityContext.runAsUser }}:{{ .Values.mongodb.securityContext.fsGroup }}", "{{ .Values.mongodb.mountPath }}"]
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - name: mongodb-data
+              mountPath: {{ .Values.mongodb.mountPath }}
+      {{ end }}
       containers:
         - env:
           - name: MONGODB_USER
@@ -67,6 +79,11 @@ spec:
           resources:
             limits:
               memory: 512Mi
+          {{ if eq .Values.clusterType "kubernetes" }}
+          securityContext:
+            runAsNonRoot: {{ .Values.mongodb.securityContext.runAsNonRoot }}
+            runAsUser: {{ .Values.mongodb.securityContext.runAsUser }}
+          {{ end }}
           volumeMounts:
             - mountPath: /var/lib/mongodb/data
               name: mongodb-data

@@ -1,0 +1,59 @@
+{{ if eq .Values.clusterType "kubernetes" }}
+{{ if .Values.ingress.letsencryptSystem }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: wes-ingress-kubernetes {{ if .Values.ingress.tls_letsencrypt }}
+  annotations:
+    kubernetes.io/ingress.class: {{ .Values.ingress.tls_letsencrypt.annotations.ingressclass }}
+    kubernetes.io/tls-acme: {{ .Values.ingress.tls_letsencrypt.annotations.tlsacme }}
+    cert-manager.io/cluster-issuer: {{ .Values.ingress.tls_letsencrypt.annotations.clusterissuer }}
+  {{ end }}
+spec: {{ if .Values.tlsSecret }}
+  tls:
+    - hosts:
+        - {{ .Values.applicationDomain }}
+      secretName: {{ .Values.tlsSecret }} {{ end }}
+  rules:
+    - host: {{ .Values.applicationDomain }}
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: {{ .Values.wes.appName }}
+                port: 
+                  number: 8080
+{{ else }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.wes.appName }}
+  labels:
+    app: {{ .Values.wes.appName }}
+spec:
+  rules:
+  - host: {{ .Values.wes.appName }}.{{ .Values.applicationDomain }}
+    http:
+      paths:
+      - path: "/.well-known"
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.wes.appName }}-certbot
+            port: 8080
+      - path: "/ga4gh/wes/v1"
+        pathType: Prefix
+        backend:
+          service:
+            name: {{ .Values.wes.appName }}
+            port: 8080
+  {{ if ne .Values.tlsSecret "" }}
+  tls:
+  - secretName: {{ .Values.tlsSecret }}
+    hosts:
+    - {{ .Values.wes.appName }}.{{ .Values.applicationDomain }}
+  {{ end }}
+{{ end }}
+{{ end }}

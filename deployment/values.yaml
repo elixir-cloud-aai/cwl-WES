@@ -2,12 +2,17 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-applicationDomain: c03.k8s-popup.csc.fi
+applicationDomain: c03.k8s-popup.csc.fi  # change to wes server
 clusterType: openshift  # either 'kubernetes' or 'openshift'
-tlsSecret: mytls-secret
+tlsSecret: mytls-secret  # put name of tlsSecret
+storageAccessMode: ReadWriteOnce  # mongodb-pvc.yaml/rabbitmq-pvc.yaml, change to ReadWriteMany if storageClass can do RWX
+
+extra_config:
+  folder: /etc/app_config
+  file: app_config.yaml
 
 autocert:
-  createJob: "true"  # actually create autocert cronjob
+  createJob: "true"  # actually create autocert cronjob, for K8S with autocert installed set to "false"
   schedule: "0 0 1 */2 *"  # cronjob schedule
   testCert: "true"  # use test certificates so as not to exceed quota
   image: elixircloud/autocert:devel
@@ -22,14 +27,20 @@ flower:
 wes:
   appName: cwlwes
   image: elixircloud/cwl-wes:latest
-  netrcMachine: defaultmachine
-  netrcLogin: defaultnetrclogin
-  netrcPassword: defaultnetrcpassword
+  #netrc: # change this, add one entry per FTP/HTTP server
+  #- Machine: defaultmachine
+  #  Login: defaultnetrclogin
+  #  Password: defaultnetrcpassword
+  storageClass: nfs-client  # <- wes-volume.yaml, only for K8S, a storageClass with readWriteMany capability is required
   volumeSize: 1Gi
+  redirect: false
+  # Activate/deactivate the '/' to '/ga4gh/wes/v1/ui/' redirection
 
 celeryWorker:
   appName: celery-worker
   image: elixircloud/cwl-wes:latest
+  tmpVolumeSize: 0Gi # Volume size for the /tmp directory. Leave 0 to not deploy. StorageClass with readWriteMany capability is required
+  tmpCleaner: false # If tmpVolume is deployed, then it should be cleaned hourly.
 
 mongodb:
   appName: mongodb
@@ -39,9 +50,24 @@ mongodb:
   databaseUser: cwlwes-user
   volumeSize: 1Gi
   image: centos/mongodb-36-centos7
+  mountPath: /var/lib/mongodb/data
+  pullPolicy: Always
+  securityContext:  # only for K8S
+    enabled: true
+    fsGroup: 1001
+    runAsUser: 1001
+    runAsNonRoot: true
 
 rabbitmq:
   appName: rabbitmq
   volumeSize: 1Gi
   image: rabbitmq:3-management
 
+ingress: # <- wes-ingress-kubernetes.yaml, only for system ingress for K8S, ensure wes namespace has rights to access it
+  letsencryptSystem: "true"  # if true, ensure wes namespace has rights to access letsencrypt pods - rbac
+  nginx_image: nginx/nginx-ingress:1.3.0
+  tls_letsencrypt:
+    annotations:
+      ingressclass: "nginx"
+      tlsacme: "\"true\""
+      clusterissuer: "letsencrypt-prod"

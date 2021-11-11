@@ -15,7 +15,7 @@ services:
       - ${WES_CONFIG}:${WES_CONFIG}
       - ${WES_CONFIG_LOG}:${WES_CONFIG_LOG}
     ports:
-      - "7777:8080"
+      - "8080:8080"
     environment:
       - WES_CONFIG
       - WES_CONFIG_LOG
@@ -55,7 +55,7 @@ services:
       - "27017:27017"
 
   flower:
-    image: mher/flower:0.9
+    image: mher/flower:0.9.7
     restart: unless-stopped
     links:
       - wes-worker

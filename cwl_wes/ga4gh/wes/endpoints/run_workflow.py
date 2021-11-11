@@ -8,19 +8,21 @@ import string  # noqa: F401
 import subprocess
 
 from celery import uuid
+from flask import current_app
 from json import (decoder, loads)
 from pymongo.errors import DuplicateKeyError
 from random import choice
-from typing import Dict
+from typing import (Dict, List, Optional)
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
 
 from flask import request
 
-from foca.config.config_parser import get_conf
+from foca.config.config_parser import (get_conf, get_conf_type)
 from cwl_wes.errors.errors import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
+from cwl_wes.ga4gh.wes.endpoints.utils.drs import translate_drs_uris
 
 
 # Get logger instance
@@ -85,10 +87,11 @@ def __immutable_multi_dict_to_nested_dict(
 def __validate_run_workflow_request(data: Dict) -> None:
     """Validates presence and types of workflow run request form data; sets
     defaults for optional fields."""
+
     # The form data is not validated properly because all types except
     # 'workflow_attachment' are string and none are labeled as required
-    # Considering the 'RunRequest' model in the current specs (0.3.0), the
-    # following assumptions are made and verified for the indicated parameters:
+    # Considering the 'RunRequest' model in the specs, the following
+    # assumptions are made and verified for the indicated parameters:
     # workflow_params:
     #   type = dict
     #   required = True
@@ -111,8 +114,7 @@ def __validate_run_workflow_request(data: Dict) -> None:
     #   type = [str]
     #   required = False
 
-    # Set required parameters
-    required = {
+    params_required = {
         'workflow_params',
         'workflow_type',
         'workflow_type_version',
@@ -128,22 +130,29 @@ def __validate_run_workflow_request(data: Dict) -> None:
         'workflow_engine_parameters',
         'tags',
     ]
-    type_str = dict((key, data[key]) for key in params_str if key in data)
-    type_dict = dict((key, data[key]) for key in params_dict if key in data)
-    # TODO: implement type casting/checking for workflow attachment
 
     # Raise error if any required params are missing
-    if not required <= set(data):
-        logger.error('POST request does not conform to schema.')
-        raise BadRequest
+    invalid = False
+    for param in params_required:
+        if param not in data:
+            logger.error(f"Required parameter '{param}' not in request body.")
+            invalid = True
 
     # Raise error if any string params are not of type string
-    if not all(isinstance(value, str) for value in type_str.values()):
-        logger.error('POST request does not conform to schema.')
-        raise BadRequest
+    for param in params_str:
+        if param in data and not isinstance(data[param], str):
+            logger.error(f"Parameter '{param}' is not of string type.")
+            invalid = True
 
     # Raise error if any dict params are not of type dict
-    if not all(isinstance(value, dict) for value in type_dict.values()):
+    for param in params_dict:
+        if param in data and not isinstance(data[param], dict):
+            logger.error(
+                f"Parameter '{param}' is not of dictionary type. Invalid JSON?"
+            )
+            invalid = True
+
+    if invalid:
         logger.error('POST request does not conform to schema.')
         raise BadRequest
 
@@ -152,7 +161,7 @@ def __validate_run_workflow_request(data: Dict) -> None:
 
 def __check_service_info_compatibility(data: Dict) -> None:
     """Checks compatibility with service info; raises BadRequest."""
-    # TODO: implement me
+    # TODO: implement
     return None
 
 
@@ -245,6 +254,43 @@ def __create_run_environment(
 
         # Exit loop
         break
+    
+    # translate DRS URIs to access URLs
+    file_types: List[str] = get_conf_type(
+        current_app.config,
+        'drs',
+        'file_types',
+        types=(list),
+    )
+    supported_access_methods: List[str] = get_conf_type(
+        current_app.config,
+        'service_info',
+        'supported_filesystem_protocols',
+        types=(list),
+    )
+    port: Optional[int] = get_conf(
+        current_app.config,
+        'drs',
+        'port',
+    )
+    base_path: Optional[str] = get_conf(
+        current_app.config,
+        'drs',
+        'base_path',
+    )
+    use_http: bool = get_conf(
+        current_app.config,
+        'drs',
+        'use_http',
+    )
+    translate_drs_uris(
+        path=document['internal']['workflow_files'],
+        file_types=file_types,
+        supported_access_methods=supported_access_methods,
+        port=port,
+        base_path=base_path,
+        use_http=use_http,
+    )
 
     return document
 
@@ -297,7 +343,7 @@ def __process_workflow_attachments(data: Dict) -> Dict:
     )
 
     # Create directory for storing workflow files
-    workflow_dir = os.path.abspath(
+    data['internal']['workflow_files'] = workflow_dir = os.path.abspath(
         os.path.join(
             data['internal']['out_dir'], 'workflow_files'
         )
@@ -406,8 +452,13 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         )
     )
 
+
     # Try to get parameters from 'workflow_params' field
     if data['api']['request']['workflow_params']:
+
+        # Replace `DRS URIs` in 'workflow_params'
+        # replace_drs_uris(data['api']['request']['workflow_params'])
+
         data['internal']['param_file_path'] = os.path.join(
             workflow_dir,
             '.'.join([
