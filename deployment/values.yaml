@@ -39,6 +39,8 @@ wes:
 celeryWorker:
   appName: celery-worker
   image: elixircloud/cwl-wes:latest
+  tmpVolumeSize: 0Gi # Volume size for the /tmp directory. Leave 0 to not deploy. StorageClass with readWriteMany capability is required
+  tmpCleaner: false # If tmpVolume is deployed, then it should be cleaned hourly.
 
 mongodb:
   appName: mongodb
