@@ -265,7 +265,7 @@ def __create_run_environment(
     supported_access_methods: List[str] = get_conf_type(
         current_app.config,
         'service_info',
-        'supported_file_system_protocols',
+        'supported_filesystem_protocols',
         types=(list),
     )
     port: Optional[int] = get_conf(

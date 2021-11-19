@@ -1,0 +1,17 @@
+---
+{{ if ne .Values.celeryWorker.tmpVolumeSize "0Gi" }}
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: celery-tmp-volume
+  {{ if eq .Values.clusterType "kubernetes" }}
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.wes.storageClass }}
+  {{ end }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.celeryWorker.tmpVolumeSize }}
+{{ end }}

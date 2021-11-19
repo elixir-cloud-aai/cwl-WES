@@ -60,6 +60,10 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: wes-volume
+        {{ if ne .Values.celeryWorker.tmpVolumeSize "0Gi" }} 
+        - mountPath: /tmp
+          name: celery-tmp-volume
+        {{ end }}
         - mountPath: /tmp/user/.netrc
           subPath: .netrc
           name: wes-netrc-secret
@@ -67,6 +71,11 @@ spec:
       - name: wes-volume
         persistentVolumeClaim:
           claimName: {{ .Values.wes.appName }}-volume
+      {{ if ne .Values.celeryWorker.tmpVolumeSize "0Gi" }} 
+      - name: celery-tmp-volume
+        persistentVolumeClaim:
+          claimName: celery-tmp-volume
+      {{ end }} 
       - name: wes-netrc-secret
         secret:
           secretName: netrc
