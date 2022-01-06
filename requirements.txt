@@ -1,4 +1,4 @@
-attrs==18.2.0
+attrs>=18.2.0
 celery==5.2.2
 connexion==1.5.2
 cryptography==3.3.2
