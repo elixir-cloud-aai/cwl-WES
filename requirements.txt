@@ -11,7 +11,7 @@ Flask-PyMongo==2.1.0
 foca==0.1.0
 gunicorn==19.9.0
 idna==2.7
-kombu==4.2.1
+kombu>=4.2.1
 py-tes==0.3.0
 pydantic
 PyJWT==1.6.4
