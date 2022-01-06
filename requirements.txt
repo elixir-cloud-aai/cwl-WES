@@ -1,5 +1,5 @@
 attrs>=18.2.0
-celery==5.2.2
+celery>=5.2.2
 connexion==1.5.2
 cryptography==3.3.2
 -e git+https://github.com/uniqueg/cwl-tes.git@57a193cabab2444bc9b661f83011837bd5ed571a#egg=cwl-tes
