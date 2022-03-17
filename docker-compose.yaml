@@ -23,7 +23,7 @@ services:
     links:
       - mongodb
       - rabbitmq
-    command: bash -c "cd /app/cwl_wes; celery worker -A celery_worker -E --loglevel=info"
+    command: bash -c "cd /app/cwl_wes; celery -A celery_worker worker -E --loglevel=info"
     volumes:
       - ../data/cwl_wes:/data
 
@@ -45,7 +45,7 @@ services:
       - "27017:27017"
 
   flower:
-    image: mher/flower:0.9
+    image: mher/flower:0.9.7
     restart: unless-stopped
     links:
       - wes-worker

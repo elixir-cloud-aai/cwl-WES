@@ -1,0 +1,33 @@
+{{ if .Values.celeryWorker.tmpCleaner }}
+{{ if ne .Values.clusterType "kubernetes" }}
+apiVersion: batch/v1beta1
+{{ else }}
+apiVersion: batch/v1
+{{ end }}
+kind: CronJob
+metadata:
+  name: celery-tmp-cleaner
+spec:
+  schedule: "@hourly"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: demo-clean
+            image: busybox
+            args:
+            - /bin/sh
+            - -c
+            - find /tmp -maxdepth 1 -type f -mmin +60  -exec rm -f {} \; 
+            volumeMounts:
+            - name: celery-tmp-volume
+              mountPath: "/tmp"
+          restartPolicy: OnFailure
+          volumes:
+          - name: celery-tmp-volume
+            persistentVolumeClaim:
+              claimName: celery-tmp-volume
+{{ end }}

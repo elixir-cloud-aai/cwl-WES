@@ -25,7 +25,7 @@ spec:
         imagePullPolicy: Always
         workingDir: '/app/cwl_wes'
         command: [ 'celery' ]
-        args: [ 'worker', '-A', 'celery_worker', '-E', '--loglevel=info', '-c', '1', '-Q', 'celery' ]
+        args: [ '-A', 'celery_worker', 'worker', '-E', '--loglevel=info', '-c', '1', '-Q', 'celery' ]
         env:
         - name: MONGO_HOST
           value: {{ .Values.mongodb.appName }}
@@ -60,6 +60,10 @@ spec:
         volumeMounts:
         - mountPath: /data
           name: wes-volume
+        {{ if ne .Values.celeryWorker.tmpVolumeSize "0Gi" }} 
+        - mountPath: /tmp
+          name: celery-tmp-volume
+        {{ end }}
         - mountPath: /tmp/user/.netrc
           subPath: .netrc
           name: wes-netrc-secret
@@ -67,6 +71,11 @@ spec:
       - name: wes-volume
         persistentVolumeClaim:
           claimName: {{ .Values.wes.appName }}-volume
+      {{ if ne .Values.celeryWorker.tmpVolumeSize "0Gi" }} 
+      - name: celery-tmp-volume
+        persistentVolumeClaim:
+          claimName: celery-tmp-volume
+      {{ end }} 
       - name: wes-netrc-secret
         secret:
           secretName: netrc

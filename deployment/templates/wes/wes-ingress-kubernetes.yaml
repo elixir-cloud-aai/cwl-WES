@@ -1,6 +1,6 @@
 {{ if eq .Values.clusterType "kubernetes" }}
 {{ if .Values.ingress.letsencryptSystem }}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: wes-ingress-kubernetes {{ if .Values.ingress.tls_letsencrypt }}
@@ -20,11 +20,14 @@ spec: {{ if .Values.tlsSecret }}
       http:
         paths:
           - path: /
+            pathType: Prefix
             backend:
-              serviceName: {{ .Values.wes.appName }}
-              servicePort: 8080
+              service:
+                name: {{ .Values.wes.appName }}
+                port: 
+                  number: 8080
 {{ else }}
-apiVersion: extensions/v1beta1
+apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ .Values.wes.appName }}
@@ -36,13 +39,17 @@ spec:
     http:
       paths:
       - path: "/.well-known"
+        pathType: Prefix
         backend:
-          serviceName: {{ .Values.wes.appName }}-certbot
-          servicePort: 8080
+          service:
+            name: {{ .Values.wes.appName }}-certbot
+            port: 8080
       - path: "/ga4gh/wes/v1"
+        pathType: Prefix
         backend:
-          serviceName: {{ .Values.wes.appName }}
-          servicePort: 8080
+          service:
+            name: {{ .Values.wes.appName }}
+            port: 8080
   {{ if ne .Values.tlsSecret "" }}
   tls:
   - secretName: {{ .Values.tlsSecret }}

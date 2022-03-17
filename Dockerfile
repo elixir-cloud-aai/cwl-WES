@@ -1,5 +1,5 @@
 ##### BASE IMAGE #####
-FROM python:3.6-slim-stretch
+FROM python:3.7-slim-stretch
 
 ##### METADATA #####
 LABEL base.image="python:3.6-slim-stretch"
