@@ -25,7 +25,7 @@ spec:
         imagePullPolicy: Always
         workingDir: '/app/cwl_wes'
         command: [ 'celery' ]
-        args: [ 'worker', '-A', 'celery_worker', '-E', '--loglevel=info', '-c', '1', '-Q', 'celery' ]
+        args: [ '-A', 'celery_worker', 'worker', '-E', '--loglevel=info', '-c', '1', '-Q', 'celery' ]
         env:
         - name: MONGO_HOST
           value: {{ .Values.mongodb.appName }}
