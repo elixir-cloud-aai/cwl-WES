@@ -17,6 +17,12 @@ spec:
       containers:
       - name: rabbitmq
         image: {{ .Values.rabbitmq.image }}
+        command:
+          - /bin/sh
+          - -c
+          - |
+            chmod g-rw /var/lib/rabbitmq/.erlang.cookie;
+            /opt/rabbitmq/sbin/rabbitmq-server
         volumeMounts:
         - mountPath: /var/lib/rabbitmq
           name: rabbitmq-volume
@@ -24,4 +30,8 @@ spec:
       - name: rabbitmq-volume
         persistentVolumeClaim:
           claimName: {{ .Values.rabbitmq.appName }}-volume
+{{- if .Values.securityContext }}
+      securityContext:
+{{- toYaml .Values.securityContext | nindent 8 -}}
+{{- end }}
 

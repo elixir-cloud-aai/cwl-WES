@@ -82,4 +82,7 @@ spec:
           items:
           - key: netrc
             path: .netrc
-
+{{- if .Values.securityContext }}
+      securityContext:
+{{- toYaml .Values.securityContext | nindent 8 -}} 
+{{- end }}

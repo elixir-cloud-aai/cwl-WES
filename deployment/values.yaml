@@ -7,6 +7,9 @@ clusterType: openshift  # either 'kubernetes' or 'openshift'
 tlsSecret: mytls-secret  # put name of tlsSecret
 storageAccessMode: ReadWriteOnce  # mongodb-pvc.yaml/rabbitmq-pvc.yaml, change to ReadWriteMany if storageClass can do RWX
 
+securityContext:
+  runAsUser: 1000
+
 extra_config:
   folder: /etc/app_config
   file: app_config.yaml
