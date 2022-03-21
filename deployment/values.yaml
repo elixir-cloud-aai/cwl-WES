@@ -55,6 +55,8 @@ mongodb:
   databaseUser: cwlwes-user
   volumeSize: 1Gi
   image: centos/mongodb-36-centos7
+  initContainer:
+    runAsRoot: false
   mountPath: /var/lib/mongodb/data
   pullPolicy: Always
   securityContext:  # only for K8S

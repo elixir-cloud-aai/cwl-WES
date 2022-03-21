@@ -14,7 +14,7 @@ spec:
       labels:
         app: {{ .Values.mongodb.appName }}
     spec:
-      {{- if and (eq .Values.clusterType "kubernetes") (eq (.Values.mongodb.securityContext.runAsUser | int) 0) }}
+      {{- if and (eq .Values.clusterType "kubernetes") .Values.mongodb.initContainer.runAsRoot }}
       initContainers:
         - name: volume-permissions
           image: busybox
