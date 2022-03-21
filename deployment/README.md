@@ -83,7 +83,7 @@ Encrypt](https://letsencrypt.org/).
 ## Security context
 Many clusters feature security policy that forbids various actions in cluster. Usually, security policy includes requirement that resources must be deployed under non-root user. The requirement is satisfied by setting `securityContext` section in resources. 
 
-`Values.yaml` offer setting security context only for Kubernetes clusters. It is set on two places:
+`Values.yaml` offer setting security context only for Kubernetes clusters. It is set on three places:
 - `mongodb.initContainer.runAsRoot` for settings related to mongoDB init container
 - `mongodb.securityContext` for settings related to mongoDB
 - `securityContext` for all other resources supporting security context
@@ -98,7 +98,7 @@ securityContext:
   fsGroup: 1001
 ```
 
-If you don't want to run under root but there you are not forced to run non-root, you can set security contexts as you wish where e.g. the `securityContext` and  `mongodb.securityContext` will be set to non-root and `mongodb.initContainer.runAsRoot` to `true` to keep the init container (chown can be done only under root user). 
+If you don't want to run under root but you are not forced to run non-root, you can set security contexts as you wish where e.g. the `securityContext` and  `mongodb.securityContext` will be set to non-root and `mongodb.initContainer.runAsRoot` to `true` to keep the init container (chown can be done only under root user). 
 
 ## To do
 
@@ -142,7 +142,7 @@ See [`values.yaml`](values.yaml) for default values.
 | rabbitmq.appName | string | name of RabbitMQ app on Kubernetes cluster |
 | rabbitmq.image | string | container image to be used to run RabbitMQ |
 | rabbitmq.volumeSize | string | size of volume reserved for RabbitMQ broker |
-| securityContext | map | for K8s, if uncommented the whole section is translated into Kubernetes `securityContext`, see section `Security Context` |
+| securityContext | map | for K8s, if uncommented the section is used as Kubernetes `securityContext`, see section `Security Context` |
 | storageAccessMode | string | access mode for MongoDB and RabbitMQ PVC |
 | tlsSecret | string | secret for TLS encryption |
 | wes.appName | string | name of the main application on Kubernetes cluster |
