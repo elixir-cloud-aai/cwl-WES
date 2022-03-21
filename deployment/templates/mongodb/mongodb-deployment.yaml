@@ -14,7 +14,7 @@ spec:
       labels:
         app: {{ .Values.mongodb.appName }}
     spec:
-      {{ if and (eq .Values.clusterType "kubernetes") (eq ( .Values.mongodb.securityContext.runAsUser | int) 0) }}
+      {{- if and (eq .Values.clusterType "kubernetes") (eq (.Values.mongodb.securityContext.runAsUser | int) 0) }}
       initContainers:
         - name: volume-permissions
           image: busybox
@@ -25,7 +25,7 @@ spec:
           volumeMounts:
             - name: mongodb-data
               mountPath: {{ .Values.mongodb.mountPath }}
-      {{ end }}
+      {{- end }}
       containers:
         - env:
           - name: MONGODB_USER
@@ -79,11 +79,11 @@ spec:
           resources:
             limits:
               memory: 512Mi
-          {{ if eq .Values.clusterType "kubernetes" }}
+          {{- if eq .Values.clusterType "kubernetes" }}
           securityContext:
             runAsNonRoot: {{ .Values.mongodb.securityContext.runAsNonRoot }}
             runAsUser: {{ .Values.mongodb.securityContext.runAsUser }}
-          {{ end }}
+          {{- end }}
           volumeMounts:
             - mountPath: /var/lib/mongodb/data
               name: mongodb-data
