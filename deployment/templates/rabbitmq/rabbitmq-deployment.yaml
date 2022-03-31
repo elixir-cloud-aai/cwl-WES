@@ -21,8 +21,8 @@ spec:
           - /bin/sh
           - -c
           - |
-            chmod g-rw /var/lib/rabbitmq/.erlang.cookie;
-            /opt/rabbitmq/sbin/rabbitmq-server
+            chmod g-rw /var/lib/rabbitmq/.erlang.cookie;    # If rabbitMQ deployment is restarted (e.g. cluster failure) cookie has incorrect permissions
+            /opt/rabbitmq/sbin/rabbitmq-server              # Solved by chmod before calling rabbitmq (https://github.com/elixir-cloud-aai/cwl-WES/issues/232)
         volumeMounts:
         - mountPath: /var/lib/rabbitmq
           name: rabbitmq-volume
