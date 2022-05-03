@@ -1,11 +1,6 @@
-{{- $appconfig := "# Empty, this configMap will be filled by Job (configmap-job-cwlwes)" }}
-{{- $config_map := (lookup "v1" "ConfigMap" .Release.Namespace "app-config") }}
-{{- if $config_map }}
-  {{- $appconfig = index $config_map.data "app_config.yaml" }}
-{{- end }}
 apiVersion: v1
 data:
-  app_config.yaml: {{ $appconfig | quote }}
+  app_config.yaml: {{ .Values.wes.appConfig | quote }}
 kind: ConfigMap
 metadata:
   name: app-config
