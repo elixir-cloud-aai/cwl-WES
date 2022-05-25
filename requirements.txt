@@ -17,7 +17,7 @@ Jinja2==3.0.3
 kombu>=4.2.1
 py-tes==0.4.2
 pydantic
-PyJWT==1.6.4
+PyJWT==2.4.0
 pymongo==3.7.2
 python-dateutil==2.6.1
 PyYAML==5.3
