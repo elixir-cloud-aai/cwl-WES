@@ -29,5 +29,5 @@ spec:
           volumes:
           - name: celery-tmp-volume
             persistentVolumeClaim:
-              claimName: celery-tmp
+              claimName: celery-tmp-volume
 {{ end }}

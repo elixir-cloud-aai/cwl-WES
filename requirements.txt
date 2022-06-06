@@ -1,5 +1,5 @@
-attrs==18.2.0
-celery==4.1.1
+attrs>=18.2.0
+celery==5.2.2
 connexion==2.7.0
 cryptography==3.3.2
 -e git+https://github.com/uniqueg/cwl-tes.git@57a193cabab2444bc9b661f83011837bd5ed571a#egg=cwl-tes
@@ -11,8 +11,11 @@ Flask-PyMongo==2.3.0
 foca==0.7.0
 gunicorn==19.9.0
 idna==2.7
-kombu==4.2.1
-py-tes==0.3.0
+importlib-metadata==4.10.1
+itsdangerous==2.0.1
+Jinja2==3.0.3
+kombu>=4.2.1
+py-tes==0.4.2
 pydantic
 PyJWT==1.7.1
 pymongo==3.10.1

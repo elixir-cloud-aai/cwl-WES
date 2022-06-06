@@ -529,7 +529,20 @@ class TaskMonitor():
 
         json=os.linesep.join(log[start:end+1])
 
-        return literal_eval(json)
+        try:
+            return literal_eval(json)
+        except ValueError as verr:
+            logger.exception(
+                "ValueError when evaluation JSON: '%s'. Original error message: %s" % \
+                   (json, verr)
+            )
+            return dict()
+        except SyntaxError as serr:
+            logger.exception(
+                "SyntaxError when evaluation JSON: '%s'. Original error message: %s" % \
+                    (json, serr)
+            )
+            return dict()
 
     def __get_tes_task_logs(
         self,
