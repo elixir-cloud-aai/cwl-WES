@@ -1,26 +1,8 @@
-attrs>=18.2.0
-celery==5.2.2
-connexion==1.5.2
-cryptography==3.3.2
 -e git+https://github.com/uniqueg/cwl-tes.git@57a193cabab2444bc9b661f83011837bd5ed571a#egg=cwl-tes
 cwltool==1.0.20181217162649
 drs-cli==0.2.3
-Flask==1.1.1
-Flask-Cors==3.0.9
-Flask-PyMongo==2.1.0
-foca==0.1.0
+foca==0.7.0
 gunicorn==19.9.0
-idna==2.7
-importlib-metadata==4.10.1
-itsdangerous==2.0.1
-Jinja2==3.0.3
-kombu>=4.2.1
 py-tes==0.4.2
-pydantic
-PyJWT==2.4.0
-pymongo==3.7.2
 python-dateutil==2.6.1
-PyYAML==5.3
-requests==2.20.0
 ruamel.yaml==0.15.51
-Werkzeug==0.15.3
