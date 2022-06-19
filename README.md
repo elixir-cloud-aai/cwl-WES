@@ -73,7 +73,7 @@ mkdir -p data/cwl_wes/db data/cwl_wes/output data/cwl_wes/tmp
 Clone repository:
 
 ```bash
-git clone https://github.com/elixir-cloud-aai/cwl-WES.git app
+git clone https://github.com/elixir-cloud-aai/cwl-WES.git
 ```
 
 Traverse to app directory:
@@ -139,7 +139,7 @@ EOF
 Copy the file into the running worker container(s):
 
 ```bash
-for cont in $(docker ps --all | grep cwl-wes_wes-worker | cut -f1 -d" "); do
+for cont in $(docker ps --all | grep wes-worker | cut -f1 -d" "); do
     docker cp .netrc "${cont}:/tmp/user"
 done
 ```
@@ -149,7 +149,7 @@ done
 Visit Swagger UI:
 
 ```bash
-firefox http://localhost:7777/ga4gh/wes/v1/ui
+firefox http://localhost:8080/ga4gh/wes/v1/ui
 ```
 
 Example values to start a simple CWL test workflow via the `POST /runs`
@@ -170,8 +170,8 @@ the `GET /runs` endpoint:
 ```console
 curl -X GET \
     --header 'Accept: application/json' \
-    'http://localhost:7777/ga4gh/wes/v1/runs' 
-``` 
+    'http://localhost:8080/ga4gh/wes/v1/runs' 
+```
 
 ###### Authorization
 
@@ -187,7 +187,7 @@ security:
 ```
 
 To send authorized requests, you **must** be in possession of a valid JWT
-Bearer token. The app was developed against JWTs issues by 
+Bearer token. The app was developed against JWTs issues by
 [ELIXIR AAI][elixir-aai], although JWTs issued by other identity providers may
 work.
 
@@ -207,13 +207,13 @@ so:
 curl -X GET \
     --header 'Accept: application/json' \
     --header 'Authorization: Bearer <YOUR_TOKEN>' \
-    'http://localhost:7777/ga4gh/wes/v1/runs' 
-``` 
+    'http://localhost:8080/ga4gh/wes/v1/runs' 
+```
 
 If you are making use of the Swagger UI, you will need to click on the
 **Authorize** button (which appears on the right-hand side of the top bar upon
 enabling the `authorization_required` option) of the Swagger UI website and
-enter your JWT token in the `api_key` field, preceded by the `Bearer` prefix: 
+enter your JWT token in the `api_key` field, preceded by the `Bearer` prefix:
 
 ![api_key](images/auth.png)
 
