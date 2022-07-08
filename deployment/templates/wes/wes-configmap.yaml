@@ -1,4 +1,4 @@
----
+{{- if .Values.wes.configWithJob }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -23,4 +23,4 @@ spec:
       restartPolicy: Never
       serviceAccountName: {{ .Values.wes.appName }}-autoadmin
 status: {}
-
+{{- end }}
