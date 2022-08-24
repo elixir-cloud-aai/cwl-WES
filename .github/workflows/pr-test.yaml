@@ -25,6 +25,6 @@ jobs:
         run: sleep 30;
       - name: Test endpoint
         shell: bash
-        run: bash test-call.bash
+        run: bash test-http-call.bash
       - name: End test
         run: docker-compose down
