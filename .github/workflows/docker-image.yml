@@ -3,8 +3,6 @@ name: Docker Image CI
 on:
   push:
     branches: [ dev ]
-  # pull_request:
-  #   branches: [ dev ]
 
 env:
   DOCKER_REPO_NAME: elixircloud/cwl-wes
@@ -25,10 +23,10 @@ jobs:
         run: sleep 30;
       - name: Test endpoint
         shell: bash
-        run: bash test-call.bash
+        run: bash test-http-call.bash
       - name: End test
         run: docker-compose down
-  
+
   build:
 
     runs-on: ubuntu-latest
