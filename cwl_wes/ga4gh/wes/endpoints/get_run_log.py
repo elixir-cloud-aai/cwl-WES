@@ -5,8 +5,8 @@ import logging
 
 from typing import Dict
 
-from foca.config.config_parser import get_conf
-from cwl_wes.errors.errors import WorkflowNotFound
+from cwl_wes.exceptions import WorkflowNotFound
+from flask import Config
 
 
 # Get logger instance
@@ -15,13 +15,13 @@ logger = logging.getLogger(__name__)
 
 # Utility function for endpoint GET /runs/<run_id>
 def get_run_log(
-    config: Dict,
+    config: Config,
     run_id: str,
     *args,
     **kwargs
 ) -> Dict:
     """Gets detailed log information for specific run."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
+    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={

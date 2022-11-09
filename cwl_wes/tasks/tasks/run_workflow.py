@@ -6,7 +6,7 @@ import re
 import subprocess
 from typing import (Dict, List, Optional, Tuple)
 
-from cwl_wes.celery_worker import celery
+from cwl_wes.worker import celery
 
 
 # Get logger instance

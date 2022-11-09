@@ -10,10 +10,9 @@ from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app
 from pymongo import collection as Collection
 
-from cwl_wes.celery_worker import celery
-from foca.config.config_parser import get_conf
-import cwl_wes.database.db_utils as db_utils
-from cwl_wes.database.register_mongodb import create_mongo_client
+from cwl_wes.worker import celery
+import cwl_wes.utils.db_utils as db_utils
+from foca.database.register_mongodb import _create_mongo_client
 from cwl_wes.ga4gh.wes.states import States
 from cwl_wes.tasks.utils import set_run_state
 
@@ -34,11 +33,13 @@ def task__cancel_run(
     token: Optional[str] = None,
 ) -> None:
     """Revokes worfklow task and tries to cancel all running TES tasks."""
-    config = current_app.config
+    foca_config = current_app.config.foca
     # Create MongoDB client
-    mongo = create_mongo_client(
+    mongo = _create_mongo_client(
         app=current_app,
-        config=config,
+        host=foca_config.db.host,
+        port=foca_config.db.port,
+        db='cwl-wes-db',
     )
     collection = mongo.db['runs']
     # Set run state to 'CANCELING'
@@ -54,8 +55,8 @@ def task__cancel_run(
         __cancel_tes_tasks(
             collection=collection,
             run_id=run_id,
-            url=get_conf(config, 'tes', 'url'),
-            timeout=get_conf(config, 'tes', 'timeout'),
+            url=foca_config.custom.tes_server.tes_server.url,
+            timeout=foca_config.custom.tes_server.tes_server.timeout,
             token=token,
         )
     except SoftTimeLimitExceeded as e:

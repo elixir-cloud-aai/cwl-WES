@@ -1,3 +1,3 @@
-from cwl_wes.app import run_server
+from cwl_wes.app import init_app
 
-app, config = run_server()
+app = init_app()

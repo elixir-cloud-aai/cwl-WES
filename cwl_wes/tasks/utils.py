@@ -5,7 +5,7 @@ from typing import Optional
 
 from pymongo import collection as Collection
 
-import cwl_wes.database.db_utils as db_utils
+import cwl_wes.utils.db_utils as db_utils
 
 
 # Get logger instance

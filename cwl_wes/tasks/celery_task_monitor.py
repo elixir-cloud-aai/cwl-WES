@@ -5,7 +5,6 @@ from datetime import datetime
 import logging
 import os
 import re
-import requests
 from shlex import quote
 from threading import Thread
 from time import sleep
@@ -18,7 +17,7 @@ from kombu.connection import Connection  # noqa: F401
 from pymongo import collection as Collection
 import tes
 
-import cwl_wes.database.db_utils as db_utils
+import cwl_wes.utils.db_utils as db_utils
 
 
 # Get logger instance

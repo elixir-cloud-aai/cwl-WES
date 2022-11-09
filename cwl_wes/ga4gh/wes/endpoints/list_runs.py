@@ -4,7 +4,7 @@ from typing import Dict
 
 from bson.objectid import ObjectId
 
-from foca.config.config_parser import get_conf
+from flask import Config
 
 
 # Get logger instance
@@ -13,23 +13,18 @@ logger = logging.getLogger(__name__)
 
 # Utility function for endpoint GET /runs
 def list_runs(
-    config: Dict,
+    config: Config,
     *args,
     **kwargs
 ) -> Dict:
     """Lists IDs and status for all workflow runs."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
+    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
 
     # Fall back to default page size if not provided by user
     if 'page_size' in kwargs:
         page_size = kwargs['page_size']
     else:
-        page_size = (
-            config
-            ['api']
-            ['endpoint_params']
-            ['default_page_size']
-    )
+        page_size = config.foca.custom.endpoint_params.default_page_size
 
     # Extract/set page token
     if 'page_token' in kwargs:

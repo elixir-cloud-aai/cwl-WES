@@ -17,10 +17,9 @@ from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
 
-from flask import request
+from flask import Config, request
 
-from foca.config.config_parser import (get_conf, get_conf_type)
-from cwl_wes.errors.errors import BadRequest
+from cwl_wes.exceptions import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
 from cwl_wes.ga4gh.wes.endpoints.utils.drs import translate_drs_uris
 
@@ -31,7 +30,7 @@ logger = logging.getLogger(__name__)
 
 # Utility function for endpoint POST /runs
 def run_workflow(
-    config: Dict,
+    config: Config,
     form_data: ImmutableMultiDict,
     *args,
     **kwargs
@@ -179,17 +178,17 @@ def __init_run_document(data: Dict) -> Dict:
 
 
 def __create_run_environment(
-    config: Dict,
+    config: Config,
     document: Dict,
     **kwargs
 ) -> Dict:
     """Creates unique run identifier and permanent and temporary storage
     directories for current run."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
-    out_dir = get_conf(config, 'storage', 'permanent_dir')
-    tmp_dir = get_conf(config, 'storage', 'tmp_dir')
-    run_id_charset = eval(get_conf(config, 'database', 'run_id', 'charset'))
-    run_id_length = get_conf(config, 'database', 'run_id', 'length')
+    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
+    out_dir = config.foca.custom.storage.permanent_dir
+    tmp_dir = config.foca.custom.storage.tmp_dir
+    run_id_charset = eval(config.foca.custom.run_id.charset)
+    run_id_length = config.foca.custom.run_id.length
 
     # Keep on trying until a unique run id was found and inserted
     # TODO: If no more possible IDs => inf loop; fix (raise custom error; 500
@@ -256,33 +255,13 @@ def __create_run_environment(
         break
     
     # translate DRS URIs to access URLs
-    file_types: List[str] = get_conf_type(
-        current_app.config,
-        'drs',
-        'file_types',
-        types=(list),
-    )
-    supported_access_methods: List[str] = get_conf_type(
-        current_app.config,
-        'service_info',
-        'supported_filesystem_protocols',
-        types=(list),
-    )
-    port: Optional[int] = get_conf(
-        current_app.config,
-        'drs',
-        'port',
-    )
-    base_path: Optional[str] = get_conf(
-        current_app.config,
-        'drs',
-        'base_path',
-    )
-    use_http: bool = get_conf(
-        current_app.config,
-        'drs',
-        'use_http',
-    )
+    drs_server_conf = current_app.config.foca.custom.drs_server
+    service_info_conf = current_app.config.foca.custom.service_info
+    file_types: List[str] = drs_server_conf.file_types
+    supported_access_methods: List[str] = service_info_conf.supported_filesystem_protocols
+    port: Optional[int] = drs_server_conf.port
+    base_path: Optional[str] = drs_server_conf.base_path
+    use_http: bool = drs_server_conf.use_http
     translate_drs_uris(
         path=document['internal']['workflow_files'],
         file_types=file_types,
@@ -517,13 +496,13 @@ def __process_workflow_attachments(data: Dict) -> Dict:
 
 
 def __run_workflow(
-    config: Dict,
+    config: Config,
     document: Dict,
     **kwargs
 ) -> None:
     """Helper function `run_workflow()`."""
-    tes_url = get_conf(config, 'tes', 'url')
-    remote_storage_url = get_conf(config, 'storage', 'remote_storage_url')
+    tes_url = config.custom.tes_server.url
+    remote_storage_url = config.custom.storage.remote_storage_url
     run_id = document['run_id']
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
@@ -566,12 +545,7 @@ def __run_workflow(
     # ]
 
     # Get timeout duration
-    timeout_duration = get_conf(
-        config,
-        'api',
-        'endpoint_params',
-        'timeout_run_workflow',
-    )
+    timeout_duration = config.custom.endpoint_params.timeout_run_workflow
 
     # Execute command as background task
     logger.info(

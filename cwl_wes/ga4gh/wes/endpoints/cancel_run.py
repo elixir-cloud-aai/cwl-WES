@@ -6,8 +6,9 @@ from typing import Dict
 from celery import (Celery, uuid)
 from connexion.exceptions import Forbidden
 
-from foca.config.config_parser import get_conf
-from cwl_wes.errors.errors import WorkflowNotFound
+from flask import Config
+
+from cwl_wes.exceptions import WorkflowNotFound
 from cwl_wes.ga4gh.wes.states import States
 from cwl_wes.tasks.tasks.cancel_run import task__cancel_run
 
@@ -18,14 +19,15 @@ logger = logging.getLogger(__name__)
 
 # Utility function for endpoint POST /runs/<run_id>/delete
 def cancel_run(
-    config: Dict,
+    config: Config,
     celery_app: Celery,
     run_id: str,
     *args,
     **kwargs
 ) -> Dict:
     """Cancels running workflow."""
-    collection_runs = get_conf(config, 'database', 'collections', 'runs')
+    foca_config = config.foca
+    collection_runs = foca_config.db.dbs['cwl-wes-db'].collections['runs']
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={
@@ -59,12 +61,7 @@ def cancel_run(
     if document['api']['state'] in States.CANCELABLE:
 
         # Get timeout duration
-        timeout_duration = get_conf(
-            config,
-            'api',
-            'endpoint_params',
-            'timeout_cancel_run',
-        )
+        timeout_duration = foca_config.custom.endpoint_params.timeout_cancel_run
 
         # Execute cancelation task in background
         task_id = uuid()

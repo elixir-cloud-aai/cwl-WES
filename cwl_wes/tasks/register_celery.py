@@ -1,10 +1,11 @@
 """Function to create Celery app instance and register task monitor."""
 
-from flask import Flask
+from connexion import App
 import logging
 import os
 
-from cwl_wes.factories.celery_app import create_celery_app
+from foca.factories.celery_app import create_celery_app
+
 from cwl_wes.tasks.celery_task_monitor import TaskMonitor
 
 
@@ -12,28 +13,24 @@ from cwl_wes.tasks.celery_task_monitor import TaskMonitor
 logger = logging.getLogger(__name__)
 
 
-def register_task_service(app: Flask) -> None:
+def register_task_service(app: App) -> None:
     """Instantiates Celery app and registers task monitor."""
     # Ensure that code is executed only once when app reloader is used
     if os.environ.get("WERKZEUG_RUN_MAIN") != 'true':
-
-        # Instantiate Celery app instance
-        celery_app = create_celery_app(app)
-
         # Start task monitor daemon
+        foca_config = app.app.config.foca
+        custom_config = foca_config.custom
+        celery_app = create_celery_app(app.app)
         TaskMonitor(
             celery_app=celery_app,
-            collection=app.config['database']['collections']['runs'],
+            collection=foca_config.db.dbs['cwl-wes-db'].collections['runs'],
             tes_config={
-                'url':
-                    app.config['tes']['url'],
-                'query_params':
-                    app.config['tes']['status_query_params'],
-                'timeout':
-                    app.config['tes']['timeout']
+                'url': custom_config.tes_server.url,
+                'query_params': custom_config.tes_server.status_query_params,
+                'timeout': custom_config.tes_server.timeout
             },
-            timeout=app.config['celery']['monitor']['timeout'],
-            authorization=app.config['security']['authorization_required'],
+            timeout=custom_config.celery.monitor.timeout,
+            authorization=foca_config.security.auth.required,
         )
         logger.info('Celery task monitor registered.')
 
