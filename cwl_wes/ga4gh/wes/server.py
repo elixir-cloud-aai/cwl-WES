@@ -22,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 # GET /runs/<run_id>
 @log_traffic
-def GetRunLog(run_id, *args, **kwargs) -> dict:
+def GetRunLog(run_id, *args, **kwargs):
     """Returns detailed run info."""
     response = get_run_log.get_run_log(
         config=current_app.config,
@@ -35,7 +35,7 @@ def GetRunLog(run_id, *args, **kwargs) -> dict:
 
 # POST /runs/<run_id>/cancel
 @log_traffic
-def CancelRun(run_id, *args, **kwargs) -> dict:
+def CancelRun(run_id, *args, **kwargs):
     """Cancels unfinished workflow run."""
     response = cancel_run.cancel_run(
         config=current_app.config,
@@ -49,7 +49,7 @@ def CancelRun(run_id, *args, **kwargs) -> dict:
 
 # GET /runs/<run_id>/status
 @log_traffic
-def GetRunStatus(run_id, *args, **kwargs) -> dict:
+def GetRunStatus(run_id, *args, **kwargs):
     """Returns run status."""
     response = get_run_status.get_run_status(
         config=current_app.config,
@@ -62,7 +62,7 @@ def GetRunStatus(run_id, *args, **kwargs) -> dict:
 
 # GET /service-info
 @log_traffic
-def GetServiceInfo(*args, **kwargs) -> dict:
+def GetServiceInfo(*args, **kwargs):
     """Returns service info."""
     response = get_service_info.get_service_info(
         config=current_app.config,
@@ -74,7 +74,7 @@ def GetServiceInfo(*args, **kwargs) -> dict:
 
 # GET /runs
 @log_traffic
-def ListRuns(*args, **kwargs) -> dict:
+def ListRuns(*args, **kwargs):
     """Lists IDs and status of all workflow runs."""
     response = list_runs.list_runs(
         config=current_app.config,
@@ -86,7 +86,7 @@ def ListRuns(*args, **kwargs) -> dict:
 
 # POST /runs
 @log_traffic
-def RunWorkflow(*args, **kwargs) -> dict:
+def RunWorkflow(*args, **kwargs):
     """Executes workflow."""
     response = run_workflow.run_workflow(
         config=current_app.config,
