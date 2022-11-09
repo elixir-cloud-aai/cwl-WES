@@ -1,8 +1,6 @@
--e git+https://github.com/uniqueg/cwl-tes.git@57a193cabab2444bc9b661f83011837bd5ed571a#egg=cwl-tes
-cwltool==1.0.20181217162649
+-e git+https://github.com/ohsu-comp-bio/cwl-tes.git@57a193cabab2444bc9b661f83011837bd5ed571a#egg=cwl-tes
 drs-cli==0.2.3
-foca==0.7.0
+foca==0.10.0
 gunicorn==19.9.0
 py-tes==0.4.2
 python-dateutil==2.6.1
-ruamel.yaml==0.15.51
