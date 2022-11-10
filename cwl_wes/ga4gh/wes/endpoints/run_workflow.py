@@ -18,6 +18,7 @@ from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
 
 from flask import Config, request
+from pymongo.collection import Collection
 
 from cwl_wes.exceptions import BadRequest
 from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
@@ -184,7 +185,7 @@ def __create_run_environment(
 ) -> Dict:
     """Creates unique run identifier and permanent and temporary storage
     directories for current run."""
-    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
+    collection_runs: Collection = config.foca.db.dbs['cwl-wes-db'].collections['runs'].client
     out_dir = config.foca.custom.storage.permanent_dir
     tmp_dir = config.foca.custom.storage.tmp_dir
     run_id_charset = eval(config.foca.custom.runs_id.charset)

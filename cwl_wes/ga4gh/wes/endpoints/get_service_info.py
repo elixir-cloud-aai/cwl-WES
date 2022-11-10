@@ -25,8 +25,8 @@ def get_service_info(
 ):
     """Returns readily formatted service info or `None` (in silent mode);
     creates service info database document if it does not exist."""
-    collection_service_info = config.foca.db.dbs['cwl-wes-db'].collections['service_info']
-    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
+    collection_service_info: Collection.Collection = config.foca.db.dbs['cwl-wes-db'].collections['service_info'].client
+    collection_runs: Collection.Collection = config.foca.db.dbs['cwl-wes-db'].collections['runs'].client
     service_info = deepcopy(config.foca.custom.service_info.dict())
 
     # Write current service info to database if absent or different from latest

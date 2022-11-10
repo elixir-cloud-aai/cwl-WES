@@ -3,7 +3,7 @@ import logging
 from typing import Dict
 
 from bson.objectid import ObjectId
-
+from pymongo.collection import Collection
 from flask import Config
 
 
@@ -18,7 +18,7 @@ def list_runs(
     **kwargs
 ) -> Dict:
     """Lists IDs and status for all workflow runs."""
-    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
+    collection_runs: Collection = config.foca.db.dbs['cwl-wes-db'].collections['runs'].client
 
     # Fall back to default page size if not provided by user
     if 'page_size' in kwargs:

@@ -5,6 +5,7 @@ import logging
 import os
 
 from foca.factories.celery_app import create_celery_app
+from pymongo.collection import Collection
 
 from cwl_wes.tasks.celery_task_monitor import TaskMonitor
 
@@ -23,7 +24,7 @@ def register_task_service(app: App) -> None:
         celery_app = create_celery_app(app.app)
         TaskMonitor(
             celery_app=celery_app,
-            collection=foca_config.db.dbs['cwl-wes-db'].collections['runs'],
+            collection=foca_config.db.dbs['cwl-wes-db'].collections['runs'].client,
             tes_config={
                 'url': custom_config.tes_server.url,
                 'query_params': custom_config.tes_server.status_query_params,

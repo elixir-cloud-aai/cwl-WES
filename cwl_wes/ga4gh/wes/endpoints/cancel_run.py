@@ -7,6 +7,7 @@ from celery import (Celery, uuid)
 from connexion.exceptions import Forbidden
 
 from flask import Config
+from pymongo.collection import Collection
 
 from cwl_wes.exceptions import WorkflowNotFound
 from cwl_wes.ga4gh.wes.states import States
@@ -27,7 +28,7 @@ def cancel_run(
 ) -> Dict:
     """Cancels running workflow."""
     foca_config = config.foca
-    collection_runs = foca_config.db.dbs['cwl-wes-db'].collections['runs']
+    collection_runs: Collection = foca_config.db.dbs['cwl-wes-db'].collections['runs'].client
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={

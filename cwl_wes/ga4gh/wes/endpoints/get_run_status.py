@@ -7,6 +7,7 @@ from typing import Dict
 
 from flask import Config
 from cwl_wes.exceptions import WorkflowNotFound
+from pymongo.collection import Collection
 
 
 # Get logger instance
@@ -21,7 +22,7 @@ def get_run_status(
     **kwargs
 ) -> Dict:
     """Gets status information for specific run."""
-    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
+    collection_runs: Collection = config.foca.db.dbs['cwl-wes-db'].collections['runs'].client
     document = collection_runs.find_one(
         filter={'run_id': run_id},
         projection={
