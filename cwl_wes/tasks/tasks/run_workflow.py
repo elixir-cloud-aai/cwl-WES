@@ -6,14 +6,14 @@ import re
 import subprocess
 from typing import (Dict, List, Optional, Tuple)
 
-from cwl_wes.worker import celery
+from cwl_wes.worker import celery_app
 
 
 # Get logger instance
 logger = logging.getLogger(__name__)
 
 
-@celery.task(
+@celery_app.task(
     name='tasks.run_workflow',
     bind=True,
     ignore_result=True,
@@ -47,7 +47,7 @@ def task__run_workflow(
 
 
 def __process_cwl_logs(
-    task: celery.Task,
+    task: celery_app.Task,
     stream: TextIOWrapper,
     token: Optional[str] = None,
 ) -> Tuple[List, List]:
@@ -141,7 +141,7 @@ def __extract_tes_task_state_from_cwl_tes_log(
 
 
 def __send_event_tes_task_update(
-    task: celery.Task,
+    task: celery_app.Task,
     tes_id: str,
     tes_state: Optional[str] = None,
     token: Optional[str] = None,

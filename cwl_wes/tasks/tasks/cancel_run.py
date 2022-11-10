@@ -10,7 +10,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app
 from pymongo import collection as Collection
 
-from cwl_wes.worker import celery
+from cwl_wes.worker import celery_app
 import cwl_wes.utils.db_utils as db_utils
 from foca.database.register_mongodb import _create_mongo_client
 from cwl_wes.ga4gh.wes.states import States
@@ -21,7 +21,7 @@ from cwl_wes.tasks.utils import set_run_state
 logger = logging.getLogger(__name__)
 
 
-@celery.task(
+@celery_app.task(
     name='tasks.cancel_run',
     ignore_result=True,
     bind=True,

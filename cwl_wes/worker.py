@@ -5,4 +5,4 @@ foca = Foca(
     config_file="config.yaml",
     custom_config_model='cwl_wes.custom_config.CustomConfig',
 )
-celery = foca.create_celery_app()
+celery_app = foca.create_celery_app()
