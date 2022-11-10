@@ -187,8 +187,8 @@ def __create_run_environment(
     collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
     out_dir = config.foca.custom.storage.permanent_dir
     tmp_dir = config.foca.custom.storage.tmp_dir
-    run_id_charset = eval(config.foca.custom.run_id.charset)
-    run_id_length = config.foca.custom.run_id.length
+    run_id_charset = eval(config.foca.custom.runs_id.charset)
+    run_id_length = config.foca.custom.runs_id.length
 
     # Keep on trying until a unique run id was found and inserted
     # TODO: If no more possible IDs => inf loop; fix (raise custom error; 500

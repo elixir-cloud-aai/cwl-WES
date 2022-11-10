@@ -6,6 +6,7 @@ import logging
 from typing import (Any, Dict, Mapping)
 
 from pymongo import collection as Collection
+from flask import Config
 
 import cwl_wes.utils.db_utils as db_utils
 from cwl_wes.ga4gh.wes.states import States
@@ -17,16 +18,16 @@ logger = logging.getLogger(__name__)
 
 # Helper function GET /service-info
 def get_service_info(
-    config: Mapping,
+    config: Config,
     silent: bool = False,
     *args: Any,
     **kwarg: Any
 ):
     """Returns readily formatted service info or `None` (in silent mode);
     creates service info database document if it does not exist."""
-    collection_service_info = config['database']['collections']['service_info']
-    collection_runs = config['database']['collections']['runs']
-    service_info = deepcopy(config['service_info'])
+    collection_service_info = config.foca.db.dbs['cwl-wes-db'].collections['service_info']
+    collection_runs = config.foca.db.dbs['cwl-wes-db'].collections['runs']
+    service_info = deepcopy(config.foca.custom.service_info.dict())
 
     # Write current service info to database if absent or different from latest
     if not service_info == db_utils.find_one_latest(collection_service_info):

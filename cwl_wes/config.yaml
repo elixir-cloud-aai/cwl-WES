@@ -58,7 +58,9 @@ api:
         - path:
             - api/20181010.be85140.workflow_execution_service.swagger.yaml
           add_security_fields:
-              x-bearerInfoFunc: app.validate_token
+              x-apikeyInfoFunc: app.validate_token
+          add_operation_fields:
+              x-swagger-router-controller: ga4gh.wes.server  
           disable_auth: True
           connexion:
               strict_validation: True
