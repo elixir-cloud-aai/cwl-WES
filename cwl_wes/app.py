@@ -25,8 +25,7 @@ def init_app() -> App:
             service_info.set_service_info(
                 data=current_app.config.foca.custom.service_info.dict()
             )
-    celery_app = foca.create_celery_app()
-    register_task_service(celery_app)
+    register_task_service()
     return app
 
 

@@ -1,9 +1,10 @@
 """Function to create Celery app instance and register task monitor."""
 
-from celery import Celery
+from cwl_wes.worker import celery_app
 import logging
 import os
 
+from foca.models.config import Config
 from cwl_wes.tasks.celery_task_monitor import TaskMonitor
 
 
@@ -11,12 +12,12 @@ from cwl_wes.tasks.celery_task_monitor import TaskMonitor
 logger = logging.getLogger(__name__)
 
 
-def register_task_service(celery_app: Celery) -> None:
+def register_task_service() -> None:
     """Instantiates Celery app and registers task monitor."""
     # Ensure that code is executed only once when app reloader is used
     if os.environ.get("WERKZEUG_RUN_MAIN") != 'true':
         # Start task monitor daemon
-        foca_config = celery_app.conf.foca
+        foca_config: Config = celery_app.conf.foca
         custom_config = foca_config.custom
         TaskMonitor(
             celery_app=celery_app,
