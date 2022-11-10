@@ -8,12 +8,12 @@ from flask import current_app
 
 from foca.utils.logging import log_traffic
 
-import cwl_wes.ga4gh.wes.endpoints.cancel_run as cancel_run
-import cwl_wes.ga4gh.wes.endpoints.get_run_log as get_run_log
-import cwl_wes.ga4gh.wes.endpoints.get_run_status as get_run_status
-import cwl_wes.ga4gh.wes.endpoints.list_runs as list_runs
-import cwl_wes.ga4gh.wes.endpoints.run_workflow as run_workflow
-import cwl_wes.ga4gh.wes.endpoints.get_service_info as get_service_info
+from cwl_wes.ga4gh.wes.endpoints.cancel_run import cancel_run
+from cwl_wes.ga4gh.wes.endpoints.get_run_log import get_run_log
+from cwl_wes.ga4gh.wes.endpoints.get_run_status import get_run_status
+from cwl_wes.ga4gh.wes.endpoints.list_runs import list_runs
+from cwl_wes.ga4gh.wes.endpoints.run_workflow import run_workflow
+from cwl_wes.ga4gh.wes.endpoints.get_service_info import get_service_info
 
 
 # Get logger instance
@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 @log_traffic
 def GetRunLog(run_id, *args, **kwargs):
     """Returns detailed run info."""
-    response = get_run_log.get_run_log(
+    response = get_run_log(
         config=current_app.config,
         run_id=run_id,
         *args,
@@ -37,7 +37,7 @@ def GetRunLog(run_id, *args, **kwargs):
 @log_traffic
 def CancelRun(run_id, *args, **kwargs):
     """Cancels unfinished workflow run."""
-    response = cancel_run.cancel_run(
+    response = cancel_run(
         config=current_app.config,
         celery_app=celery_app,
         run_id=run_id,
