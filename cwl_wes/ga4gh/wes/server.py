@@ -51,7 +51,7 @@ def CancelRun(run_id, *args, **kwargs):
 @log_traffic
 def GetRunStatus(run_id, *args, **kwargs):
     """Returns run status."""
-    response = get_run_status.get_run_status(
+    response = get_run_status(
         config=current_app.config,
         run_id=run_id,
         *args,
@@ -64,7 +64,7 @@ def GetRunStatus(run_id, *args, **kwargs):
 @log_traffic
 def GetServiceInfo(*args, **kwargs):
     """Returns service info."""
-    response = get_service_info.get_service_info(
+    response = get_service_info(
         config=current_app.config,
         *args,
         **kwargs
@@ -76,7 +76,7 @@ def GetServiceInfo(*args, **kwargs):
 @log_traffic
 def ListRuns(*args, **kwargs):
     """Lists IDs and status of all workflow runs."""
-    response = list_runs.list_runs(
+    response = list_runs(
         config=current_app.config,
         *args,
         **kwargs
@@ -88,7 +88,7 @@ def ListRuns(*args, **kwargs):
 @log_traffic
 def RunWorkflow(*args, **kwargs):
     """Executes workflow."""
-    response = run_workflow.run_workflow(
+    response = run_workflow(
         config=current_app.config,
         form_data=request.form,
         *args,
