@@ -1,8 +1,8 @@
 """Entry point for Celery workers."""
+from foca.foca import Foca
 
-from foca.factories.celery_app import create_celery_app
-
-from cwl_wes.app import init_app
-
-flask_app = init_app().app
-celery = create_celery_app(app=flask_app)
+foca = Foca(
+    config_file="config.yaml",
+    custom_config_model='cwl_wes.custom_config.CustomConfig',
+)
+celery = foca.create_celery_app()

@@ -3,7 +3,8 @@ import os
 from cwl_wes.app import init_app
 
 # Source application configuration
-app_config = init_app().app.config.foca
+app = init_app().app
+app_config = app.config.foca
 
 # Set Gunicorn number of workers and threads
 workers = int(os.environ.get('GUNICORN_PROCESSES', '1'))

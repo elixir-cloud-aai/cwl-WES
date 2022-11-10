@@ -502,8 +502,8 @@ def __run_workflow(
     **kwargs
 ) -> None:
     """Helper function `run_workflow()`."""
-    tes_url = config.custom.tes_server.url
-    remote_storage_url = config.custom.storage.remote_storage_url
+    tes_url = config.foca.custom.tes_server.url
+    remote_storage_url = config.foca.custom.storage.remote_storage_url
     run_id = document['run_id']
     task_id = document['task_id']
     tmp_dir = document['internal']['tmp_dir']
@@ -546,7 +546,7 @@ def __run_workflow(
     # ]
 
     # Get timeout duration
-    timeout_duration = config.custom.endpoint_params.timeout_run_workflow
+    timeout_duration = config.foca.custom.endpoint_params.timeout_run_workflow
 
     # Execute command as background task
     logger.info(
