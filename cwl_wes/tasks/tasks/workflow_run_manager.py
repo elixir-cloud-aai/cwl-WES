@@ -14,19 +14,56 @@ import cwl_wes.utils.db_utils as db_utils
 # Get logger instance
 logger = logging.getLogger(__name__)
 
-# Set string time format
-strf: str = '%Y-%m-%d %H:%M:%S.%f'
-
 
 class WorkflowRunManager:
+    """Workflow run manager.
+    """
 
     def __init__(
         self,
-        task: celery_app.Task,
         command_list: List,
+        task: celery_app.Task,
         tmp_dir: str,
         token: Optional[str] = None
     ) -> None:
+        """Initiate workflow run manager instance.
+
+        Args:
+            task: Celery task instance for initiating workflow run.
+            task_id: Unique identifier for workflow run task.
+            command_list: List of commands to be executed as a part of workflow run.
+            tmp_dir: Current working directory to be passed for child process execution
+                context.
+            token: JSON Web Token (JWT).
+            foca_config: :py:class:`foca.models.config.Config` instance
+                describing configurations registered with `celery_app`.
+            custom_config: :py:class:`cwl_wes.custom_config.CustomConfig` instance
+                describing custom configuration model for cwl-WES specific
+                configurations. 
+            collection: Collection client for saving task run progress.
+            tes_config: TES (Task Execution Service) endpoint configurations.
+            authorization: Boolean to define the security auth configuration for
+                the app.
+            string_format: String time format for task timestamps.
+
+        Attributes:
+            task: Celery task instance for initiating workflow run.
+            task_id: Unique identifier for workflow run task.
+            command_list: List of commands to be executed as a part of workflow run.
+            tmp_dir: Current working directory to be passed for child process execution
+                context.
+            token: JSON Web Token (JWT).
+            foca_config: :py:class:`foca.models.config.Config` instance
+                describing configurations registered with `celery_app`.
+            custom_config: :py:class:`cwl_wes.custom_config.CustomConfig` instance
+                describing custom configuration model for cwl-WES specific
+                configurations. 
+            collection: Collection client for saving task run progress.
+            tes_config: TES (Task Execution Service) endpoint configurations.
+            authorization: Boolean to define the security auth configuration for
+                the app.
+            string_format: String time format for task timestamps.
+        """
         self.task = task
         self.task_id = self.task.request.id
         self.command_list = command_list
@@ -40,11 +77,12 @@ class WorkflowRunManager:
             'query_params': self.custom_config.tes_server.status_query_params,
             'timeout': self.custom_config.tes_server.timeout
         }
-        self.timeout = self.custom_config.celery.monitor.timeout
         self.authorization = self.foca_config.security.auth.required
+        self.string_format: str = '%Y-%m-%d %H:%M:%S.%f'
     
     def trigger_task_start_events(self) -> None:
-        """Event handler for started Celery tasks."""
+        """Method to trigger task start events.
+        """
         if not self.collection.find_one({'task_id': self.task.request.id}):
             return None
         internal = dict()
@@ -59,7 +97,7 @@ class WorkflowRunManager:
                 internal=internal,
                 task_started=datetime.utcfromtimestamp(
                     current_ts
-                ).strftime(strf),
+                ).strftime(self.string_format),
             )
         except Exception as e:
             logger.exception(
@@ -74,9 +112,11 @@ class WorkflowRunManager:
             )
 
     def trigger_task_failure_events(self, task_end_ts):
-        """Event handler for failed (system error) Celery tasks."""
+        """Method to trigger task failure events.
+        """
         if not self.collection.find_one({'task_id': self.task_id}):
             return None
+        
         # Create dictionary for internal parameters
         internal = dict()
         internal['task_finished'] = datetime.utcfromtimestamp(
@@ -91,20 +131,30 @@ class WorkflowRunManager:
             internal=internal,
             task_finished=datetime.utcfromtimestamp(
                 task_end_ts
-            ).strftime(strf),
+            ).strftime(self.string_format),
             exception=task_meta_data.result,
         )
     
     def trigger_task_success_events(
         self,
-        returncode,
-        log, tes_ids,
-        token, task_end_ts
+        returncode: int,
+        log: str,
+        tes_ids: List[str],
+        token: str,
+        task_end_ts: float
     ) -> None:
-        """Event handler for successful, failed and canceled Celery
-        tasks."""
+        """Method to trigger task success events.
+
+        Args:
+            returncode: Task completion status code.
+            log: Task run log.
+            tes_ids: TES task identifiers.
+            token: TES token.
+            task_end_ts: Task end timestamp.
+        """
         if not self.collection.find_one({'task_id': self.task_id}):
             return None
+
         # Parse subprocess results
         try:
             log_list = log
@@ -143,7 +193,6 @@ class WorkflowRunManager:
             state = 'COMPLETE'
 
         # Extract run outputs
-        #outputs = self.__cwl_tes_outputs_parser(log)
         cwl_tes_processor = CWLTesProcessor(tes_config=self.tes_config)
         outputs = CWLTesProcessor.__cwl_tes_outputs_parser_list(log_list)
 
@@ -162,7 +211,7 @@ class WorkflowRunManager:
                 task_logs=task_logs,
                 task_finished=datetime.utcfromtimestamp(
                     task_end_ts
-                ).strftime(strf),
+                ).strftime(self.string_format),
                 return_code=returncode,
                 stdout=log,
                 stderr='',
@@ -182,10 +231,20 @@ class WorkflowRunManager:
     
     def trigger_task_end_events(
         self,
-        returncode,
-        log, tes_ids,
-        token
-    ):
+        returncode: int,
+        log: str,
+        tes_ids: List[str],
+        token: str
+    ) -> None:
+        """Method to trigger task completion events.
+
+        Args:
+            returncode: Task completion status code.
+            log: Task run log.
+            tes_ids: TES task identifiers.
+            token: TES token.
+            task_end_ts: Task end timestamp.
+        """
         task_end_ts = time.time()
         if returncode == 0:
             self.trigger_task_success_events(
@@ -205,6 +264,13 @@ class WorkflowRunManager:
     ):
         """Updates state, internal and run log parameters in database
         document.
+
+        Args:
+            state: Task state.
+            internal: Task specific internal parameters.
+            outputs: Task specific output parameters.
+            task_logs: Task run logs.
+
         """
         # TODO: Minimize db ops; try to compile entire object & update once
         # Update internal parameters
@@ -303,6 +369,8 @@ class WorkflowRunManager:
 
         
     def run_workflow(self):
+        """Method to initiate workflow run.
+        """
         self.trigger_task_start_events()
         proc = subprocess.Popen(
             self.command_list,

@@ -123,12 +123,14 @@ class CWLLogProcessor:
     ) -> None:
         """Event handler for TES task state changes."""
         # If TES task is new, add task log to database
+        logger.info(f"TES_STATE------------->{tes_state}")
         cwl_tes_processor = CWLTesProcessor(tes_config=self.tes_config)
         if not tes_state:
             tes_log = cwl_tes_processor.__get_tes_task_log(
                 tes_id=tes_id,
                 token=token,
             )
+            logger.info(f"LOG------------->{tes_log}")
             try:
                 db_utils.append_to_tes_task_logs(
                     collection=self.collection,
