@@ -29,9 +29,10 @@ class StorageConfig(FOCABaseConfig):
         ... )
         StorageConfig(tmp_dir='/data/tmp', permanent_dir='/data/output', remote_storage_url='ftp://ftp.private/upload')
     """
-    permanent_dir: str = '/data/output'
-    tmp_dir: str = '/data/tmp'
-    remote_storage_url: str = 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
+
+    permanent_dir: str = "/data/output"
+    tmp_dir: str = "/data/tmp"
+    remote_storage_url: str = "ftp://ftp-private.ebi.ac.uk/upload/foivos"
 
 
 class CeleryConfig(FOCABaseConfig):
@@ -56,6 +57,7 @@ class CeleryConfig(FOCABaseConfig):
         ... )
         CeleryConfig(timeout=15, message_maxsize=1024)
     """
+
     timeout: float = 0.1
     message_maxsize: int = 16777216
 
@@ -65,10 +67,10 @@ class WorkflowTypeVersionConfig(FOCABaseConfig):
     Args:
         workflow_type_version: List of one or more acceptable versions for the
             workflow type.
-        
+
     Attributes:
         workflow_type_version: List of one or more acceptable versions for the
-            workflow type.    
+            workflow type.
 
     Raises:
         pydantic.ValidationError: The class was instantianted with an illegal
@@ -80,6 +82,7 @@ class WorkflowTypeVersionConfig(FOCABaseConfig):
         ... )
         WorkflowTypeVersionConfig(workflow_type_version=['v1.0'])
     """
+
     workflow_type_version: Optional[List[str]] = []
 
 
@@ -108,6 +111,7 @@ class DefaultWorkflowEngineParameterConfig(FOCABaseConfig):
         ... )
         DefaultWorkflowEngineParameterConfig(name='name', type='str', default_value='default')
     """
+
     name: Optional[str]
     type: Optional[str]
     default_value: Optional[str]
@@ -132,7 +136,8 @@ class TagsConfig(FOCABaseConfig):
         ... )
         TagsConfig(known_tes_endpoints='https://tes.endpoint')
     """
-    known_tes_endpoints: str = 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
+
+    known_tes_endpoints: str = "https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/"
 
 
 class ServiceInfoConfig(FOCABaseConfig):
@@ -153,7 +158,7 @@ class ServiceInfoConfig(FOCABaseConfig):
         default_workflow_engine_parameters: Each workflow engine can present additional
             parameters that can be sent to the workflow engine.
         tags: A key-value map of arbitrary, extended metadata outside the scope of the above but
-            useful to report back. 
+            useful to report back.
 
     Attributes:
         contact_info: Email address/webpage URL with contact information.
@@ -170,7 +175,7 @@ class ServiceInfoConfig(FOCABaseConfig):
         default_workflow_engine_parameters: Each workflow engine can present additional
             parameters that can be sent to the workflow engine.
         tags: A key-value map of arbitrary, extended metadata outside the scope of the above but
-            useful to report back. 
+            useful to report back.
 
     Raises:
         pydantic.ValidationError: The class was instantianted with an illegal
@@ -195,12 +200,15 @@ class ServiceInfoConfig(FOCABaseConfig):
         tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|h\
         ttps://tesk.c01.k8s-popup.csc.fi/'))
     """
-    contact_info: str = 'https://github.com/elixir-cloud-aai/cwl-WES'
-    auth_instructions_url: str = 'https://www.elixir-europe.org/services/compute/aai'
-    supported_filesystem_protocols: List[str] = ['ftp', 'https', 'local']
-    supported_wes_versions: List[str] = ['1.0.0']
+
+    contact_info: str = "https://github.com/elixir-cloud-aai/cwl-WES"
+    auth_instructions_url: str = (
+        "https://www.elixir-europe.org/services/compute/aai"
+    )
+    supported_filesystem_protocols: List[str] = ["ftp", "https", "local"]
+    supported_wes_versions: List[str] = ["1.0.0"]
     workflow_type_versions: Dict[str, WorkflowTypeVersionConfig] = {
-        'CWL': WorkflowTypeVersionConfig(workflow_type_version=['v1.0']),
+        "CWL": WorkflowTypeVersionConfig(workflow_type_version=["v1.0"]),
     }
     workflow_engine_versions: Dict[str, str] = {}
     default_workflow_engine_parameters: List[
@@ -234,9 +242,10 @@ class TesServerConfig(FOCABaseConfig):
         ... )
         TesServerConfig(url='https://tes.endpoint', timeout=5, status_query_params='FULL')
     """
-    url: str = 'https://csc-tesk.c03.k8s-popup.csc.fi/'
+
+    url: str = "https://csc-tesk.c03.k8s-popup.csc.fi/"
     timeout: int = 5
-    status_query_params: str = 'FULL'
+    status_query_params: str = "FULL"
 
 
 class DRSServerConfig(FOCABaseConfig):
@@ -273,10 +282,11 @@ class DRSServerConfig(FOCABaseConfig):
         ... )
         DRSServerConfig(port=443, base_path='ga4gh/drs/v1', use_http=False, file_types=['cwl', 'yaml', 'yml'])
     """
+
     port: Optional[int] = None
     base_path: Optional[str] = None
     use_http: bool = False
-    file_types: List[str] = ['cwl', 'yaml', 'yml']
+    file_types: List[str] = ["cwl", "yaml", "yml"]
 
 
 class IdConfig(FOCABaseConfig):
@@ -303,6 +313,7 @@ class IdConfig(FOCABaseConfig):
         ... )
         IdConfig(charset='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789', length=6)
     """
+
     length: int = 6
     charset: str = string.ascii_uppercase + string.digits
 
@@ -338,6 +349,7 @@ class ControllerConfig(FOCABaseConfig):
         ... )
         ControllerConfig(default_page_size=5, timeout_cancel_run=60, timeout_run_workflow=60)
     """
+
     default_page_size: int = 5
     timeout_cancel_run: int = 60
     timeout_run_workflow: Optional[int] = None
@@ -365,8 +377,8 @@ class CustomConfig(FOCABaseConfig):
         pydantic.ValidationError: The class was instantianted with an illegal
             data type.
     """
+
     storage: StorageConfig = StorageConfig()
     celery: CeleryConfig = CeleryConfig()
     controller: ControllerConfig = ControllerConfig()
     service_info: ServiceInfoConfig = ServiceInfoConfig()
- 

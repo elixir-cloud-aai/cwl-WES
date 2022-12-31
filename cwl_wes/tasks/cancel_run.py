@@ -2,19 +2,18 @@
 
 import logging
 from requests import HTTPError
-import tes
 import time
-from typing import (List, Optional)
+from typing import List, Optional
 
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app
-from pymongo import collection as Collection
-
-from cwl_wes.worker import celery_app
-import cwl_wes.utils.db_utils as db_utils
 from foca.database.register_mongodb import _create_mongo_client
+from pymongo import collection as Collection
+import tes
+
 from cwl_wes.ga4gh.wes.states import States
-from cwl_wes.tasks.utils import set_run_state
+import cwl_wes.utils.db as db_utils
+from cwl_wes.worker import celery_app
 
 
 # Get logger instance
@@ -22,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 
 @celery_app.task(
-    name='tasks.cancel_run',
+    name="tasks.cancel_run",
     ignore_result=True,
     bind=True,
 )
@@ -39,15 +38,15 @@ def task__cancel_run(
         app=current_app,
         host=foca_config.db.host,
         port=foca_config.db.port,
-        db='cwl-wes-db',
+        db="cwl-wes-db",
     )
-    collection = mongo.db['runs']
+    collection = mongo.db["runs"]
     # Set run state to 'CANCELING'
-    set_run_state(
+    db_utils.set_run_state(
         collection=collection,
         run_id=run_id,
         task_id=task_id,
-        state='CANCELING',
+        state="CANCELING",
     )
 
     try:
@@ -61,11 +60,11 @@ def task__cancel_run(
             token=token,
         )
     except SoftTimeLimitExceeded as e:
-        set_run_state(
+        db_utils.set_run_state(
             collection=collection,
             run_id=run_id,
             task_id=task_id,
-            state='SYSTEM_ERROR',
+            state="SYSTEM_ERROR",
         )
         logger.warning(
             (
@@ -110,11 +109,11 @@ def __cancel_tes_tasks(
         canceled = canceled + cancel
         time.sleep(timeout)
         document = collection.find_one(
-            filter={'run_id': run_id},
+            filter={"run_id": run_id},
             projection={
-                'api.state': True,
-                '_id': False,
-            }
+                "api.state": True,
+                "_id": False,
+            },
         )
-        if document['api']['state'] in States.FINISHED:
+        if document["api"]["state"] in States.FINISHED:
             break

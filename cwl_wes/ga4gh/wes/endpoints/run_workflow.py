@@ -1,29 +1,26 @@
 """Utility functions for POST /runs endpoint."""
 
+from json import decoder, loads
 import logging
 import os
+from random import choice
 import re
 import shutil
 import string  # noqa: F401
 import subprocess
+from typing import Dict, List, Optional
 
 from celery import uuid
-from flask import current_app
-from json import (decoder, loads)
+from flask import current_app, Config, request
+from pymongo.collection import Collection
 from pymongo.errors import DuplicateKeyError
-from random import choice
-from typing import (Dict, List, Optional)
 from yaml import dump
 from werkzeug.datastructures import ImmutableMultiDict
 from werkzeug.utils import secure_filename
 
-from flask import Config, request
-from pymongo.collection import Collection
-
 from cwl_wes.exceptions import BadRequest
-from cwl_wes.tasks.tasks.run_workflow import task__run_workflow
-from cwl_wes.ga4gh.wes.endpoints.utils.drs import translate_drs_uris
-
+from cwl_wes.tasks.run_workflow import task__run_workflow
+from cwl_wes.utils.drs import translate_drs_uris
 
 # Get logger instance
 logger = logging.getLogger(__name__)
@@ -31,10 +28,7 @@ logger = logging.getLogger(__name__)
 
 # Utility function for endpoint POST /runs
 def run_workflow(
-    config: Config,
-    form_data: ImmutableMultiDict,
-    *args,
-    **kwargs
+    config: Config, form_data: ImmutableMultiDict, *args, **kwargs
 ) -> Dict:
     """Executes workflow and save info to database; returns unique run id."""
     # Validate data and prepare run environment
@@ -45,19 +39,13 @@ def run_workflow(
     __check_service_info_compatibility(data=form_data_dict)
     document = __init_run_document(data=form_data_dict)
     document = __create_run_environment(
-        config=config,
-        document=document,
-        **kwargs
+        config=config, document=document, **kwargs
     )
 
     # Start workflow run in background
-    __run_workflow(
-        config=config,
-        document=document,
-        **kwargs
-    )
+    __run_workflow(config=config, document=document, **kwargs)
 
-    response = {'run_id': document['run_id']}
+    response = {"run_id": document["run_id"]}
     return response
 
 
@@ -70,7 +58,7 @@ def __secure_join(basedir: str, fname: str) -> str:
 
 
 def __immutable_multi_dict_to_nested_dict(
-    multi_dict: ImmutableMultiDict
+    multi_dict: ImmutableMultiDict,
 ) -> Dict:
     """Converts ImmutableMultiDict to nested dictionary."""
     # Convert to flat dictionary
@@ -115,20 +103,20 @@ def __validate_run_workflow_request(data: Dict) -> None:
     #   required = False
 
     params_required = {
-        'workflow_params',
-        'workflow_type',
-        'workflow_type_version',
-        'workflow_url',
+        "workflow_params",
+        "workflow_type",
+        "workflow_type_version",
+        "workflow_url",
     }
     params_str = [
-        'workflow_type',
-        'workflow_type_version',
-        'workflow_url',
+        "workflow_type",
+        "workflow_type_version",
+        "workflow_url",
     ]
     params_dict = [
-        'workflow_params',
-        'workflow_engine_parameters',
-        'tags',
+        "workflow_params",
+        "workflow_engine_parameters",
+        "tags",
     ]
 
     # Raise error if any required params are missing
@@ -153,7 +141,7 @@ def __validate_run_workflow_request(data: Dict) -> None:
             invalid = True
 
     if invalid:
-        logger.error('POST request does not conform to schema.')
+        logger.error("POST request does not conform to schema.")
         raise BadRequest
 
     return None
@@ -168,24 +156,22 @@ def __check_service_info_compatibility(data: Dict) -> None:
 def __init_run_document(data: Dict) -> Dict:
     """Initializes workflow run document."""
     document: Dict = dict()
-    document['api'] = dict()
-    document['internal'] = dict()
-    document['api']['request'] = data
-    document['api']['state'] = 'UNKNOWN'
-    document['api']['run_log'] = dict()
-    document['api']['task_logs'] = list()
-    document['api']['outputs'] = dict()
+    document["api"] = dict()
+    document["internal"] = dict()
+    document["api"]["request"] = data
+    document["api"]["state"] = "UNKNOWN"
+    document["api"]["run_log"] = dict()
+    document["api"]["task_logs"] = list()
+    document["api"]["outputs"] = dict()
     return document
 
 
-def __create_run_environment(
-    config: Config,
-    document: Dict,
-    **kwargs
-) -> Dict:
+def __create_run_environment(config: Config, document: Dict, **kwargs) -> Dict:
     """Creates unique run identifier and permanent and temporary storage
     directories for current run."""
-    collection_runs: Collection = config.foca.db.dbs['cwl-wes-db'].collections['runs'].client
+    collection_runs: Collection = (
+        config.foca.db.dbs["cwl-wes-db"].collections["runs"].client
+    )
     out_dir = config.foca.custom.storage.permanent_dir
     tmp_dir = config.foca.custom.storage.tmp_dir
     run_id_charset = eval(config.foca.custom.controller.runs_id.charset)
@@ -220,14 +206,14 @@ def __create_run_environment(
             continue
 
         # Add run/task/user identifier, temp/output directories to document
-        document['run_id'] = run_id
-        document['task_id'] = task_id
-        if 'user_id' in kwargs:
-            document['user_id'] = kwargs['user_id']
+        document["run_id"] = run_id
+        document["task_id"] = task_id
+        if "user_id" in kwargs:
+            document["user_id"] = kwargs["user_id"]
         else:
-            document['user_id'] = None
-        document['internal']['tmp_dir'] = current_tmp_dir
-        document['internal']['out_dir'] = current_out_dir
+            document["user_id"] = None
+        document["internal"]["tmp_dir"] = current_tmp_dir
+        document["internal"]["out_dir"] = current_out_dir
 
         # Process worflow attachments
         document = __process_workflow_attachments(document)
@@ -248,23 +234,25 @@ def __create_run_environment(
         # Catch other database errors
         # TODO: implement properly
         except Exception as e:
-            print('Database error')
+            print("Database error")
             print(e)
             break
 
         # Exit loop
         break
-    
+
     # translate DRS URIs to access URLs
     drs_server_conf = current_app.config.foca.custom.controller.drs_server
     service_info_conf = current_app.config.foca.custom.service_info
     file_types: List[str] = drs_server_conf.file_types
-    supported_access_methods: List[str] = service_info_conf.supported_filesystem_protocols
+    supported_access_methods: List[
+        str
+    ] = service_info_conf.supported_filesystem_protocols
     port: Optional[int] = drs_server_conf.port
     base_path: Optional[str] = drs_server_conf.base_path
     use_http: bool = drs_server_conf.use_http
     translate_drs_uris(
-        path=document['internal']['workflow_files'],
+        path=document["internal"]["workflow_files"],
         file_types=file_types,
         supported_access_methods=supported_access_methods,
         port=port,
@@ -275,12 +263,9 @@ def __create_run_environment(
     return document
 
 
-def __create_run_id(
-    charset: str = '0123456789',
-    length: int = 6
-) -> str:
+def __create_run_id(charset: str = "0123456789", length: int = 6) -> str:
     """Creates random run ID."""
-    return ''.join(choice(charset) for __ in range(length))
+    return "".join(choice(charset) for __ in range(length))
 
 
 def __process_workflow_attachments(data: Dict) -> Dict:
@@ -317,16 +302,14 @@ def __process_workflow_attachments(data: Dict) -> Dict:
     #   specified, are: ',', ';', ':', '|'
     re_git_file = re.compile(
         (
-            r'^(https?:.*)\/(blob|src|tree)\/(.*?)\/(.*?\.(cwl|yml|yaml|json))'
-            r'[,:;|]?(.*\.(yml|yaml|json))?'
+            r"^(https?:.*)\/(blob|src|tree)\/(.*?)\/(.*?\.(cwl|yml|yaml|json))"
+            r"[,:;|]?(.*\.(yml|yaml|json))?"
         )
     )
 
     # Create directory for storing workflow files
-    data['internal']['workflow_files'] = workflow_dir = os.path.abspath(
-        os.path.join(
-            data['internal']['out_dir'], 'workflow_files'
-        )
+    data["internal"]["workflow_files"] = workflow_dir = os.path.abspath(
+        os.path.join(data["internal"]["out_dir"], "workflow_files")
     )
     try:
         os.mkdir(workflow_dir)
@@ -336,29 +319,24 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         pass
 
     # Get main workflow file
-    user_string = data['api']['request']['workflow_url']
+    user_string = data["api"]["request"]["workflow_url"]
     m = re_git_file.match(user_string)
 
     # Get workflow from Git repo if regex matches
     if m:
 
-        repo_url = '.'.join([m.group(1), 'git'])
+        repo_url = ".".join([m.group(1), "git"])
         branch_commit = m.group(3)
         cwl_path = m.group(4)
 
         # Try to clone repo
         if not subprocess.run(
-            [
-                'git',
-                'clone',
-                repo_url,
-                os.path.join(workflow_dir, 'repo')
-            ],
-            check=True
+            ["git", "clone", repo_url, os.path.join(workflow_dir, "repo")],
+            check=True,
         ):
             logger.error(
                 (
-                    'Could not clone Git repository. Check value of '
+                    "Could not clone Git repository. Check value of "
                     "'workflow_url' in run request."
                 )
             )
@@ -367,29 +345,27 @@ def __process_workflow_attachments(data: Dict) -> Dict:
         # Try to checkout branch/commit
         if not subprocess.run(
             [
-                'git',
-                '--git-dir',
-                os.path.join(workflow_dir, 'repo', '.git'),
-                '--work-tree',
-                os.path.join(workflow_dir, 'repo'),
-                'checkout',
-                branch_commit
+                "git",
+                "--git-dir",
+                os.path.join(workflow_dir, "repo", ".git"),
+                "--work-tree",
+                os.path.join(workflow_dir, "repo"),
+                "checkout",
+                branch_commit,
             ],
-            check=True
+            check=True,
         ):
             logger.error(
                 (
-                    'Could not checkout repository commit/branch. Check value '
+                    "Could not checkout repository commit/branch. Check value "
                     "of 'workflow_url' in run request."
                 )
             )
             raise BadRequest
 
         # Set CWL path
-        data['internal']['cwl_path'] = os.path.join(
-            workflow_dir,
-            'repo',
-            cwl_path
+        data["internal"]["cwl_path"] = os.path.join(
+            workflow_dir, "repo", cwl_path
         )
 
     # Else assume value of 'workflow_url' represents file on local file system,
@@ -408,126 +384,129 @@ def __process_workflow_attachments(data: Dict) -> Dict:
                     shutil.copyfileobj(attachment.stream, dest)
 
             # Adjust workflow_url to point to workflow directory.
-            req_data = data['api']['request']
-            workflow_url = __secure_join(workflow_dir, req_data['workflow_url'])
+            req_data = data["api"]["request"]
+            workflow_url = __secure_join(
+                workflow_dir, req_data["workflow_url"]
+            )
             if os.path.exists(workflow_url):
-                req_data['workflow_url'] = workflow_url
+                req_data["workflow_url"] = workflow_url
 
         # Set main CWL workflow file path
-        data['internal']['cwl_path'] = os.path.abspath(
-            data['api']['request']['workflow_url']
+        data["internal"]["cwl_path"] = os.path.abspath(
+            data["api"]["request"]["workflow_url"]
         )
 
         # Extract name and extensions of workflow
         workflow_name_ext = os.path.splitext(
-            os.path.basename(
-                data['internal']['cwl_path']
-            )
+            os.path.basename(data["internal"]["cwl_path"])
         )
 
     # Get parameter file
     workflow_name_ext = os.path.splitext(
-        os.path.basename(
-            data['internal']['cwl_path']
-        )
+        os.path.basename(data["internal"]["cwl_path"])
     )
 
-
     # Try to get parameters from 'workflow_params' field
-    if data['api']['request']['workflow_params']:
+    if data["api"]["request"]["workflow_params"]:
 
         # Replace `DRS URIs` in 'workflow_params'
         # replace_drs_uris(data['api']['request']['workflow_params'])
 
-        data['internal']['param_file_path'] = os.path.join(
+        data["internal"]["param_file_path"] = os.path.join(
             workflow_dir,
-            '.'.join([
-                str(workflow_name_ext[0]),
-                'yml',
-            ]),
+            ".".join(
+                [
+                    str(workflow_name_ext[0]),
+                    "yml",
+                ]
+            ),
         )
-        with open(data['internal']['param_file_path'], 'w') as yaml_file:
+        with open(data["internal"]["param_file_path"], "w") as yaml_file:
             dump(
-                data['api']['request']['workflow_params'],
+                data["api"]["request"]["workflow_params"],
                 yaml_file,
                 allow_unicode=True,
-                default_flow_style=False
+                default_flow_style=False,
             )
 
     # Or from provided relative file path in repo
     elif m and m.group(6):
         param_path = m.group(6)
-        data['internal']['param_file_path'] = os.path.join(
+        data["internal"]["param_file_path"] = os.path.join(
             workflow_dir,
-            'repo',
+            "repo",
             param_path,
         )
 
     # Else try to see if there is a 'yml', 'yaml' or 'json' file with exactly
     # the same basename as CWL in same dir
     else:
-        param_file_extensions = ['yml', 'yaml', 'json']
+        param_file_extensions = ["yml", "yaml", "json"]
         for ext in param_file_extensions:
             possible_param_file = os.path.join(
                 workflow_dir,
-                'repo',
-                '.'.join([
-                    str(workflow_name_ext[0]),
-                    ext,
-                ]),
+                "repo",
+                ".".join(
+                    [
+                        str(workflow_name_ext[0]),
+                        ext,
+                    ]
+                ),
             )
             if os.path.isfile(possible_param_file):
-                data['internal']['param_file_path'] = possible_param_file
+                data["internal"]["param_file_path"] = possible_param_file
                 break
 
     # Raise BadRequest if not parameter file was found
-    if 'param_file_path' not in data['internal']:
+    if "param_file_path" not in data["internal"]:
         raise BadRequest
 
     # Extract workflow attachments from form data dictionary
-    if 'workflow_attachment' in data['api']['request']:
+    if "workflow_attachment" in data["api"]["request"]:
 
         # TODO: do something with data['workflow_attachment']
 
         # Strip workflow attachments from data
-        del data['api']['request']['workflow_attachment']
+        del data["api"]["request"]["workflow_attachment"]
 
     # Return form data stripped of workflow attachments
     return data
 
 
-def __run_workflow(
-    config: Config,
-    document: Dict,
-    **kwargs
-) -> None:
+def __run_workflow(config: Config, document: Dict, **kwargs) -> None:
     """Helper function `run_workflow()`."""
     tes_url = config.foca.custom.controller.tes_server.url
     remote_storage_url = config.foca.custom.storage.remote_storage_url
-    run_id = document['run_id']
-    task_id = document['task_id']
-    tmp_dir = document['internal']['tmp_dir']
-    cwl_path = document['internal']['cwl_path']
-    param_file_path = document['internal']['param_file_path']
+    run_id = document["run_id"]
+    task_id = document["task_id"]
+    tmp_dir = document["internal"]["tmp_dir"]
+    cwl_path = document["internal"]["cwl_path"]
+    param_file_path = document["internal"]["param_file_path"]
 
     # Build command
     command_list = [
-        'cwl-tes',
-        '--debug',
-        '--leave-outputs',
-        '--remote-storage-url', remote_storage_url,
-        '--tes', tes_url,
+        "cwl-tes",
+        "--debug",
+        "--leave-outputs",
+        "--remote-storage-url",
+        remote_storage_url,
+        "--tes",
+        tes_url,
         cwl_path,
-        param_file_path
+        param_file_path,
     ]
 
     # Add authorization parameters
-    if 'jwt' in kwargs \
-            and 'claims' in kwargs \
-            and 'public_key' in kwargs['claims']:
+    if (
+        "jwt" in kwargs
+        and "claims" in kwargs
+        and "public_key" in kwargs["claims"]
+    ):
         auth_params = [
-            '--token-public-key', kwargs['claims']['public_key'],
-            '--token', kwargs['jwt'],
+            "--token-public-key",
+            kwargs["claims"]["public_key"],
+            "--token",
+            kwargs["jwt"],
         ]
         command_list[2:2] = auth_params
 
@@ -562,9 +541,9 @@ def __run_workflow(
     task__run_workflow.apply_async(
         None,
         {
-            'command_list': command_list,
-            'tmp_dir': tmp_dir,
-            'token': kwargs.get('jwt'),
+            "command_list": command_list,
+            "tmp_dir": tmp_dir,
+            "token": kwargs.get("jwt"),
         },
         task_id=task_id,
         soft_time_limit=timeout_duration,

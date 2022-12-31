@@ -88,8 +88,8 @@ wes:
         broker_port: 5672
         result_backend: 'rpc://'
         include:
-            - cwl_wes.tasks.tasks.run_workflow
-            - cwl_wes.tasks.tasks.cancel_run
+            - cwl_wes.tasks.run_workflow
+            - cwl_wes.tasks.cancel_run
         monitor:
             timeout: 0.1
         message_maxsize: 16777216
@@ -130,7 +130,6 @@ wes:
               default_value: '5'
         tags:
             known_tes_endpoints: 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
-            app_version: 0.15.0
 
     # TES server
     tes:

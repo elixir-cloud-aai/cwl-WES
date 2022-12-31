@@ -17,7 +17,6 @@ logger = logging.getLogger(__name__)
 
 
 class ServiceInfo:
-
     def __init__(self) -> None:
         """Class for WES API service info server-side controller methods.
 
@@ -34,11 +33,12 @@ class ServiceInfo:
         self.config: Dict = current_app.config
         self.foca_config: Config = self.config.foca
         self.db_client_service_info: Collection = (
-            self.foca_config.db.dbs['cwl-wes-db']
-            .collections['service_info'].client
+            self.foca_config.db.dbs["cwl-wes-db"]
+            .collections["service_info"]
+            .client
         )
         self.db_client_runs: Collection = (
-            self.foca_config.db.dbs['cwl-wes-db'].collections['runs'].client
+            self.foca_config.db.dbs["cwl-wes-db"].collections["runs"].client
         )
         self.object_id: str = "000000000000000000000000"
 
@@ -55,13 +55,13 @@ class ServiceInfo:
             NotFound: Service info was not found.
         """
         service_info = self.db_client_service_info.find_one(
-            {'_id': ObjectId(self.object_id)},
-            {'_id': False},
+            {"_id": ObjectId(self.object_id)},
+            {"_id": False},
         )
         if service_info is None:
             raise NotFound
         if get_counts:
-            service_info['system_state_counts'] = self._get_state_counts()
+            service_info["system_state_counts"] = self._get_state_counts()
         return service_info
 
     def set_service_info(
@@ -74,7 +74,7 @@ class ServiceInfo:
             data: Dictionary of service info values. Cf.
         """
         self.db_client_service_info.replace_one(
-            filter={'_id': ObjectId(self.object_id)},
+            filter={"_id": ObjectId(self.object_id)},
             replacement=data,
             upsert=True,
         )
@@ -86,10 +86,10 @@ class ServiceInfo:
         cursor = self.db_client_runs.find(
             filter={},
             projection={
-                'run_log.state': True,
-                '_id': False,
-            }
+                "run_log.state": True,
+                "_id": False,
+            },
         )
         for record in cursor:
-            current_counts[record['run_log']['state']] += 1
+            current_counts[record["run_log"]["state"]] += 1
         return current_counts

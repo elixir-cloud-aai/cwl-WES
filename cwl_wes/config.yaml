@@ -100,8 +100,8 @@ jobs:
     port: 5672
     backend: 'rpc://'
     include:
-        - cwl_wes.tasks.tasks.run_workflow
-        - cwl_wes.tasks.tasks.cancel_run
+        - cwl_wes.tasks.run_workflow
+        - cwl_wes.tasks.cancel_run
 
 # Exception configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.ExceptionConfig

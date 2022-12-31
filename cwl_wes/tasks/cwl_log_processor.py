@@ -1,24 +1,25 @@
-import re
-import os
-import logging
-from _io import TextIOWrapper
-from typing import (Dict, List, Optional, Tuple)
-from ast import literal_eval
+"""cwl-tes log parser executed on worker."""
 
-import tes
+from ast import literal_eval
+from _io import TextIOWrapper
+import logging
+import os
+import re
+from typing import Dict, List, Optional, Tuple
+
+import cwl_wes.utils.db as db_utils
 from cwl_wes.worker import celery_app
-import cwl_wes.utils.db_utils as db_utils
+import tes
 
 # Get logger instance
 logger = logging.getLogger(__name__)
 
 
 class CWLLogProcessor:
-
     def __init__(self, tes_config, collection) -> None:
         self.tes_config = tes_config
         self.collection = collection
-    
+
     def process_cwl_logs(
         self,
         task: celery_app.Task,
@@ -26,12 +27,13 @@ class CWLLogProcessor:
         token: Optional[str] = None,
     ) -> Tuple[List, List]:
         """Parses combinend cwl-tes STDOUT/STDERR and sends TES task IDs and state
-        updates to broker."""
+        updates to broker.
+        """
         stream_container: List = list()
         tes_states: Dict = dict()
 
         # Iterate over STDOUT/STDERR stream
-        for line in iter(stream.readline, ''):
+        for line in iter(stream.readline, ""):
 
             line = line.rstrip()
 
@@ -73,14 +75,13 @@ class CWLLogProcessor:
 
         return (stream_container, list(tes_states.keys()))
 
-
     def process_tes_log(self, line: str) -> List[str]:
         """Handles irregularities arising from log parsing."""
         lines: List = list()
 
         # Handle special case where FTP and cwl-tes logs are on same line
         re_ftp_cwl_tes = re.compile(
-            r'^(\*cmd\* .*)(\[step \w*\] produced output \{)$'
+            r"^(\*cmd\* .*)(\[step \w*\] produced output \{)$"
         )
         m = re_ftp_cwl_tes.match(line)
         if m:
@@ -113,7 +114,6 @@ class CWLLogProcessor:
 
         return (task_id, task_state)
 
-
     def capture_tes_task_update(
         self,
         task: celery_app.Task,
@@ -140,7 +140,7 @@ class CWLLogProcessor:
             except Exception as e:
                 logger.exception(
                     (
-                        'Database error. Could not update log information for '
+                        "Database error. Could not update log information for "
                         "task '{task}'. Original error message: {type}: {msg}"
                     ).format(
                         task=task.task_id,
@@ -172,7 +172,7 @@ class CWLLogProcessor:
             except Exception as e:
                 logger.exception(
                     (
-                        'Database error. Could not update log information for '
+                        "Database error. Could not update log information for "
                         "task '{task}'. Original error message: {type}: {msg}"
                     ).format(
                         task=task.task_id,
@@ -184,67 +184,68 @@ class CWLLogProcessor:
 
 
 class CWLTesProcessor:
-
     def __init__(self, tes_config) -> None:
         self.tes_config = tes_config
-    
+
     @staticmethod
     def __cwl_tes_outputs_parser(log: str) -> Dict:
         """Parses outputs from cwl-tes log."""
         # Find outputs object in log string
         re_outputs = re.compile(
             r'(^\{$\n^ {4}"\S+": [\[\{]$\n(^ {4,}.*$\n)*^ {4}[\]\}]$\n^\}$\n)',
-            re.MULTILINE
+            re.MULTILINE,
         )
         m = re_outputs.search(log)
         if m:
             return literal_eval(m.group(1))
         else:
             return dict()
-    
+
     @staticmethod
     def __cwl_tes_outputs_parser_list(log: List) -> Dict:
-        """This function parses outputs from the cwl-tes log"""
-        """The outputs JSON starts at the line before last in the logs"""
-        """So unless the outputs are empty ({}), parse upward,"""
-        """until you find the beginning of the JSON containing the outputs"""
-        
-        indices=range(len(log)-1,-1,-1)
+        """Parse outputs from cwl-tes log.
 
-        start=-1
-        end=-1
+        The outputs JSON starts at the line before last in the logs. So unless
+        the outputs are empty ({}), parse upward, until you find the beginning
+        of the JSON containing the outputs.
+        """
+
+        indices = range(len(log) - 1, -1, -1)
+
+        start = -1
+        end = -1
         for index in indices:
-            if log[index].rstrip()=='{}':
+            if log[index].rstrip() == "{}":
                 return dict()
-            elif log[index].rstrip()=='}':
-                end=index
+            elif log[index].rstrip() == "}":
+                end = index
                 break
-        
+
         # No valid JSON was found and the previous loop
         # reached the end of the log
-        if end==0:
+        if end == 0:
             return dict()
-        
-        indices=range(end-1,-1,-1)
+
+        indices = range(end - 1, -1, -1)
         for index in indices:
-            if log[index].rstrip()=='{':
-                start=index
+            if log[index].rstrip() == "{":
+                start = index
                 break
 
-        json=os.linesep.join(log[start:end+1])
+        json = os.linesep.join(log[start:end + 1])
 
         try:
             return literal_eval(json)
         except ValueError as verr:
             logger.exception(
-                "ValueError when evaluation JSON: '%s'. Original error message: %s" % \
-                   (json, verr)
+                "ValueError when evaluation JSON: '%s'. Original error message: %s"
+                % (json, verr)
             )
             return dict()
         except SyntaxError as serr:
             logger.exception(
-                "SyntaxError when evaluation JSON: '%s'. Original error message: %s" % \
-                    (json, serr)
+                "SyntaxError when evaluation JSON: '%s'. Original error message: %s"
+                % (json, serr)
             )
             return dict()
 
@@ -271,8 +272,8 @@ class CWLTesProcessor:
     ) -> Dict:
         """Gets task log from TES instance."""
         tes_client = tes.HTTPClient(
-            url=self.tes_config['url'],
-            timeout=self.tes_config['timeout'],
+            url=self.tes_config["url"],
+            timeout=self.tes_config["timeout"],
             token=token,
         )
 
@@ -281,7 +282,7 @@ class CWLTesProcessor:
         try:
             task_log = tes_client.get_task(
                 task_id=tes_id,
-                view=self.tes_config['query_params'],
+                view=self.tes_config["query_params"],
             ).as_dict()
         except Exception as e:
             # TODO: handle more robustly: only 400/Bad Request is okay;
@@ -292,6 +293,6 @@ class CWLTesProcessor:
             )
             task_log = {}
 
-        logger.debug(f'Task log: {task_log}')
+        logger.debug(f"Task log: {task_log}")
 
         return task_log

@@ -1,25 +1,25 @@
-class States():
+class States:
 
     UNDEFINED = [
-        'UNKNOWN',
+        "UNKNOWN",
     ]
 
     CANCELABLE = [
-        'INITIALIZING',
-        'PAUSED',
-        'QUEUED',
-        'RUNNING',
+        "INITIALIZING",
+        "PAUSED",
+        "QUEUED",
+        "RUNNING",
     ]
 
     UNFINISHED = CANCELABLE + [
-        'CANCELING',
+        "CANCELING",
     ]
 
     FINISHED = [
-        'COMPLETE',
-        'CANCELED',
-        'EXECUTOR_ERROR',
-        'SYSTEM_ERROR',
+        "COMPLETE",
+        "CANCELED",
+        "EXECUTOR_ERROR",
+        "SYSTEM_ERROR",
     ]
 
     DEFINED = UNFINISHED + FINISHED

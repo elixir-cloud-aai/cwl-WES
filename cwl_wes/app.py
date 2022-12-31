@@ -1,7 +1,5 @@
 """cwl-WES application entry point."""
 
-from pathlib import Path
-
 from connexion import App
 from flask import current_app
 from foca import Foca
@@ -13,7 +11,7 @@ from cwl_wes.exceptions import NotFound
 def init_app() -> App:
     foca = Foca(
         config_file="config.yaml",
-        custom_config_model='cwl_wes.custom_config.CustomConfig',
+        custom_config_model="cwl_wes.custom_config.CustomConfig",
     )
     app = foca.create_app()
     with app.app.app_context():
@@ -31,6 +29,6 @@ def run_app(app: App) -> None:
     app.run(port=app.port)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     app = init_app()
     run_app(app)

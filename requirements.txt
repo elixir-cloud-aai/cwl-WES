@@ -1,7 +1,5 @@
 foca==0.12.0
--e git+https://github.com/ohsu-comp-bio/cwl-tes.git@7b44cb1825a302bb7eccb3f2d91dc233adc0e32f#egg=cwl-tes
+cwl-tes @ git+https://github.com/ohsu-comp-bio/cwl-tes.git@7b44cb1825a302bb7eccb3f2d91dc233adc0e32f#egg=cwl-tes
 drs-cli==0.2.3
 gunicorn==19.9.0
 py-tes==0.4.2
-python-dateutil==2.6.1
-importlib-metadata==4.13.0

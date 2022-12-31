@@ -7,10 +7,10 @@ import os
 import re
 from requests.exceptions import ConnectionError
 import sys
-from typing import (Iterator, List, Match, Optional)
+from typing import Iterator, List, Match, Optional
 
 from drs_cli.client import DRSClient
-from drs_cli.errors import (InvalidResponseError, InvalidURI)
+from drs_cli.errors import InvalidResponseError, InvalidURI
 from drs_cli.models import Error
 from werkzeug.exceptions import (
     BadRequest,
@@ -51,16 +51,20 @@ def translate_drs_uris(
             documentation/specification.
     """
     # define regex for identifying DRS URIs
-    _RE_DOMAIN_PART = r'[a-z0-9]([a-z0-9-]{1,61}[a-z0-9]?)?'
+    _RE_DOMAIN_PART = r"[a-z0-9]([a-z0-9-]{1,61}[a-z0-9]?)?"
     _RE_DOMAIN = rf"({_RE_DOMAIN_PART}\.)+{_RE_DOMAIN_PART}\.?"
     _RE_OBJECT_ID = rf"(?P<drs_uri>drs:\/\/{_RE_DOMAIN}\/\S+)"
 
     # get absolute paths of file or directory (including subdirectories)
     logger.debug(f"Collecting file(s) for provided path '{path}'...")
-    files = abs_paths(
-        dir=path,
-        file_ext=file_types,
-    ) if os.path.isdir(path) else [path]
+    files = (
+        abs_paths(
+            dir=path,
+            file_ext=file_types,
+        )
+        if os.path.isdir(path)
+        else [path]
+    )
 
     # replace any DRS URIs in any file in place
     for _file in files:
@@ -72,7 +76,7 @@ def translate_drs_uris(
                         pattern=_RE_OBJECT_ID,
                         repl=partial(
                             get_replacement_string,
-                            ref='drs_uri',
+                            ref="drs_uri",
                             supported_access_methods=supported_access_methods,
                             port=port,
                             base_path=base_path,
@@ -184,9 +188,7 @@ def get_access_url_from_drs(
 
     # get DRS object
     try:
-        object = client.get_object(
-            object_id=drs_uri
-        )
+        object = client.get_object(object_id=drs_uri)
     except (ConnectionError, InvalidResponseError):
         logger.error(f"Could not connect to DRS host for DRS URI '{drs_uri}'.")
         raise InternalServerError
@@ -208,8 +210,9 @@ def get_access_url_from_drs(
     for supported_method in supported_access_methods:
         try:
             access_url = str(
-                available_methods
-                [available_types.index(supported_method)].access_url.url
+                available_methods[
+                    available_types.index(supported_method)
+                ].access_url.url
             )
             logger.info(
                 f"Resolved DRS URI '{drs_uri}' to access link '{access_url}'."
