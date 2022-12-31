@@ -6,7 +6,6 @@ from connexion import App
 from flask import current_app
 from foca import Foca
 
-from cwl_wes.tasks.register_celery import register_task_service
 from cwl_wes.ga4gh.wes.service_info import ServiceInfo
 from cwl_wes.exceptions import NotFound
 
@@ -25,7 +24,6 @@ def init_app() -> App:
             service_info.set_service_info(
                 data=current_app.config.foca.custom.service_info.dict()
             )
-    register_task_service()
     return app
 
 

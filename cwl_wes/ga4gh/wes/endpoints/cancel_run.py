@@ -62,7 +62,7 @@ def cancel_run(
     if document['api']['state'] in States.CANCELABLE:
 
         # Get timeout duration
-        timeout_duration = foca_config.custom.endpoint_params.timeout_cancel_run
+        timeout_duration = foca_config.custom.controller.timeout_cancel_run
 
         # Execute cancelation task in background
         task_id = uuid()

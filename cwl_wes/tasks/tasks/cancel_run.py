@@ -52,11 +52,12 @@ def task__cancel_run(
 
     try:
         # Cancel individual TES tasks
+        tes_server_config = foca_config.custom.controller.tes_server
         __cancel_tes_tasks(
             collection=collection,
             run_id=run_id,
-            url=foca_config.custom.tes_server.tes_server.url,
-            timeout=foca_config.custom.tes_server.tes_server.timeout,
+            url=tes_server_config.url,
+            timeout=tes_server_config.timeout,
             token=token,
         )
     except SoftTimeLimitExceeded as e:

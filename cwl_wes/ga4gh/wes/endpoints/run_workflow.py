@@ -188,8 +188,8 @@ def __create_run_environment(
     collection_runs: Collection = config.foca.db.dbs['cwl-wes-db'].collections['runs'].client
     out_dir = config.foca.custom.storage.permanent_dir
     tmp_dir = config.foca.custom.storage.tmp_dir
-    run_id_charset = eval(config.foca.custom.runs_id.charset)
-    run_id_length = config.foca.custom.runs_id.length
+    run_id_charset = eval(config.foca.custom.controller.runs_id.charset)
+    run_id_length = config.foca.custom.controller.runs_id.length
 
     # Keep on trying until a unique run id was found and inserted
     # TODO: If no more possible IDs => inf loop; fix (raise custom error; 500
@@ -256,7 +256,7 @@ def __create_run_environment(
         break
     
     # translate DRS URIs to access URLs
-    drs_server_conf = current_app.config.foca.custom.drs_server
+    drs_server_conf = current_app.config.foca.custom.controller.drs_server
     service_info_conf = current_app.config.foca.custom.service_info
     file_types: List[str] = drs_server_conf.file_types
     supported_access_methods: List[str] = service_info_conf.supported_filesystem_protocols
@@ -502,7 +502,7 @@ def __run_workflow(
     **kwargs
 ) -> None:
     """Helper function `run_workflow()`."""
-    tes_url = config.foca.custom.tes_server.url
+    tes_url = config.foca.custom.controller.tes_server.url
     remote_storage_url = config.foca.custom.storage.remote_storage_url
     run_id = document['run_id']
     task_id = document['task_id']
@@ -546,7 +546,7 @@ def __run_workflow(
     # ]
 
     # Get timeout duration
-    timeout_duration = config.foca.custom.endpoint_params.timeout_run_workflow
+    timeout_duration = config.foca.custom.controller.timeout_run_workflow
 
     # Execute command as background task
     logger.info(
