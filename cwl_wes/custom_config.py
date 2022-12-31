@@ -118,11 +118,9 @@ class TagsConfig(FOCABaseConfig):
 
     Args:
         known_tes_endpoints: Valid TES endpoints.
-        app_version: Application version.
 
     Attributes:
         known_tes_endpoints: Valid TES endpoints.
-        app_version: Application version.
 
     Raises:
         pydantic.ValidationError: The class was instantianted with an illegal
@@ -131,12 +129,10 @@ class TagsConfig(FOCABaseConfig):
     Example:
         >>> TagsConfig(
         ...     known_tes_endpoints='https://tes.endpoint',
-        ...     app_version='0.1.x',
         ... )
-        TagsConfig(known_tes_endpoints='https://tes.endpoint', app_version='0.1.x')
+        TagsConfig(known_tes_endpoints='https://tes.endpoint')
     """
     known_tes_endpoints: str = 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
-    app_version: str = '0.15.0'
 
 
 class ServiceInfoConfig(FOCABaseConfig):
@@ -189,7 +185,7 @@ class ServiceInfoConfig(FOCABaseConfig):
         ...     workflow_type_versions={'CWL': WorkflowTypeVersionConfig(workflow_type_version=['v1.0'])},
         ...     workflow_engine_versions={},
         ...     default_workflow_engine_parameters=[],
-        ...     tags=TagsConfig(known_tes_endpoints='https://tes.endpoint/', app_version='0.1.0')
+        ...     tags=TagsConfig(known_tes_endpoints='https://tes.endpoint/')
         ... )
         ServiceInfoConfig(contact_info='https://github.com/elixir-cloud-aai/cwl-WES', auth_instruc\
         tions_url='https://www.elixir-europe.org/services/compute/aai', supported_filesystem_proto\
@@ -197,7 +193,7 @@ class ServiceInfoConfig(FOCABaseConfig):
         'CWL': WorkflowTypeVersionConfig(workflow_type_version=['v1.0'])}, workflow_engine_version\
         s={}, default_workflow_engine_parameters=[], tags=TagsConfig(known_tes_endpoints='https://\
         tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|h\
-        ttps://tesk.c01.k8s-popup.csc.fi/', app_version='0.15.0'))
+        ttps://tesk.c01.k8s-popup.csc.fi/'))
     """
     contact_info: str = 'https://github.com/elixir-cloud-aai/cwl-WES'
     auth_instructions_url: str = 'https://www.elixir-europe.org/services/compute/aai'
