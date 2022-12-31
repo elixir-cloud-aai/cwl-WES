@@ -1,10 +1,7 @@
 """Celery background task to start workflow run."""
 
-# from _io import TextIOWrapper
 import logging
-# import re
-# import subprocess
-from typing import (Dict, List, Optional, Tuple)
+from typing import (List, Optional, Tuple)
 
 from cwl_wes.worker import celery_app
 from cwl_wes.tasks.tasks.workflow_run_manager import WorkflowRunManager

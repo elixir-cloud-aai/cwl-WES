@@ -34,37 +34,15 @@ class StorageConfig(FOCABaseConfig):
     remote_storage_url: str = 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
 
 
-class MonitorConfig(FOCABaseConfig):
-    """Model for monitoring celery.
-
-    Args:
-        timeout: Celery task timeout.
-
-    Attributes:
-        timeout: Celery task timeout.
-
-    Raises:
-        pydantic.ValidationError: The class was instantianted with an illegal
-            data type.
-
-    Example:
-        >>> MonitorConfig(
-        ...     timeout=15,
-        ... )
-        MonitorConfig(timeout=15)
-    """
-    timeout: float = 0.1
-
-
 class CeleryConfig(FOCABaseConfig):
     """Model for celery configurations.
 
     Args:
-        monitor: Celery monitoring configurations.
+        timeout: Celery task timeout.
         message_maxsize: Celery message max size.
 
     Attributes:
-        monitor: Celery monitoring configurations.
+        timeout: Celery task timeout.
         message_maxsize: Celery message max size.
 
     Raises:
@@ -73,40 +51,13 @@ class CeleryConfig(FOCABaseConfig):
 
     Example:
         >>> CeleryConfig(
-        ...     monitor=MonitorConfig(timeout=15),
+        ...     timeout=15,
         ...     message_maxsize=1024
         ... )
-        CeleryConfig(monitor=MonitorConfig(timeout=15), message_maxsize=1024)
+        CeleryConfig(timeout=15, message_maxsize=1024)
     """
-    monitor: MonitorConfig = MonitorConfig()
+    timeout: float = 0.1
     message_maxsize: int = 16777216
-
-
-class EndpointConfig(FOCABaseConfig):
-    """Model for celery configurations.
-
-    Args:
-        monitor: Celery monitoring configurations.
-        message_maxsize: Celery message max size.
-
-    Attributes:
-        monitor: Celery monitoring configurations.
-        message_maxsize: Celery message max size.
-
-    Raises:
-        pydantic.ValidationError: The class was instantianted with an illegal
-            data type.
-
-    Example:
-        >>> CeleryConfig(
-        ...     monitor=MonitorConfig(timeout=15),
-        ...     message_maxsize=1024
-        ... )
-        CeleryConfig(monitor=MonitorConfig(timeout=15), message_maxsize=1024)
-    """
-    default_page_size: int = 5
-    timeout_cancel_run: int = 60
-    timeout_run_workflow: Optional[int] = None
 
 
 class WorkflowTypeVersionConfig(FOCABaseConfig):
@@ -360,23 +311,21 @@ class IdConfig(FOCABaseConfig):
     charset: str = string.ascii_uppercase + string.digits
 
 
-class CustomConfig(FOCABaseConfig):
-    """Model for custom configuration parameters.
+class ControllerConfig(FOCABaseConfig):
+    """Model for controller configurations.
 
     Args:
-        storage: Storage config parameters.
-        celery: Celery config parameters.
-        endpoint_params: Endpoint config parameters.
-        service_info: Service Info config parameters.
+        default_page_size: Pagination page size.
+        timeout_cancel_run: Timeout for `cancel_run` workflow.
+        timeout_run_workflow: Timeout for `run_workflow` workflow.
         tes_server: TES Server config parameters.
         drs_server: DRS Server config parameters.
         runs_id: Identifier config parameters.
 
     Attributes:
-        storage: Storage config parameters.
-        celery: Celery config parameters.
-        endpoint_params: Endpoint config parameters.
-        service_info: Service Info config parameters.
+        default_page_size: Pagination page size.
+        timeout_cancel_run: Timeout for `cancel_run` workflow.
+        timeout_run_workflow: Timeout for `run_workflow` workflow.
         tes_server: TES Server config parameters.
         drs_server: DRS Server config parameters.
         runs_id: Identifier config parameters.
@@ -384,12 +333,44 @@ class CustomConfig(FOCABaseConfig):
     Raises:
         pydantic.ValidationError: The class was instantianted with an illegal
             data type.
+
+    Example:
+        >>> ControllerConfig(
+        ...     default_page_size=5,
+        ...     timeout_cancel_run=60,
+        ...     timeout_run_workflow=None
+        ... )
+        ControllerConfig(default_page_size=5, timeout_cancel_run=60, timeout_run_workflow=60)
     """
-    storage: StorageConfig = StorageConfig()
-    celery: CeleryConfig = CeleryConfig()
-    endpoint_params: EndpointConfig = EndpointConfig()
-    service_info: ServiceInfoConfig = ServiceInfoConfig()
+    default_page_size: int = 5
+    timeout_cancel_run: int = 60
+    timeout_run_workflow: Optional[int] = None
     tes_server: TesServerConfig = TesServerConfig()
     drs_server: DRSServerConfig = DRSServerConfig()
     runs_id: IdConfig = IdConfig()
+
+
+class CustomConfig(FOCABaseConfig):
+    """Model for custom configuration parameters.
+
+    Args:
+        storage: Storage config parameters.
+        celery: Celery config parameters.
+        controller: Controller config parameters.
+        service_info: Service Info config parameters.
+
+    Attributes:
+        storage: Storage config parameters.
+        celery: Celery config parameters.
+        controller: Controller config parameters.
+        service_info: Service Info config parameters.
+
+    Raises:
+        pydantic.ValidationError: The class was instantianted with an illegal
+            data type.
+    """
+    storage: StorageConfig = StorageConfig()
+    celery: CeleryConfig = CeleryConfig()
+    controller: ControllerConfig = ControllerConfig()
+    service_info: ServiceInfoConfig = ServiceInfoConfig()
  

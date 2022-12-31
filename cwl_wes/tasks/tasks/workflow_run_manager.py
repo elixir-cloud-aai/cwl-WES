@@ -70,12 +70,12 @@ class WorkflowRunManager:
         self.tmp_dir = tmp_dir
         self.token = token
         self.foca_config: Config = celery_app.conf.foca
-        self.custom_config = self.foca_config.custom
+        self.controller_config = self.foca_config.custom.controller
         self.collection = self.foca_config.db.dbs['cwl-wes-db'].collections['runs'].client
         self.tes_config= {
-            'url': self.custom_config.tes_server.url,
-            'query_params': self.custom_config.tes_server.status_query_params,
-            'timeout': self.custom_config.tes_server.timeout
+            'url': self.controller_config.tes_server.url,
+            'query_params': self.controller_config.tes_server.status_query_params,
+            'timeout': self.controller_config.tes_server.timeout
         }
         self.authorization = self.foca_config.security.auth.required
         self.string_format: str = '%Y-%m-%d %H:%M:%S.%f'
@@ -194,7 +194,7 @@ class WorkflowRunManager:
 
         # Extract run outputs
         cwl_tes_processor = CWLTesProcessor(tes_config=self.tes_config)
-        outputs = CWLTesProcessor.__cwl_tes_outputs_parser_list(log_list)
+        outputs = cwl_tes_processor.__cwl_tes_outputs_parser_list(log=log_list)
 
         # Get task logs
         task_logs = cwl_tes_processor.__get_tes_task_logs(
@@ -249,7 +249,7 @@ class WorkflowRunManager:
         if returncode == 0:
             self.trigger_task_success_events(
                 log=log, tes_ids=tes_ids, token=token,
-                task_end_ts=task_end_ts
+                task_end_ts=task_end_ts, returncode=returncode
             )
         else:
             self.trigger_task_failure_events(task_end_ts=task_end_ts)

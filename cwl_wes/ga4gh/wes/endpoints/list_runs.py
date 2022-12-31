@@ -24,7 +24,7 @@ def list_runs(
     if 'page_size' in kwargs:
         page_size = kwargs['page_size']
     else:
-        page_size = config.foca.custom.endpoint_params.default_page_size
+        page_size = config.foca.custom.controller.default_page_size
 
     # Extract/set page token
     if 'page_token' in kwargs:
