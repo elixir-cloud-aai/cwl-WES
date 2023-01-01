@@ -1,7 +1,7 @@
 """Celery background task to start workflow run."""
 
 import logging
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 from cwl_wes.worker import celery_app
 from cwl_wes.tasks.workflow_run_manager import WorkflowRunManager
@@ -22,11 +22,10 @@ def task__run_workflow(
     command_list: List,
     tmp_dir: str,
     token: Optional[str] = None,
-) -> Tuple[int, List[str], List[str], Optional[str]]:
-    """Adds workflow run to task queue."""
+) -> None:
+    """Add workflow run to task queue."""
     # Execute task in background
     workflow_run_manager = WorkflowRunManager(
         task=self, command_list=command_list, tmp_dir=tmp_dir, token=token
     )
-    return_val = workflow_run_manager.run_workflow()
-    return return_val
+    workflow_run_manager.run_workflow()

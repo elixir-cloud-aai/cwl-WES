@@ -5,19 +5,18 @@ from setuptools import setup, find_packages
 
 root_dir = Path(__file__).parent.resolve()
 
-exec(open(root_dir / "cwl_wes" / "version.py").read())
+with open(root_dir / "cwl_wes" / "version.py", encoding="utf-8") as _file:
+    exec(_file.read())  # pylint: disable=exec-used
 
-file_name = root_dir / "README.md"
-with open(file_name, "r") as _file:
+with open(root_dir / "README.md", encoding="utf-8") as _file:
     LONG_DESCRIPTION = _file.read()
 
-req = root_dir / "requirements.txt"
-with open(req, "r") as _file:
+with open(root_dir / "requirements.txt", encoding="utf-8") as _file:
     INSTALL_REQUIRES = _file.read().splitlines()
 
 setup(
     name="cwl-wes",
-    version=__version__,  # noqa: F821
+    version=__version__,  # noqa: F821  # pylint: disable=undefined-variable
     author="Elixir Cloud & AAI",
     author_email="alexander.kanitz@alumni.ethz.ch",
     description="Flask- and MongoDB-powered GA4GH WES server",

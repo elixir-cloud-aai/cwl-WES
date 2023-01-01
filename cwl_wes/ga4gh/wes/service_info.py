@@ -1,4 +1,4 @@
-"""Controllers for the `/service-info route."""
+"""Controller for the `/service-info route."""
 
 import logging
 from typing import Dict
@@ -17,19 +17,21 @@ logger = logging.getLogger(__name__)
 
 
 class ServiceInfo:
+    """Class for WES API service info server-side controller methods.
+
+    Creates service info upon first request, if it does not exist.
+
+    Attributes:
+        config: App configuration.
+        foca_config: FOCA configuration.
+        db_client_service_info: Database collection storing service info
+            objects.
+        db_client_runs: Database collection storing workflow run objects.
+        object_id: Database identifier for service info.
+    """
+
     def __init__(self) -> None:
-        """Class for WES API service info server-side controller methods.
-
-        Creates service info upon first request, if it does not exist.
-
-        Attributes:
-            config: App configuration.
-            foca_config: FOCA configuration.
-            db_client_service_info: Database collection storing service info
-                objects.
-            db_client_runs: Database collection storing workflow run objects.
-            object_id: Database identifier for service info.
-        """
+        """Construct class instance."""
         self.config: Dict = current_app.config
         self.foca_config: Config = self.config.foca
         self.db_client_service_info: Collection = (
@@ -81,7 +83,7 @@ class ServiceInfo:
         logger.info("Service info set.")
 
     def _get_state_counts(self) -> Dict[str, int]:
-        """Gets current system state counts."""
+        """Get current system state counts."""
         current_counts = {state: 0 for state in States.ALL}
         cursor = self.db_client_runs.find(
             filter={},

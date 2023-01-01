@@ -1,4 +1,10 @@
+"""WES run states."""
+
+# pragma pylint: disable=too-few-public-methods
+
+
 class States:
+    """WES run states."""
 
     UNDEFINED = [
         "UNKNOWN",

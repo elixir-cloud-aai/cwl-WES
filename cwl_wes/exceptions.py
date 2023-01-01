@@ -1,3 +1,5 @@
+"""cwl-WES exceptions."""
+
 from connexion.exceptions import (
     BadRequestProblem,
     ExtraParameterProblem,
@@ -11,8 +13,6 @@ from werkzeug.exceptions import BadRequest, InternalServerError, NotFound
 
 class WorkflowNotFound(ProblemException, NotFound):
     """WorkflowNotFound(404) error compatible with Connexion."""
-
-    pass
 
 
 exceptions = {

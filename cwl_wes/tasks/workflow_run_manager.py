@@ -8,6 +8,7 @@ import time
 from typing import Dict, List, Optional
 
 from foca.models.config import Config
+from pymongo.errors import PyMongoError
 
 from cwl_wes.tasks.cwl_log_processor import CWLLogProcessor, CWLTesProcessor
 import cwl_wes.utils.db as db_utils
@@ -17,7 +18,7 @@ from cwl_wes.worker import celery_app
 logger = logging.getLogger(__name__)
 
 
-class WorkflowRunManager:
+class WorkflowRunManager:  # pylint: disable=too-many-instance-attributes
     """Workflow run manager."""
 
     def __init__(
@@ -32,37 +33,39 @@ class WorkflowRunManager:
         Args:
             task: Celery task instance for initiating workflow run.
             task_id: Unique identifier for workflow run task.
-            command_list: List of commands to be executed as a part of workflow run.
-            tmp_dir: Current working directory to be passed for child process execution
-                context.
+            command_list: List of commands to be executed as a part of workflow
+                run.
+            tmp_dir: Current working directory to be passed for child process
+                execution context.
             token: JSON Web Token (JWT).
             foca_config: :py:class:`foca.models.config.Config` instance
                 describing configurations registered with `celery_app`.
-            custom_config: :py:class:`cwl_wes.custom_config.CustomConfig` instance
-                describing custom configuration model for cwl-WES specific
-                configurations.
+            custom_config: :py:class:`cwl_wes.custom_config.CustomConfig`
+                instance describing custom configuration model for cwl-WES
+                specific configurations.
             collection: Collection client for saving task run progress.
             tes_config: TES (Task Execution Service) endpoint configurations.
-            authorization: Boolean to define the security auth configuration for
-                the app.
+            authorization: Boolean to define the security auth configuration
+                for the app.
             string_format: String time format for task timestamps.
 
         Attributes:
             task: Celery task instance for initiating workflow run.
             task_id: Unique identifier for workflow run task.
-            command_list: List of commands to be executed as a part of workflow run.
-            tmp_dir: Current working directory to be passed for child process execution
-                context.
+            command_list: List of commands to be executed as a part of workflow
+                run.
+            tmp_dir: Current working directory to be passed for child process
+                execution context.
             token: JSON Web Token (JWT).
             foca_config: :py:class:`foca.models.config.Config` instance
                 describing configurations registered with `celery_app`.
-            custom_config: :py:class:`cwl_wes.custom_config.CustomConfig` instance
-                describing custom configuration model for cwl-WES specific
-                configurations.
+            custom_config: :py:class:`cwl_wes.custom_config.CustomConfig`
+                instance describing custom configuration model for cwl-WES
+                specific configurations.
             collection: Collection client for saving task run progress.
             tes_config: TES (Task Execution Service) endpoint configurations.
-            authorization: Boolean to define the security auth configuration for
-                the app.
+            authorization: Boolean to define the security auth configuration
+                for the app.
             string_format: String time format for task timestamps.
         """
         self.task = task
@@ -77,17 +80,19 @@ class WorkflowRunManager:
         )
         self.tes_config = {
             "url": self.controller_config.tes_server.url,
-            "query_params": self.controller_config.tes_server.status_query_params,
+            "query_params": (
+                self.controller_config.tes_server.status_query_params
+            ),
             "timeout": self.controller_config.tes_server.timeout,
         }
         self.authorization = self.foca_config.security.auth.required
         self.string_format: str = "%Y-%m-%d %H:%M:%S.%f"
 
     def trigger_task_start_events(self) -> None:
-        """Method to trigger task start events."""
+        """Trigger task start events."""
         if not self.collection.find_one({"task_id": self.task.request.id}):
-            return None
-        internal = dict()
+            return
+        internal = {}
         current_ts = time.time()
         internal["task_started"] = datetime.utcfromtimestamp(current_ts)
         # Update run document in database
@@ -99,25 +104,25 @@ class WorkflowRunManager:
                     self.string_format
                 ),
             )
-        except Exception as e:
+        except PyMongoError as exc:
             logger.exception(
-                (
-                    "Database error. Could not update log information for "
-                    "task '{task}'. Original error message: {type}: {msg}"
-                ).format(
-                    task=self.task_id,
-                    type=type(e).__name__,
-                    msg=e,
-                )
+                "Database error. Could not update log information for task"
+                f" '{self.task_id}'. Original error message:"
+                f" {type(exc).__name__}: {exc}"
             )
+            raise
 
     def trigger_task_failure_events(self, task_end_ts):
-        """Method to trigger task failure events."""
+        """Trigger task failure events.
+
+        Args:
+            task_end_ts: Task end timestamp.
+        """
         if not self.collection.find_one({"task_id": self.task_id}):
-            return None
+            return
 
         # Create dictionary for internal parameters
-        internal = dict()
+        internal = {}
         internal["task_finished"] = datetime.utcfromtimestamp(task_end_ts)
         task_meta_data = celery_app.AsyncResult(id=self.task_id)
         internal["traceback"] = task_meta_data.traceback
@@ -132,7 +137,7 @@ class WorkflowRunManager:
             exception=task_meta_data.result,
         )
 
-    def trigger_task_success_events(
+    def trigger_task_success_events(  # pylint: disable=too-many-arguments
         self,
         returncode: int,
         log: str,
@@ -140,7 +145,7 @@ class WorkflowRunManager:
         token: str,
         task_end_ts: float,
     ) -> None:
-        """Method to trigger task success events.
+        """Trigger task success events.
 
         Args:
             returncode: Task completion status code.
@@ -150,26 +155,14 @@ class WorkflowRunManager:
             task_end_ts: Task end timestamp.
         """
         if not self.collection.find_one({"task_id": self.task_id}):
-            return None
+            return
 
         # Parse subprocess results
-        try:
-            log_list = log
-            log = os.linesep.join(log)
-        except Exception as e:
-            logger.exception(
-                (
-                    "Field 'result' in event message malformed. Original "
-                    "error message: {type}: {msg}"
-                ).format(
-                    type=type(e).__name__,
-                    msg=e,
-                )
-            )
-            pass
+        log_list = log
+        log = os.linesep.join(log)
 
         # Create dictionary for internal parameters
-        internal = dict()
+        internal = {}
         internal["task_finished"] = datetime.utcfromtimestamp(task_end_ts)
 
         # Set final state to be set
@@ -189,10 +182,10 @@ class WorkflowRunManager:
 
         # Extract run outputs
         cwl_tes_processor = CWLTesProcessor(tes_config=self.tes_config)
-        outputs = cwl_tes_processor.__cwl_tes_outputs_parser_list(log=log_list)
+        outputs = cwl_tes_processor.cwl_tes_outputs_parser_list(log=log_list)
 
         # Get task logs
-        task_logs = cwl_tes_processor.__get_tes_task_logs(
+        task_logs = cwl_tes_processor.get_tes_task_logs(
             tes_ids=tes_ids,
             token=token,
         )
@@ -211,23 +204,22 @@ class WorkflowRunManager:
                 stdout=log,
                 stderr="",
             )
-        except Exception as e:
+        except PyMongoError as exc:
             logger.exception(
-                (
-                    "Database error. Could not update log information for "
-                    "task '{task}'. Original error message: {type}: {msg}"
-                ).format(
-                    task=self.task_id,
-                    type=type(e).__name__,
-                    msg=e,
-                )
+                "Database error. Could not update log information for task"
+                f" '{self.task_id}'. Original error message:"
+                f" {type(exc).__name__}: {exc}"
             )
-            pass
+            raise
 
     def trigger_task_end_events(
-        self, returncode: int, log: str, tes_ids: List[str], token: str
+        self,
+        returncode: int,
+        log: str,
+        tes_ids: List[str],
+        token: str,
     ) -> None:
-        """Method to trigger task completion events.
+        """Trigger task completion events.
 
         Args:
             returncode: Task completion status code.
@@ -248,15 +240,17 @@ class WorkflowRunManager:
         else:
             self.trigger_task_failure_events(task_end_ts=task_end_ts)
 
-    def update_run_document(
+    def update_run_document(  # pylint: disable=too-many-branches
         self,
         state: Optional[str] = None,
         internal: Optional[Dict] = None,
         outputs: Optional[Dict] = None,
         task_logs: Optional[List[Dict]] = None,
-        **run_log_params
+        **run_log_params,
     ):
-        """Updates state, internal and run log parameters in database
+        """Update run document.
+
+        Specifically, update state, internal and run log parameters in database
         document.
 
         Args:
@@ -264,7 +258,7 @@ class WorkflowRunManager:
             internal: Task specific internal parameters.
             outputs: Task specific output parameters.
             task_logs: Task run logs.
-
+            **run_log_params: Run log parameters.
         """
         # TODO: Minimize db ops; try to compile entire object & update once
         # Update internal parameters
@@ -306,23 +300,20 @@ class WorkflowRunManager:
         # Calculate queue, execution and run time
         if document and document["internal"]:
             run_log = document["internal"]
-            durations = dict()
+            durations = {}
 
             if "task_started" in run_log_params:
                 if "task_started" in run_log and "task_received" in run_log:
-                    pass
                     durations["time_queue"] = (
                         run_log["task_started"] - run_log["task_received"]
                     ).total_seconds()
 
             if "task_finished" in run_log_params:
                 if "task_finished" in run_log and "task_started" in run_log:
-                    pass
                     durations["time_execution"] = (
                         run_log["task_finished"] - run_log["task_started"]
                     ).total_seconds()
                 if "task_finished" in run_log and "task_received" in run_log:
-                    pass
                     durations["time_total"] = (
                         run_log["task_finished"] - run_log["task_received"]
                     ).total_seconds()
@@ -343,28 +334,27 @@ class WorkflowRunManager:
                     task_id=self.task_id,
                     state=state,
                 )
-            except Exception:
+            except PyMongoError as exc:
+                logger.exception(
+                    "Database error. Could not update log information for task"
+                    f" '{self.task_id}'. Original error message:"
+                    f" {type(exc).__name__}: {exc}"
+                )
                 raise
 
         # Log info message
         if document:
             logger.info(
-                (
-                    "State of run '{run_id}' (task id: '{task_id}') changed "
-                    "to '{state}'."
-                ).format(
-                    run_id=document["run_id"],
-                    task_id=self.task_id,
-                    state=state,
-                )
+                f"State of run '{document['run_id']}' (task id:"
+                f" '{self.task_id}') changed to '{state}'."
             )
 
         return document
 
     def run_workflow(self):
-        """Method to initiate workflow run."""
+        """Initiate workflow run."""
         self.trigger_task_start_events()
-        proc = subprocess.Popen(
+        proc = subprocess.Popen(  # pylint: disable=consider-using-with
             self.command_list,
             cwd=self.tmp_dir,
             stdout=subprocess.PIPE,

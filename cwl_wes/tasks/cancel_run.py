@@ -1,7 +1,6 @@
 """Celery background task to cancel workflow run and related TES tasks."""
 
 import logging
-from requests import HTTPError
 import time
 from typing import List, Optional
 
@@ -9,12 +8,12 @@ from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app
 from foca.database.register_mongodb import _create_mongo_client
 from pymongo import collection as Collection
+from requests import HTTPError
 import tes
 
 from cwl_wes.ga4gh.wes.states import States
 import cwl_wes.utils.db as db_utils
 from cwl_wes.worker import celery_app
-
 
 # Get logger instance
 logger = logging.getLogger(__name__)
@@ -26,7 +25,6 @@ logger = logging.getLogger(__name__)
     bind=True,
 )
 def task__cancel_run(
-    self,
     run_id: str,
     task_id: str,
     token: Optional[str] = None,
@@ -59,7 +57,7 @@ def task__cancel_run(
             timeout=tes_server_config.timeout,
             token=token,
         )
-    except SoftTimeLimitExceeded as e:
+    except SoftTimeLimitExceeded as exc:
         db_utils.set_run_state(
             collection=collection,
             run_id=run_id,
@@ -67,15 +65,9 @@ def task__cancel_run(
             state="SYSTEM_ERROR",
         )
         logger.warning(
-            (
-                "Canceling workflow run '{run_id}' timed out. Run state "
-                "was set to 'SYSTEM_ERROR'. Original error message: "
-                "{type}: {msg}"
-            ).format(
-                run_id=run_id,
-                type=type(e).__name__,
-                msg=e,
-            )
+            f"Canceling workflow run '{run_id}' timed out. Run state was set "
+            "to 'SYSTEM_ERROR'. Original error message: "
+            f"{type(exc).__name__}: {exc}"
         )
 
 
@@ -92,7 +84,7 @@ def __cancel_tes_tasks(
         timeout=timeout,
         token=token,
     )
-    canceled: List = list()
+    canceled: List = []
     while True:
         task_ids = db_utils.find_tes_task_ids(
             collection=collection,

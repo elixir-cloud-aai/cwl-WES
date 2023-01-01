@@ -6,6 +6,7 @@ from typing import Any, List, Mapping, Optional
 from bson.objectid import ObjectId
 from pymongo import collection as Collection
 from pymongo.collection import ReturnDocument
+from pymongo.errors import PyMongoError
 
 # Get logger instance
 logger = logging.getLogger(__name__)
@@ -14,7 +15,7 @@ logger = logging.getLogger(__name__)
 def update_run_state(
     collection: Collection, task_id: str, state: str = "UNKNOWN"
 ) -> Optional[Mapping[Any, Any]]:
-    """Updates state of workflow run and returns document."""
+    """Update state of workflow run and returns document."""
     return collection.find_one_and_update(
         {"task_id": task_id},
         {"$set": {"api.state": state}},
@@ -25,8 +26,16 @@ def update_run_state(
 def upsert_fields_in_root_object(
     collection: Collection, task_id: str, root: str, **kwargs
 ) -> Optional[Mapping[Any, Any]]:
-    """Inserts (or updates) fields in(to) the same root (object) field and
-    returns document.
+    """Insert or update fields in(to) the same root (object) field.
+
+    Args:
+        collection: MongoDB collection.
+        task_id: Task identifier of workflow run.
+        root: Root field name.
+        **kwargs: Key-value pairs of fields to insert/update.
+
+    Returns:
+        Inserted/updated document, or `None` if database operation failed.
     """
     return collection.find_one_and_update(
         {"task_id": task_id},
@@ -42,7 +51,17 @@ def upsert_fields_in_root_object(
 def update_tes_task_state(
     collection: Collection, task_id: str, tes_id: str, state: str
 ) -> Optional[Mapping[Any, Any]]:
-    """Updates `state` field in TES task log and returns updated document."""
+    """Update field 'state' in TES task log and return updated document.
+
+    Args:
+        collection: MongoDB collection.
+        task_id: Task identifier of workflow run.
+        tes_id: Identifier of TES task.
+        state: New state of TES task.
+
+    Returns:
+        Updated document, or `None` if database operation failed.
+    """
     return collection.find_one_and_update(
         {"task_id": task_id, "api.task_logs": {"$elemMatch": {"id": tes_id}}},
         {"$set": {"api.task_logs.$.state": state}},
@@ -55,7 +74,16 @@ def append_to_tes_task_logs(
     task_id: str,
     tes_log: Mapping,
 ) -> Optional[Mapping[Any, Any]]:
-    """Appends task log to TES task logs and returns updated document."""
+    """Append task log to TES task logs.
+
+    Args:
+        collection: MongoDB collection.
+        task_id: Task identifier of workflow run.
+        tes_log: Task log to append.
+
+    Returns:
+        Updated document, or `None` if database operation failed.
+    """
     return collection.find_one_and_update(
         {"task_id": task_id},
         {"$push": {"api.task_logs": tes_log}},
@@ -64,7 +92,15 @@ def append_to_tes_task_logs(
 
 
 def find_tes_task_ids(collection: Collection, run_id: str) -> List:
-    """Get list of TES task ids associated with a run of interest."""
+    """Get list of TES task ids associated with a run of interest.
+
+    Args:
+        collection: MongoDB collection.
+        run_id: Run identifier.
+
+    Returns:
+        List of TES task ids.
+    """
     return collection.distinct("api.task_logs.id", {"run_id": run_id})
 
 
@@ -73,8 +109,15 @@ def set_run_state(
     run_id: str,
     task_id: Optional[str] = None,
     state: str = "UNKNOWN",
-):
-    """Set/update state of run associated with Celery task."""
+) -> None:
+    """Set/update state of run associated with Celery task.
+
+    Args:
+        collection: MongoDB collection.
+        run_id: Run identifier.
+        task_id: Task identifier of workflow run.
+        state: New state of workflow run.
+    """
     if not task_id:
         document = collection.find_one(
             filter={"run_id": run_id},
@@ -92,37 +135,25 @@ def set_run_state(
             task_id=_task_id,
             state=state,
         )
-    except Exception as e:
+    except PyMongoError as exc:
         logger.exception(
-            (
-                "Database error. Could not update state of run '{run_id}' "
-                "(task id: '{task_id}') to state '{state}'. Original error "
-                "message: {type}: {msg}"
-            ).format(
-                run_id=run_id,
-                task_id=_task_id,
-                state=state,
-                type=type(e).__name__,
-                msg=e,
-            )
+            f"Database error. Could not update state of run '{run_id}' (task "
+            f"id: '{task_id}') to state '{state}'. Original error message: "
+            f"{type(exc).__name__}: {exc}"
         )
     finally:
         if document:
             logger.info(
-                (
-                    "State of run '{run_id}' (task id: '{task_id}') "
-                    "changed to '{state}'."
-                ).format(
-                    run_id=run_id,
-                    task_id=_task_id,
-                    state=state,
-                )
+                f"State of run '{run_id}' (task id: '{task_id}') changed to: "
+                f"{state}."
             )
 
 
 def find_one_latest(collection: Collection) -> Optional[Mapping[Any, Any]]:
-    """Returns newest object, stripped of the object id, or None if no object
-    exists.
+    """Find newest object.
+
+    Returns:
+        Object stripped of object id, or `None` if no object exists.
     """
     try:
         return (
@@ -136,7 +167,11 @@ def find_one_latest(collection: Collection) -> Optional[Mapping[Any, Any]]:
 
 
 def find_id_latest(collection: Collection) -> Optional[ObjectId]:
-    """Returns object id of newest object, or None if no object exists."""
+    """Find identifier of newest object.
+
+    Returns:
+        Object identifier, or `None` if no object exists.
+    """
     try:
         return collection.find().sort([("_id", -1)]).limit(1).next()["_id"]
     except StopIteration:

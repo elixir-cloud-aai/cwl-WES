@@ -1,4 +1,4 @@
-"""Entry point for Celery workers."""
+"""Celery worker entry point."""
 
 from foca.foca import Foca
 

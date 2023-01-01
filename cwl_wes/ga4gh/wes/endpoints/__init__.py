@@ -1,1 +1,1 @@
-"""cwl-WES controllers subpackage."""
+"""cwl-WES controllers helper functions."""
