@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-WES_ROOT="http://localhost:8079/ga4gh/wes/v1"
+WES_ROOT="http://localhost:8080/ga4gh/wes/v1"
 
 # GET /service-info
 ENDPOINT="/service-info"
@@ -137,3 +137,12 @@ RESPONSE_CODE=$(curl \
 )
 echo -n "$RESPONSE_CODE | Result: "
 test $RESPONSE_CODE = $EXPECTED_CODE && echo "PASSED" || (echo "FAILED" && exit 1)
+
+# TODO
+# POST /runs 200 (as above)
+# Fetch identifier (as above)
+# CANCEL /runs/{run_id} 200
+# Check that status changed to CANCELING
+# Sleep 3-5 min
+# Check that second run has status CANCELED
+# Check that second run has status COMPLETE
