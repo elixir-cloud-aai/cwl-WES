@@ -329,7 +329,7 @@ class ControllerConfig(FOCABaseConfig):
     timeout_cancel_run: int = 60
     timeout_run_workflow: Optional[int] = None
     tes_server: List[TesServerConfig] = []
-    drs_server: List[DRSServerConfig] = []
+    drs_server: DRSServerConfig = DRSServerConfig()
     runs_id: IdConfig = IdConfig()
 
 
