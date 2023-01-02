@@ -120,9 +120,9 @@ custom:
     timeout_cancel_run: 60
     timeout_run_workflow: null
     tes_server:
-      - url: "http://62.217.122.249:31567/"
-        timeout: 5
-        status_query_params: "FULL"
+      url: "http://62.217.122.249:31567/"
+      timeout: 5
+      status_query_params: "FULL"
     drs_server:
       port: null # use this port for resolving DRS URIs; set to `null` to use default (443)
       base_path: null # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)

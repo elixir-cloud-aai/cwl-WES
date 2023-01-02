@@ -328,7 +328,7 @@ class ControllerConfig(FOCABaseConfig):
     default_page_size: int = 5
     timeout_cancel_run: int = 60
     timeout_run_workflow: Optional[int] = None
-    tes_server: List[TesServerConfig] = []
+    tes_server: TesServerConfig
     drs_server: DRSServerConfig = DRSServerConfig()
     runs_id: IdConfig = IdConfig()
 
@@ -351,5 +351,5 @@ class CustomConfig(FOCABaseConfig):
 
     storage: StorageConfig = StorageConfig()
     celery: CeleryConfig = CeleryConfig()
-    controller: ControllerConfig = ControllerConfig()
+    controller: ControllerConfig
     service_info: ServiceInfoConfig

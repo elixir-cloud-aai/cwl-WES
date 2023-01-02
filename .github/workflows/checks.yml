@@ -37,15 +37,15 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
-      - name: Test build
+      - name: Deploy app
         run: docker-compose up -d --build
-      - name: Sleep
+      - name: Wait for app startup
         shell: bash
-        run: sleep 30;
-      - name: Test endpoint
+        run: sleep 20
+      - name: Run integration tests
         shell: bash
-        run: bash test-http-call.bash
-      - name: End test
+        run: bash tests/integration_tests.sh
+      - name: Tear down app
         run: docker-compose down
   publish:
     name: Build and publish app image

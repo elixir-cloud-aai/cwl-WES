@@ -96,10 +96,10 @@ class ServiceInfo:
         cursor = db_client_runs.find(
             filter={},
             projection={
-                "run_log.state": True,
+                "api.state": True,
                 "_id": False,
             },
         )
         for record in cursor:
-            current_counts[record["run_log"]["state"]] += 1
+            current_counts[record["api"]["state"]] += 1
         return current_counts
