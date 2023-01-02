@@ -3,6 +3,8 @@ name: Docker Image CI
 on:
   push:
     branches: [dev]
+  pull_request:
+    branches: [dev]
 
 env:
   DOCKER_REPO_NAME: elixircloud/cwl-wes
