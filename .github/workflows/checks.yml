@@ -21,7 +21,9 @@ jobs:
         with:
           python-version: "3.10"
       - name: Install requirements
-        run: pip install -r requirements.txt -r requirements_dev.txt
+        run: |
+          pip install .
+          pip install -r requirements_dev.txt
       - name: Lint with Flake8
         run: flake8 cwl_wes/ setup.py
       - name: Lint with Pylint
