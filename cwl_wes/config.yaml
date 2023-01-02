@@ -124,13 +124,13 @@ custom:
         timeout: 5
         status_query_params: "FULL"
     drs_server:
-      - port: null # use this port for resolving DRS URIs; set to `null` to use default (443)
-        base_path: null # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)
-        use_http: False # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
-        file_types: # extensions of files to scan for DRS URI resolution
-          - cwl
-          - yaml
-          - yml
+      port: null # use this port for resolving DRS URIs; set to `null` to use default (443)
+      base_path: null # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)
+      use_http: False # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
+      file_types: # extensions of files to scan for DRS URI resolution
+        - cwl
+        - yaml
+        - yml
     runs_id:
       length: 6
       charset: string.ascii_uppercase + string.digits
