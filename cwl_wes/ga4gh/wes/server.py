@@ -12,7 +12,7 @@ from pymongo.collection import Collection
 from foca.utils.logging import log_traffic
 
 from cwl_wes.ga4gh.wes.endpoints.run_workflow import run_workflow
-from cwl_wes.ga4gh.wes.endpoints.get_service_info import get_service_info
+from cwl_wes.ga4gh.wes.endpoints.service_info import ServiceInfo
 from cwl_wes.ga4gh.wes.states import States
 from cwl_wes.tasks.cancel_run import task__cancel_run
 from cwl_wes.utils.controllers import get_document_if_allowed
@@ -118,12 +118,8 @@ def GetServiceInfo(*args, **kwargs) -> Optional[Dict]:
     Returns:
         Service info object.
     """
-    response = get_service_info(
-        config=current_app.config,
-        *args,
-        **kwargs,
-    )
-    return response
+    service_info = ServiceInfo()
+    return service_info.get_service_info()
 
 
 # GET /runs

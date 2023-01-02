@@ -3,11 +3,9 @@
 from pathlib import Path
 
 from connexion import App
-from flask import current_app
 from foca import Foca
 
-from cwl_wes.ga4gh.wes.service_info import ServiceInfo
-from cwl_wes.exceptions import NotFound
+from cwl_wes.ga4gh.wes.endpoints.service_info import ServiceInfo
 
 
 def init_app() -> App:
@@ -23,12 +21,7 @@ def init_app() -> App:
     app = foca.create_app()
     with app.app.app_context():
         service_info = ServiceInfo()
-        try:
-            service_info.get_service_info()
-        except NotFound:
-            service_info.set_service_info(
-                data=current_app.config.foca.custom.service_info.dict()
-            )
+        service_info.init_service_info_from_config()
     return app
 
 

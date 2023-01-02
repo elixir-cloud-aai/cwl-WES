@@ -352,4 +352,4 @@ class CustomConfig(FOCABaseConfig):
     storage: StorageConfig = StorageConfig()
     celery: CeleryConfig = CeleryConfig()
     controller: ControllerConfig = ControllerConfig()
-    service_info: ServiceInfoConfig = ServiceInfoConfig()
+    service_info: ServiceInfoConfig

@@ -6,158 +6,152 @@
 # Server configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.ServerConfig
 server:
-    host: "0.0.0.0"
-    port: 8080
-    debug: True
-    environment: development
-    testing: False
-    use_reloader: True
+  host: "0.0.0.0"
+  port: 8080
+  debug: True
+  environment: development
+  testing: False
+  use_reloader: True
 
 # Security configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.SecurityConfig
 security:
-    auth:
-        required: False
-        add_key_to_claims: True
-        algorithms:
-            - RS256
-        allow_expired: False
-        audience: null
-        validation_methods:
-            - userinfo
-            - public_key
-        validation_checks: all
+  auth:
+    required: False
+    add_key_to_claims: True
+    algorithms:
+      - RS256
+    allow_expired: False
+    audience: null
+    validation_methods:
+      - userinfo
+      - public_key
+    validation_checks: all
 
 # Database configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.DBConfig
 db:
-    host: mongodb
-    port: 27017
-    dbs:
-        cwl-wes-db:
-            collections:
-                runs:
-                    indexes:
-                        - keys:
-                              run_id: 1
-                              task_id: 1
-                          options:
-                              "unique": True
-                              "sparse": True
-                service_info:
-                    indexes:
-                        - keys:
-                              id: 1
-                          options:
-                              "unique": True
+  host: mongodb
+  port: 27017
+  dbs:
+    cwl-wes-db:
+      collections:
+        runs:
+          indexes:
+            - keys:
+                run_id: 1
+                task_id: 1
+              options:
+                "unique": True
+                "sparse": True
+        service_info: []
 
 # API configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.APIConfig
 api:
-    specs:
-        - path:
-              - api/20181010.be85140.workflow_execution_service.swagger.yaml
-          add_security_fields:
-              x-apikeyInfoFunc: app.validate_token
-          add_operation_fields:
-              x-swagger-router-controller: ga4gh.wes.server
-          disable_auth: True
-          connexion:
-              strict_validation: True
-              validate_responses: False
-              options:
-                  swagger_ui: True
-                  serve_spec: True
+  specs:
+    - path:
+        - api/20181010.be85140.workflow_execution_service.swagger.yaml
+      add_security_fields:
+        x-apikeyInfoFunc: app.validate_token
+      add_operation_fields:
+        x-swagger-router-controller: ga4gh.wes.server
+      disable_auth: True
+      connexion:
+        strict_validation: True
+        validate_responses: False
+        options:
+          swagger_ui: True
+          serve_spec: True
 
 # Logging configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.LogConfig
 log:
-    version: 1
-    disable_existing_loggers: False
-    formatters:
-        standard:
-            class: logging.Formatter
-            style: "{"
-            format: "[{asctime}: {levelname:<8}] {message} [{name}]"
-        long:
-            class: logging.Formatter
-            style: "{"
-            format: "[{asctime}: {levelname:<8}] {message} [{name}]"
-    handlers:
-        console:
-            class: logging.StreamHandler
-            level: 20
-            formatter: standard
-            stream: ext://sys.stderr
-    root:
-        level: 10
-        handlers: [console]
+  version: 1
+  disable_existing_loggers: False
+  formatters:
+    standard:
+      class: logging.Formatter
+      style: "{"
+      format: "[{asctime}: {levelname:<8}] {message} [{name}]"
+    long:
+      class: logging.Formatter
+      style: "{"
+      format: "[{asctime}: {levelname:<8}] {message} [{name}]"
+  handlers:
+    console:
+      class: logging.StreamHandler
+      level: 20
+      formatter: standard
+      stream: ext://sys.stderr
+  root:
+    level: 10
+    handlers: [console]
 
 # Background job configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.JobsConfig
 jobs:
-    host: rabbitmq
-    port: 5672
-    backend: "rpc://"
-    include:
-        - cwl_wes.tasks.run_workflow
-        - cwl_wes.tasks.cancel_run
+  host: rabbitmq
+  port: 5672
+  backend: "rpc://"
+  include:
+    - cwl_wes.tasks.run_workflow
+    - cwl_wes.tasks.cancel_run
 
 # Exception configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.ExceptionConfig
 exceptions:
-    required_members: [["message"], ["code"]]
-    status_member: ["code"]
-    exceptions: cwl_wes.exceptions.exceptions
+  required_members: [["message"], ["code"]]
+  status_member: ["code"]
+  exceptions: cwl_wes.exceptions.exceptions
 
 # Custom configuration
 # Available in app context as attributes of `current_app.config.foca`
 custom:
-    storage:
-        permanent_dir: "/data/output"
-        tmp_dir: "/data/tmp"
-        remote_storage_url: "ftp://ftp-private.ebi.ac.uk/upload/foivos"
-    celery:
-        timeout: 0.1
-        message_maxsize: 16777216
-    controller:
-        default_page_size: 5
-        timeout_cancel_run: 60
-        timeout_run_workflow: null
-        tes_server:
-            - url: "http://62.217.122.249:31567/"
-              timeout: 5
-              status_query_params: "FULL"
-        drs_server:
-            - port: null # use this port for resolving DRS URIs; set to `null` to use default (443)
-              base_path: null # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)
-              use_http: False # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
-              file_types: # extensions of files to scan for DRS URI resolution
-                  - cwl
-                  - yaml
-                  - yml
-        runs_id:
-            length: 6
-            charset: string.ascii_uppercase + string.digits
-    service_info:
-        contact_info: "https://github.com/elixir-cloud-aai/cwl-WES"
-        auth_instructions_url: "https://www.elixir-europe.org/services/compute/aai"
-        supported_filesystem_protocols:
-            - ftp
-            - https
-            - local
-        supported_wes_versions:
-            - 1.0.0
-        workflow_type_versions:
-            CWL:
-                workflow_type_version:
-                    - v1.0
-        workflow_engine_versions:
-            cwl-tes: 0.2.0
-        default_workflow_engine_parameters:
-            - type: string
-              default_value: some_string
-            - type: int
-              default_value: "5"
-        tags:
-            known_tes_endpoints: "https://csc-tesk-noauth.rahtiapp.fi/swagger-ui.html|https://tesk-na.cloud.e-infra.cz/swagger-ui.html"
+  storage:
+    permanent_dir: "/data/output"
+    tmp_dir: "/data/tmp"
+    remote_storage_url: "ftp://ftp-private.ebi.ac.uk/upload/foivos"
+  celery:
+    timeout: 0.1
+    message_maxsize: 16777216
+  controller:
+    default_page_size: 5
+    timeout_cancel_run: 60
+    timeout_run_workflow: null
+    tes_server:
+      - url: "http://62.217.122.249:31567/"
+        timeout: 5
+        status_query_params: "FULL"
+    drs_server:
+      - port: null # use this port for resolving DRS URIs; set to `null` to use default (443)
+        base_path: null # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)
+        use_http: False # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
+        file_types: # extensions of files to scan for DRS URI resolution
+          - cwl
+          - yaml
+          - yml
+    runs_id:
+      length: 6
+      charset: string.ascii_uppercase + string.digits
+  service_info:
+    contact_info: "https://github.com/elixir-cloud-aai/cwl-WES"
+    auth_instructions_url: "https://github.com/elixir-cloud-aai/cwl-WES"
+    supported_filesystem_protocols:
+      - ftp
+      - https
+      - local
+    supported_wes_versions:
+      - 1.0.0
+      - 1.0.1
+    workflow_type_versions:
+      CWL:
+        workflow_type_version:
+          - v1.0
+          - v1.1
+          - v1.2
+    workflow_engine_versions:
+      cwl-tes: 0.3.0, commit 7b44cb1
+    default_workflow_engine_parameters: []
+    tags:
+      known_tes_endpoints: "https://csc-tesk-noauth.rahtiapp.fi/swagger-ui.html|https://tesk-na.cloud.e-infra.cz/swagger-ui.html"

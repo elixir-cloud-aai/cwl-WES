@@ -4,7 +4,6 @@ import logging
 from typing import Dict
 
 from bson.objectid import ObjectId
-from foca.models.config import Config
 from flask import current_app
 from pymongo.collection import Collection
 
@@ -22,26 +21,17 @@ class ServiceInfo:
     Creates service info upon first request, if it does not exist.
 
     Attributes:
-        config: App configuration.
-        foca_config: FOCA configuration.
-        db_client_service_info: Database collection storing service info
-            objects.
-        db_client_runs: Database collection storing workflow run objects.
+        db_collections: FOCA MongoDB collections.
+        db_client: Database collection storing service info objects.
         object_id: Database identifier for service info.
     """
 
     def __init__(self) -> None:
         """Construct class instance."""
-        self.config: Dict = current_app.config
-        self.foca_config: Config = self.config.foca
-        self.db_client_service_info: Collection = (
-            self.foca_config.db.dbs["cwl-wes-db"]
-            .collections["service_info"]
-            .client
-        )
-        self.db_client_runs: Collection = (
-            self.foca_config.db.dbs["cwl-wes-db"].collections["runs"].client
-        )
+        self.db_collections = current_app.config.foca.db.dbs[
+            "cwl-wes-db"
+        ].collections
+        self.db_client: Collection = self.db_collections["service_info"].client
         self.object_id: str = "000000000000000000000000"
 
     def get_service_info(self, get_counts: bool = True) -> Dict:
@@ -56,7 +46,7 @@ class ServiceInfo:
         Raises:
             NotFound: Service info was not found.
         """
-        service_info = self.db_client_service_info.find_one(
+        service_info = self.db_client.find_one(
             {"_id": ObjectId(self.object_id)},
             {"_id": False},
         )
@@ -66,26 +56,44 @@ class ServiceInfo:
             service_info["system_state_counts"] = self._get_state_counts()
         return service_info
 
-    def set_service_info(
-        self,
-        data: Dict,
-    ) -> None:
+    def set_service_info(self, data: Dict) -> None:
         """Create or update service info.
 
         Arguments:
             data: Dictionary of service info values. Cf.
         """
-        self.db_client_service_info.replace_one(
+        self.db_client.replace_one(
             filter={"_id": ObjectId(self.object_id)},
             replacement=data,
             upsert=True,
         )
-        logger.info("Service info set.")
+        logger.info(f"Service info set: {data}")
+
+    def init_service_info_from_config(self) -> None:
+        """Initialize service info from config.
+
+        Set service info only if it does not yet exist.
+        """
+        service_info_conf = current_app.config.foca.custom.service_info.dict()
+        try:
+            service_info_db = self.get_service_info(get_counts=False)
+        except NotFound:
+            logger.info("Initializing service info.")
+            self.set_service_info(data=service_info_conf)
+            return
+        if service_info_db != service_info_conf:
+            logger.info(
+                "Service info configuration changed. Updating service info."
+            )
+            self.set_service_info(data=service_info_conf)
+            return
+        logger.debug("Service info already initialized and up to date.")
 
     def _get_state_counts(self) -> Dict[str, int]:
         """Get current system state counts."""
         current_counts = {state: 0 for state in States.ALL}
-        cursor = self.db_client_runs.find(
+        db_client_runs: Collection = self.db_collections["runs"].client
+        cursor = db_client_runs.find(
             filter={},
             projection={
                 "run_log.state": True,

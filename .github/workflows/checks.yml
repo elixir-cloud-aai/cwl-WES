@@ -1,0 +1,76 @@
+name: Docker Image CI
+
+on:
+  push:
+    branches: [dev]
+
+env:
+  DOCKER_REPO_NAME: elixircloud/cwl-wes
+
+jobs:
+  lint:
+    name: Run linting
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+      - name: Install requirements
+        run: pip install -r requirements.txt -r requirements_dev.txt
+      - name: Lint with Flake8
+        run: flake8 cwl_wes/ setup.py
+      - name: Lint with Pylint
+        run: pylint cwl_wes/ setup.py
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Test build
+        run: docker-compose up -d --build
+      - name: Sleep
+        shell: bash
+        run: sleep 30;
+      - name: Test endpoint
+        shell: bash
+        run: bash test-http-call.bash
+      - name: End test
+        run: docker-compose down
+  publish:
+    name: Build and publish app image
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' }}
+    needs: [lint, test]
+    env:
+      DOCKER_REPO_NAME: elixircloud/cwl-wes
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+      - name: Generate tag
+        run: |
+          echo "TAG=$(date '+%Y%m%d')" >> $GITHUB_ENV
+      - name: Build and publish image
+        id: docker
+        uses: philips-software/docker-ci-scripts@v5.0.0
+        with:
+          dockerfile: .
+          image-name: "protes"
+          tags: "latest ${{ env.TAG }}"
+          push-branches: "${{ github.event.repository.default_branch }}"
+        env:
+          REGISTRY_USERNAME: ${{ secrets.DOCKERHUB_LOGIN }}
+          REGISTRY_TOKEN: "${{ secrets.DOCKERHUB_TOKEN }}"
+          DOCKER_ORGANIZATION: ${{ secrets.DOCKERHUB_ORG }}
+          GITHUB_ORGANIZATION: ${{ github.repository_owner }}
+      - name: Verify that image was pushed
+        run: |
+          echo "Push indicator: ${{ steps.docker.outputs.push-indicator }}"
+          echo "# Set to 'true' if image was pushed, empty string otherwise"
+          test "${{ steps.docker.outputs.push-indicator }}" == "true"
