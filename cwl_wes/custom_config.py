@@ -202,11 +202,11 @@ class ServiceInfoConfig(FOCABaseConfig):
     default_workflow_engine_parameters: List[
         DefaultWorkflowEngineParameterConfig
     ] = []
-    tags: TagsConfig = TagsConfig()
+    tags: TagsConfig
 
 
 class TesServerConfig(FOCABaseConfig):
-    """Model for tes server configuration.
+    """Model for TES server configuration.
 
     Args:
         url: TES Endpoint URL.
@@ -328,8 +328,8 @@ class ControllerConfig(FOCABaseConfig):
     default_page_size: int = 5
     timeout_cancel_run: int = 60
     timeout_run_workflow: Optional[int] = None
-    tes_server: TesServerConfig = TesServerConfig()
-    drs_server: DRSServerConfig = DRSServerConfig()
+    tes_server: List[TesServerConfig] = []
+    drs_server: List[DRSServerConfig] = []
     runs_id: IdConfig = IdConfig()
 
 

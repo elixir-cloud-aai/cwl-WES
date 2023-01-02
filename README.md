@@ -87,7 +87,7 @@ cd app
 * Via the **app configuration file**
 
   ```bash
-  vi cwl_wes/config/app_config.yaml
+  vi cwl_wes/config.yaml
   ```
 
 * Via **environment variables**
@@ -253,7 +253,7 @@ question etc.
 [badge-url-ci]: <https://travis-ci.com/elixir-cloud-aai/cwl-WES>
 [badge-url-health]: <https://csc-wes.rahtiapp.fi/ga4gh/wes/v1/ui/>
 [badge-url-license]: <http://www.apache.org/licenses/LICENSE-2.0>
-[config-app]: cwl_wes/config/app_config.yaml
+[config-app]: cwl_wes/config.yaml
 [docs-kubernetes]: deployment/README.md
 [elixir-aai]: https://perun.elixir-czech.cz/
 [elixir-user-group-apply]: https://perun.elixir-czech.cz/fed/registrar/?vo=elixir&group=ECP_CLN:OSS

@@ -6,7 +6,7 @@
 # Server configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.ServerConfig
 server:
-    host: '0.0.0.0'
+    host: "0.0.0.0"
     port: 8080
     debug: True
     environment: development
@@ -20,12 +20,12 @@ security:
         required: False
         add_key_to_claims: True
         algorithms:
-          - RS256
+            - RS256
         allow_expired: False
         audience: null
         validation_methods:
-          - userinfo
-          - public_key
+            - userinfo
+            - public_key
         validation_checks: all
 
 # Database configuration
@@ -42,25 +42,25 @@ db:
                               run_id: 1
                               task_id: 1
                           options:
-                            'unique': True
-                            'sparse': True
+                              "unique": True
+                              "sparse": True
                 service_info:
                     indexes:
                         - keys:
                               id: 1
                           options:
-                            'unique': True
+                              "unique": True
 
 # API configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.APIConfig
 api:
     specs:
         - path:
-            - api/20181010.be85140.workflow_execution_service.swagger.yaml
+              - api/20181010.be85140.workflow_execution_service.swagger.yaml
           add_security_fields:
               x-apikeyInfoFunc: app.validate_token
           add_operation_fields:
-              x-swagger-router-controller: ga4gh.wes.server  
+              x-swagger-router-controller: ga4gh.wes.server
           disable_auth: True
           connexion:
               strict_validation: True
@@ -98,7 +98,7 @@ log:
 jobs:
     host: rabbitmq
     port: 5672
-    backend: 'rpc://'
+    backend: "rpc://"
     include:
         - cwl_wes.tasks.run_workflow
         - cwl_wes.tasks.cancel_run
@@ -106,17 +106,17 @@ jobs:
 # Exception configuration
 # Cf. https://foca.readthedocs.io/en/latest/modules/foca.models.html#foca.models.config.ExceptionConfig
 exceptions:
-    required_members: [['message'], ['code']]
-    status_member: ['code']
+    required_members: [["message"], ["code"]]
+    status_member: ["code"]
     exceptions: cwl_wes.exceptions.exceptions
 
 # Custom configuration
 # Available in app context as attributes of `current_app.config.foca`
 custom:
     storage:
-        permanent_dir: '/data/output'
-        tmp_dir: '/data/tmp'
-        remote_storage_url: 'ftp://ftp-private.ebi.ac.uk/upload/foivos'
+        permanent_dir: "/data/output"
+        tmp_dir: "/data/tmp"
+        remote_storage_url: "ftp://ftp-private.ebi.ac.uk/upload/foivos"
     celery:
         timeout: 0.1
         message_maxsize: 16777216
@@ -125,23 +125,23 @@ custom:
         timeout_cancel_run: 60
         timeout_run_workflow: null
         tes_server:
-            url: 'http://62.217.122.249:31567/'
-            timeout: 5
-            status_query_params: 'FULL'
+            - url: "http://62.217.122.249:31567/"
+              timeout: 5
+              status_query_params: "FULL"
         drs_server:
-            port: null  # use this port for resolving DRS URIs; set to `null` to use default (443)
-            base_path: null  # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)
-            use_http: False  # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
-            file_types:  # extensions of files to scan for DRS URI resolution
-                - cwl
-                - yaml
-                - yml
+            - port: null # use this port for resolving DRS URIs; set to `null` to use default (443)
+              base_path: null # use this base path for resolving DRS URIs; set to `null` to use default (`ga4gh/drs/v1`)
+              use_http: False # use `http` for resolving DRS URIs; set to `False` to use default (`https`)
+              file_types: # extensions of files to scan for DRS URI resolution
+                  - cwl
+                  - yaml
+                  - yml
         runs_id:
             length: 6
             charset: string.ascii_uppercase + string.digits
     service_info:
-        contact_info: 'https://github.com/elixir-cloud-aai/cwl-WES'
-        auth_instructions_url: 'https://www.elixir-europe.org/services/compute/aai'
+        contact_info: "https://github.com/elixir-cloud-aai/cwl-WES"
+        auth_instructions_url: "https://www.elixir-europe.org/services/compute/aai"
         supported_filesystem_protocols:
             - ftp
             - https
@@ -158,6 +158,6 @@ custom:
             - type: string
               default_value: some_string
             - type: int
-              default_value: '5'
+              default_value: "5"
         tags:
-            known_tes_endpoints: 'https://tes.tsi.ebi.ac.uk/|https://tes-dev.tsi.ebi.ac.uk/|https://csc-tesk.c03.k8s-popup.csc.fi/|https://tesk.c01.k8s-popup.csc.fi/'
+            known_tes_endpoints: "https://csc-tesk-noauth.rahtiapp.fi/swagger-ui.html|https://tesk-na.cloud.e-infra.cz/swagger-ui.html"

@@ -15,8 +15,7 @@ ENV USER=ipython
 
 WORKDIR /app
 COPY ./ .
-RUN pip install -e . \
-    && pip install -r requirements_dev.txt
+RUN pip install -e .
 
 ## Add permissions for storing updated API specification
 ## (required by FOCA)
