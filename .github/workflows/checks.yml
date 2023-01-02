@@ -1,4 +1,4 @@
-name: Docker Image CI
+name: cwl-WES checks
 
 on:
   push:
