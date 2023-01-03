@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: [dev]
 
-env:
-  DOCKER_REPO_NAME: elixircloud/cwl-wes
-
 jobs:
   lint:
     name: Run linting
@@ -52,8 +49,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' }}
     needs: [lint, test]
-    env:
-      DOCKER_REPO_NAME: elixircloud/cwl-wes
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
@@ -65,7 +60,7 @@ jobs:
         uses: philips-software/docker-ci-scripts@v5.0.0
         with:
           dockerfile: .
-          image-name: "protes"
+          image-name: "cwl-wes"
           tags: "latest ${{ env.TAG }}"
           push-branches: "${{ github.event.repository.default_branch }}"
         env:
