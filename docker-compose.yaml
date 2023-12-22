@@ -2,7 +2,7 @@ version: '3.6'
 services:
 
   wes:
-    image: elixircloud/cwl-wes:latest
+    image: docker.io/elixircloud/cwl-wes:latest
     build:
       context: .
       dockerfile: Dockerfile
@@ -16,7 +16,7 @@ services:
       - "8080:8080"
 
   wes-worker:
-    image: elixircloud/cwl-wes:latest
+    image: docker.io/elixircloud/cwl-wes:latest
     restart: unless-stopped
     depends_on:
       - wes
