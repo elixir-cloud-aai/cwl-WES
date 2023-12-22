@@ -1,4 +1,4 @@
-FROM elixircloud/foca:20221110-py3.8
+FROM docker.io/elixircloud/foca:20231219-py3.11
 
 LABEL version="2.0"
 LABEL software="cwl-WES"
