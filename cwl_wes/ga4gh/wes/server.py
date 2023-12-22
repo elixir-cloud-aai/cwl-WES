@@ -1,118 +1,187 @@
 """Controller for GA4GH WES API endpoints."""
 
 import logging
+from typing import Dict, Optional
 
-from celery import current_app as celery_app
+from bson.objectid import ObjectId
+from celery import uuid
 from connexion import request
 from flask import current_app
+from pymongo.collection import Collection
 
-import cwl_wes.ga4gh.wes.endpoints.cancel_run as cancel_run
-import cwl_wes.ga4gh.wes.endpoints.get_run_log as get_run_log
-import cwl_wes.ga4gh.wes.endpoints.get_run_status as get_run_status
-import cwl_wes.ga4gh.wes.endpoints.list_runs as list_runs
-import cwl_wes.ga4gh.wes.endpoints.run_workflow as run_workflow
-import cwl_wes.ga4gh.wes.endpoints.get_service_info as get_service_info
-from cwl_wes.security.decorators import auth_token_optional
+from foca.utils.logging import log_traffic
 
+from cwl_wes.ga4gh.wes.endpoints.run_workflow import run_workflow
+from cwl_wes.ga4gh.wes.endpoints.service_info import ServiceInfo
+from cwl_wes.ga4gh.wes.states import States
+from cwl_wes.tasks.cancel_run import task__cancel_run
+from cwl_wes.utils.controllers import get_document_if_allowed
+
+# pragma pylint: disable=invalid-name,unused-argument
 
 # Get logger instance
 logger = logging.getLogger(__name__)
 
 
 # GET /runs/<run_id>
-@auth_token_optional
-def GetRunLog(run_id, *args, **kwargs):
-    """Returns detailed run info."""
-    response = get_run_log.get_run_log(
+@log_traffic
+def GetRunLog(run_id, *args, **kwargs) -> Dict:
+    """Get detailed run info.
+
+    Returns:
+        Run info object.
+    """
+    document = get_document_if_allowed(
         config=current_app.config,
         run_id=run_id,
-        *args,
-        **kwargs
+        projection={
+            "user_id": True,
+            "api": True,
+            "_id": False,
+        },
+        user_id=kwargs.get("user_id"),
     )
-    log_request(request, response)
-    return response
+    assert "api" in document, "'api' key not in document"
+    return document["api"]
 
 
 # POST /runs/<run_id>/cancel
-@auth_token_optional
-def CancelRun(run_id, *args, **kwargs):
-    """Cancels unfinished workflow run."""
-    response = cancel_run.cancel_run(
+@log_traffic
+def CancelRun(run_id, *args, **kwargs) -> Dict:
+    """Cancel unfinished workflow run.
+
+    Returns:
+        Run identifier object.
+    """
+    document = get_document_if_allowed(
         config=current_app.config,
-        celery_app=celery_app,
         run_id=run_id,
-        *args,
-        **kwargs
+        projection={
+            "user_id": True,
+            "task_id": True,
+            "api.state": True,
+            "_id": False,
+        },
+        user_id=kwargs.get("user_id"),
     )
-    log_request(request, response)
-    return response
+    assert "api" in document, "'api' key not in document"
+    assert "state" in document["api"], "'state' key not in document['api']"
+
+    if document["api"]["state"] in States.CANCELABLE:
+        timeout_duration = (
+            current_app.config.foca.custom.controller.timeout_cancel_run
+        )
+        task_id = uuid()
+        logger.info(f"Canceling run '{run_id}' as background task: {task_id}")
+        task__cancel_run.apply_async(
+            None,
+            {
+                "run_id": run_id,
+                "task_id": document["task_id"],
+                "token": kwargs.get("jwt"),
+            },
+            task_id=task_id,
+            soft_time_limit=timeout_duration,
+        )
+
+    return {"run_id": run_id}
 
 
 # GET /runs/<run_id>/status
-@auth_token_optional
-def GetRunStatus(run_id, *args, **kwargs):
-    """Returns run status."""
-    response = get_run_status.get_run_status(
+@log_traffic
+def GetRunStatus(run_id, *args, **kwargs) -> Dict:
+    """Get run status.
+
+    Returns:
+        Run status object.
+    """
+    document = get_document_if_allowed(
         config=current_app.config,
         run_id=run_id,
-        *args,
-        **kwargs
+        projection={
+            "user_id": True,
+            "api.state": True,
+            "_id": False,
+        },
+        user_id=kwargs.get("user_id"),
     )
-    log_request(request, response)
-    return response
+    assert "api" in document, "'api' key not in document"
+    assert "state" in document["api"], "'state' key not in document['api']"
+    return {"run_id": run_id, "state": document["api"]["state"]}
 
 
 # GET /service-info
-def GetServiceInfo(*args, **kwargs):
-    """Returns service info."""
-    response = get_service_info.get_service_info(
-        config=current_app.config,
-        *args,
-        **kwargs
-    )
-    log_request(request, response)
-    return response
+@log_traffic
+def GetServiceInfo(*args, **kwargs) -> Optional[Dict]:
+    """Get service info.
+
+    Returns:
+        Service info object.
+    """
+    service_info = ServiceInfo()
+    return service_info.get_service_info()
 
 
 # GET /runs
-@auth_token_optional
-def ListRuns(*args, **kwargs):
-    """Lists IDs and status of all workflow runs."""
-    response = list_runs.list_runs(
-        config=current_app.config,
-        *args,
-        **kwargs
+@log_traffic
+def ListRuns(*args, **kwargs) -> Dict:
+    """List IDs and status of all workflow runs.
+
+    Returns:
+        Run list object.
+    """
+    collection_runs: Collection = (
+        current_app.config.foca.db.dbs["cwl-wes-db"].collections["runs"].client
     )
-    log_request(request, response)
-    return response
+    page_size = kwargs.get(
+        "page_size",
+        current_app.config.foca.custom.controller.default_page_size,
+    )
+    page_token = kwargs.get("page_token", "")
+
+    filter_dict = {}
+    if "user_id" in kwargs:
+        filter_dict["user_id"] = kwargs["user_id"]
+    if page_token != "":
+        filter_dict["_id"] = {"$lt": ObjectId(page_token)}
+    cursor = (
+        collection_runs.find(
+            filter=filter_dict,
+            projection={
+                "run_id": True,
+                "api.state": True,
+            },
+        )
+        .sort("_id", -1)
+        .limit(page_size)
+    )
+    runs_list = list(cursor)
+
+    if runs_list:
+        next_page_token = str(runs_list[-1]["_id"])
+    else:
+        next_page_token = ""
+
+    for run in runs_list:
+        del run["_id"]
+        run["state"] = run["api"]["state"]
+        del run["api"]
+
+    return {"next_page_token": next_page_token, "runs": runs_list}
 
 
 # POST /runs
-@auth_token_optional
-def RunWorkflow(*args, **kwargs):
-    """Executes workflow."""
-    response = run_workflow.run_workflow(
+@log_traffic
+def RunWorkflow(*args, **kwargs) -> Dict:
+    """Trigger workflow run.
+
+    Returns:
+        Run identifier object.
+    """
+    response = run_workflow(
         config=current_app.config,
         form_data=request.form,
         *args,
-        **kwargs
+        **kwargs,
     )
-    log_request(request, response)
     return response
-
-
-def log_request(request, response):
-    """Writes request and response to log."""
-    # TODO: write decorator for request logging
-    logger.debug(
-        (
-            "Response to request \"{method} {path} {protocol}\" from "
-            "{remote_addr}: {response}"
-        ).format(
-            method=request.environ['REQUEST_METHOD'],
-            path=request.environ['PATH_INFO'],
-            protocol=request.environ['SERVER_PROTOCOL'],
-            remote_addr=request.environ['REMOTE_ADDR'],
-            response=response,
-        )
-    )

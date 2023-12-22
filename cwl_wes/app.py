@@ -1,61 +1,35 @@
-"""Entry point to start service."""
+"""cwl-WES application entry point."""
 
-from cwl_wes.api.register_openapi import register_openapi
-from cwl_wes.config.app_config import parse_app_config
-from foca.config.config_parser import (get_conf, get_conf_type)
-from foca.config.log_config import configure_logging
-from cwl_wes.database.register_mongodb import register_mongodb
-from cwl_wes.errors.errors import register_error_handlers
-from cwl_wes.factories.connexion_app import create_connexion_app
-from cwl_wes.tasks.register_celery import register_task_service
-from cwl_wes.security.cors import enable_cors
+from pathlib import Path
+
+from connexion import App
+from foca import Foca
+
+from cwl_wes.ga4gh.wes.endpoints.service_info import ServiceInfo
 
 
-def run_server():
+def init_app() -> App:
+    """Initialize FOCA application.
 
-    # Configure logger
-    configure_logging(config_var='WES_CONFIG_LOG')
-
-    # Parse app configuration
-    config = parse_app_config(config_var='WES_CONFIG')
-
-    # Create Connexion app
-    connexion_app = create_connexion_app(config)
-
-    # Register MongoDB
-    connexion_app.app = register_mongodb(connexion_app.app)
-
-    # Register error handlers
-    connexion_app = register_error_handlers(connexion_app)
-
-    # Create Celery app and register background task monitoring service
-    register_task_service(connexion_app.app)
-
-    # Register OpenAPI specs
-    connexion_app = register_openapi(
-        app=connexion_app,
-        specs=get_conf_type(
-            config,
-            'api',
-            'specs',
-            types=(list),
-        ),
-        add_security_definitions=get_conf(
-            config,
-            'security',
-            'authorization_required'
-        )
+    Returns:
+        App: FOCA application.
+    """
+    foca = Foca(
+        config_file=Path("config.yaml"),
+        custom_config_model="cwl_wes.custom_config.CustomConfig",
     )
+    app = foca.create_app()
+    with app.app.app_context():
+        service_info = ServiceInfo()
+        service_info.init_service_info_from_config()
+    return app
 
-    # Enable cross-origin resource sharing
-    enable_cors(connexion_app.app)
 
-    return connexion_app, config
+def run_app(app: App) -> None:
+    """Run FOCA application."""
+    app.run(port=app.port)
 
 
-if __name__ == '__main__':
-    connexion_app, config = run_server()
-    # Run app
-    connexion_app.run(
-        use_reloader=get_conf(config, 'server', 'use_reloader')
-    )
+if __name__ == "__main__":
+    my_app = init_app()
+    run_app(my_app)
