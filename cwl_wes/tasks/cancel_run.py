@@ -25,7 +25,7 @@ logger = logging.getLogger(__name__)
     bind=True,
 )
 def task__cancel_run(
-    self,
+    self,  # pylint: disable=unused-argument
     run_id: str,
     task_id: str,
     token: Optional[str] = None,
