@@ -176,7 +176,72 @@ test $RUN_ID_CANCEL != "null" && echo "PASSED" || (echo "FAILED" && exit 1)
 
 # TODO
 # CANCEL /runs/{run_id} 200
+ENDPOINT="/runs/$RUN_ID_CANCEL/cancel"
+METHOD="POST"
+EXPECTED_CODE="200"
+echo -n "Testing '$METHOD $ENDPOINT' | Expecting: $EXPECTED_CODE | Got: "
+RESPONSE_CODE=$(curl \
+  --silent \
+  --write-out "%{http_code}" \
+  --output "/dev/null" \
+  --request "$METHOD" \
+  --header "Accept: application/json" \
+  "${WES_ROOT}${ENDPOINT}" \
+)
+echo -n "$RESPONSE_CODE | Result: "
+test $RESPONSE_CODE = $EXPECTED_CODE && echo "PASSED" || (echo "FAILED" && exit 1)
+
+# Sleep 2 seconds
+sleep 2
+
 # Check that status changed to CANCELING
+ENDPOINT="/runs/$RUN_ID_CANCEL/status"
+METHOD="GET"
+EXPECTED_STATUS="CANCELING"
+echo -n "Testing '$METHOD $ENDPOINT' | Expecting: $EXPECTED_STATUS | Got: "
+RESPONSE_STATUS=$(curl \
+  --silent \
+  --request "$METHOD" \
+  --header "Accept: application/json" \
+  "${WES_ROOT}${ENDPOINT}" \
+  | jq .state \
+  | tr -d '"' \
+)
+echo -n "$RESPONSE_STATUS | Result: "
+test $RESPONSE_STATUS = $EXPECTED_STATUS && echo "PASSED" || (echo "FAILED" && exit 1)
+
 # Sleep 3-5 min
+sleep 180
+
 # Check that run with $RUN_ID_COMPLETE has status COMPLETE
+ENDPOINT="/runs/$RUN_ID_COMPLETE/status"
+METHOD="GET"
+EXPECTED_STATUS="COMPLETE"
+echo -n "Testing '$METHOD $ENDPOINT' | Expecting: $EXPECTED_STATUS | Got: "
+RESPONSE_STATUS=$(curl \
+  --silent \
+  --request "$METHOD" \
+  --header "Accept: application/json" \
+  "${WES_ROOT}${ENDPOINT}" \
+  | jq .state \
+  | tr -d '"' \
+)
+echo -n "$RESPONSE_STATUS | Result: "
+test $RESPONSE_STATUS = $EXPECTED_STATUS && echo "PASSED" || (echo "FAILED" && exit 1)
+
+
 # Check that run with $RUN_ID_CANCEL has status CANCELED
+ENDPOINT="/runs/$RUN_ID_CANCEL/status"
+METHOD="GET"
+EXPECTED_STATUS="CANCELED"
+echo -n "Testing '$METHOD $ENDPOINT' | Expecting: $EXPECTED_STATUS | Got: "
+RESPONSE_STATUS=$(curl \
+  --silent \
+  --request "$METHOD" \
+  --header "Accept: application/json" \
+  "${WES_ROOT}${ENDPOINT}" \
+  | jq .state \
+  | tr -d '"' \
+)
+echo -n "$RESPONSE_STATUS | Result: "
+test $RESPONSE_STATUS = $EXPECTED_STATUS && echo "PASSED" || (echo "FAILED" && exit 1)
