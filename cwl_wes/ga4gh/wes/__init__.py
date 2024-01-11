@@ -1,1 +1,1 @@
-"""cwl-WES controllers package."""
+"""GA4GH WES API controllers package."""

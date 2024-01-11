@@ -205,7 +205,7 @@ class ServiceInfoConfig(FOCABaseConfig):
     tags: TagsConfig
 
 
-class TesServerConfig(FOCABaseConfig):
+class TESServerConfig(FOCABaseConfig):
     """Model for TES server configuration.
 
     Args:
@@ -328,7 +328,7 @@ class ControllerConfig(FOCABaseConfig):
     default_page_size: int = 5
     timeout_cancel_run: int = 60
     timeout_run_workflow: Optional[int] = None
-    tes_server: TesServerConfig
+    tes_server: TESServerConfig
     drs_server: DRSServerConfig = DRSServerConfig()
     runs_id: IdConfig = IdConfig()
 

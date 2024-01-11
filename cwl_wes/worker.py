@@ -1,6 +1,6 @@
 """Celery worker entry point."""
 
-from foca.foca import Foca
+from foca import Foca
 
 foca = Foca(
     config_file="config.yaml",
