@@ -1,80 +1,74 @@
 """Celery background task to cancel workflow run and related TES tasks."""
 
 import logging
-from requests import HTTPError
-import tes
 import time
-from typing import (List, Optional)
+from typing import List, Optional
 
 from celery.exceptions import SoftTimeLimitExceeded
 from flask import current_app
+from foca.database.register_mongodb import _create_mongo_client
 from pymongo import collection as Collection
+from requests import HTTPError
+import tes
 
-from cwl_wes.celery_worker import celery
-from foca.config.config_parser import get_conf
-import cwl_wes.database.db_utils as db_utils
-from cwl_wes.database.register_mongodb import create_mongo_client
 from cwl_wes.ga4gh.wes.states import States
-from cwl_wes.tasks.utils import set_run_state
-
+import cwl_wes.utils.db as db_utils
+from cwl_wes.worker import celery_app
 
 # Get logger instance
 logger = logging.getLogger(__name__)
 
 
-@celery.task(
-    name='tasks.cancel_run',
+@celery_app.task(
+    name="tasks.cancel_run",
     ignore_result=True,
     bind=True,
 )
 def task__cancel_run(
-    self,
+    self,  # pylint: disable=unused-argument
     run_id: str,
     task_id: str,
     token: Optional[str] = None,
 ) -> None:
     """Revokes worfklow task and tries to cancel all running TES tasks."""
-    config = current_app.config
+    foca_config = current_app.config.foca
     # Create MongoDB client
-    mongo = create_mongo_client(
+    mongo = _create_mongo_client(
         app=current_app,
-        config=config,
+        host=foca_config.db.host,
+        port=foca_config.db.port,
+        db="cwl-wes-db",
     )
-    collection = mongo.db['runs']
+    collection = mongo.db["runs"]
     # Set run state to 'CANCELING'
-    set_run_state(
+    db_utils.set_run_state(
         collection=collection,
         run_id=run_id,
         task_id=task_id,
-        state='CANCELING',
+        state="CANCELING",
     )
 
     try:
         # Cancel individual TES tasks
+        tes_server_config = foca_config.custom.controller.tes_server
         __cancel_tes_tasks(
             collection=collection,
             run_id=run_id,
-            url=get_conf(config, 'tes', 'url'),
-            timeout=get_conf(config, 'tes', 'timeout'),
+            url=tes_server_config.url,
+            timeout=tes_server_config.timeout,
             token=token,
         )
-    except SoftTimeLimitExceeded as e:
-        set_run_state(
+    except SoftTimeLimitExceeded as exc:
+        db_utils.set_run_state(
             collection=collection,
             run_id=run_id,
             task_id=task_id,
-            state='SYSTEM_ERROR',
+            state="SYSTEM_ERROR",
         )
         logger.warning(
-            (
-                "Canceling workflow run '{run_id}' timed out. Run state "
-                "was set to 'SYSTEM_ERROR'. Original error message: "
-                "{type}: {msg}"
-            ).format(
-                run_id=run_id,
-                type=type(e).__name__,
-                msg=e,
-            )
+            f"Canceling workflow run '{run_id}' timed out. Run state was set "
+            "to 'SYSTEM_ERROR'. Original error message: "
+            f"{type(exc).__name__}: {exc}"
         )
 
 
@@ -91,7 +85,7 @@ def __cancel_tes_tasks(
         timeout=timeout,
         token=token,
     )
-    canceled: List = list()
+    canceled: List = []
     while True:
         task_ids = db_utils.find_tes_task_ids(
             collection=collection,
@@ -108,11 +102,11 @@ def __cancel_tes_tasks(
         canceled = canceled + cancel
         time.sleep(timeout)
         document = collection.find_one(
-            filter={'run_id': run_id},
+            filter={"run_id": run_id},
             projection={
-                'api.state': True,
-                '_id': False,
-            }
+                "api.state": True,
+                "_id": False,
+            },
         )
-        if document['api']['state'] in States.FINISHED:
+        if document["api"]["state"] in States.FINISHED:
             break

@@ -1,3 +1,5 @@
-from cwl_wes.app import run_server
+"""WSGI entry point."""
 
-app, config = run_server()
+from cwl_wes.app import init_app
+
+app = init_app()

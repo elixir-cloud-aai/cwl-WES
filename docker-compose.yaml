@@ -9,7 +9,7 @@ services:
     restart: unless-stopped
     links:
       - mongodb
-    command: bash -c "cd /app/cwl_wes; gunicorn -c config.py wsgi:app"
+    command: bash -c "cd /app/cwl_wes; gunicorn -c gunicorn.py wsgi:app"
     volumes:
       - ../data/cwl_wes:/data
     ports:
@@ -23,7 +23,7 @@ services:
     links:
       - mongodb
       - rabbitmq
-    command: bash -c "cd /app/cwl_wes; celery -A celery_worker worker -E --loglevel=info"
+    command: bash -c "cd /app/cwl_wes; celery -A worker worker -E --loglevel=info"
     volumes:
       - ../data/cwl_wes:/data
 
@@ -37,7 +37,7 @@ services:
       - "5672:5672"
 
   mongodb:
-    image: mongo:3.2
+    image: mongo:3.6
     restart: unless-stopped
     volumes:
       - ../data/cwl_wes/db:/data/db

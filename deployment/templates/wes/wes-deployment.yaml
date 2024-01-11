@@ -26,7 +26,7 @@ spec:
         imagePullPolicy: Always
         workingDir: '/app/cwl_wes'
         command: [ 'gunicorn' ]
-        args: [ '--log-level', 'debug', '-c', 'config.py', 'wsgi:app', '--reload', '--reload-extra-file', '{{ .Values.extra_config.folder }}/{{ .Values.extra_config.file }}' ]
+        args: [ '--log-level', 'debug', '-c', 'gunicorn.py', 'wsgi:app', '--reload', '--reload-extra-file', '{{ .Values.extra_config.folder }}/{{ .Values.extra_config.file }}' ]
         env:
         - name: WES_CONFIG
           value: {{ .Values.extra_config.folder }}/{{ .Values.extra_config.file }}
