@@ -22,5 +22,9 @@ spec:
           value: {{ .Values.wes.appName }}
       restartPolicy: Never
       serviceAccountName: {{ .Values.wes.appName }}-autoadmin
+{{- if .Values.securityContext }}
+      securityContext:
+{{- toYaml .Values.securityContext | nindent 8 -}} 
+{{- end }}
 status: {}
 {{- end }}

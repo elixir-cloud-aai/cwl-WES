@@ -19,4 +19,7 @@ spec:
         command: ['flower']
         args: ['--broker=amqp://guest:guest@rabbitmq:5672//', '--port=5555', '--basic_auth={{ .Values.flower.basicAuth }}']
         name: flower
-
+{{- if .Values.securityContext }}
+      securityContext:
+{{- toYaml .Values.securityContext | nindent 8 -}} 
+{{- end }}
