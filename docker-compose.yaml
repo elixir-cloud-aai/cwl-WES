@@ -12,8 +12,13 @@ services:
     command: bash -c "cd /app/cwl_wes; gunicorn -c gunicorn.py wsgi:app"
     volumes:
       - ../data/cwl_wes:/data
+      - ${WES_CONFIG}:${WES_CONFIG}
+      - ${WES_CONFIG_LOG}:${WES_CONFIG_LOG}
     ports:
       - "8080:8080"
+    environment:
+      - WES_CONFIG
+      - WES_CONFIG_LOG
 
   wes-worker:
     image: elixircloud/cwl-wes:latest
@@ -26,6 +31,11 @@ services:
     command: bash -c "cd /app/cwl_wes; celery -A worker worker -E --loglevel=info"
     volumes:
       - ../data/cwl_wes:/data
+      - ${WES_CONFIG}:${WES_CONFIG}
+      - ${WES_CONFIG_LOG}:${WES_CONFIG_LOG}
+    environment:
+      - WES_CONFIG
+      - WES_CONFIG_LOG
 
   rabbitmq:
     image: "rabbitmq:3-management"
