@@ -10,11 +10,24 @@ then
 	env
 	exit 1
 fi
+
+if [ -z "$MONGO_HOST" ];
+then
+  MONGO_HOST='mongodb'
+fi
+
+if [ -z "$RABBIT_HOST" ];
+then
+  RABBIT_HOST='rabbitmq'
+fi
+
 echo "Inputs:"
 echo " CONFIG MAP NAME: $CONFIG_MAP_NAME"
 echo " API SERVER:      $APISERVER"
 echo " APP CONFIG PATH: $APP_CONFIG_PATH"
 echo " WES APP NAME:    $WES_APP_NAME"
+echo " MONGO HOST:      $MONGO_HOST"
+echo " RABBIT HOST:     $RABBIT_HOST"
 
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
@@ -29,7 +42,11 @@ echo "Current Kubernetes namespace: $NAMESPACE"; echo
 
 echo " * Getting current default configuration"
 
-APP_CONFIG=$(cat "$APP_CONFIG_PATH")
+APP_CONFIG=$(yq --arg MONGO_HOST "$MONGO_HOST" \
+    --arg RABBIT_HOST "$RABBIT_HOST" \
+    '.db.host = $MONGO_HOST |
+     .jobs.host = $RABBIT_HOST' \
+    "$APP_CONFIG_PATH")
 
 echo " * Getting current configMap"
 curl -s \
