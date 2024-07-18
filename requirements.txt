@@ -4,3 +4,4 @@ drs-cli~=0.2.3
 gunicorn~=19.9.0
 py-tes~=0.4.2
 importlib-metadata==4.13.0
+yq==3.2.3
