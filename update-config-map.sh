@@ -4,17 +4,31 @@
 #
 ###############################################################################
 
-if [ -z "$CONFIG_MAP_NAME" -o -z "$APISERVER" -o -z "$APP_CONFIG_PATH" -o -z "$WES_APP_NAME" ];
+if [ -z "$CONFIG_MAP_NAME" -o -z "$APISERVER" -o -z "$APP_CONFIG_PATH" -o -z "$WES_APP_NAME" -o -z "$CELERY_APP_NAME" ];
 then
-	echo "CONFIG_MAP_NAME, APISERVER, APP_CONFIG_PATH, and WES_APP_NAME env vars required"
+	echo "CONFIG_MAP_NAME, APISERVER, APP_CONFIG_PATH, WES_APP_NAME, and CELERY_APP_NAME env vars required"
 	env
 	exit 1
 fi
+
+if [ -z "$MONGO_HOST" ];
+then
+  MONGO_HOST='mongodb'
+fi
+
+if [ -z "$RABBIT_HOST" ];
+then
+  RABBIT_HOST='rabbitmq'
+fi
+
 echo "Inputs:"
 echo " CONFIG MAP NAME: $CONFIG_MAP_NAME"
 echo " API SERVER:      $APISERVER"
 echo " APP CONFIG PATH: $APP_CONFIG_PATH"
 echo " WES APP NAME:    $WES_APP_NAME"
+echo " CELERY APP NAME: $CELERY_APP_NAME"
+echo " MONGO HOST:      $MONGO_HOST"
+echo " RABBIT HOST:     $RABBIT_HOST"
 
 NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
 
@@ -29,7 +43,13 @@ echo "Current Kubernetes namespace: $NAMESPACE"; echo
 
 echo " * Getting current default configuration"
 
-APP_CONFIG=$(cat "$APP_CONFIG_PATH")
+command -V yq || echo "yq not found, exiting"; exit 6
+
+APP_CONFIG=$(yq -y --arg MONGO_HOST "$MONGO_HOST" \
+    --arg RABBIT_HOST "$RABBIT_HOST" \
+    '.db.host = $MONGO_HOST |
+     .jobs.host = $RABBIT_HOST' \
+    "$APP_CONFIG_PATH") || exit 4
 
 echo " * Getting current configMap"
 curl -s \
@@ -47,7 +67,7 @@ jq . /tmp/configmap.json || exit 2
 echo " JSON file is valid";echo
 
 echo " * Creating update for secret"
-jq ".data.\"app_config.yaml\" = \"$APP_CONFIG\"" /tmp/configmap.json >/tmp/configmap-patch.json
+jq --arg APP_CONFIG "$APP_CONFIG" '.data."app_config.yaml" = $APP_CONFIG' /tmp/configmap.json >/tmp/configmap-patch.json || exit 5
 
 echo " * Validating JSON file patched:"; echo
 jq . /tmp/configmap-patch.json || exit 3
@@ -85,8 +105,27 @@ do
     "https://$APISERVER/api/v1/namespaces/${NAMESPACE}/pods/$pod"
 done
 
+###
+echo " * Deleting current $CELERY_APP_NAME pod"
+curl -s \
+  --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+  -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+  -X GET \
+  -H "Accept: application/json, */*" \
+  "https://$APISERVER/api/v1/namespaces/${NAMESPACE}/pods/" | \
+jq '.items | .[] | .metadata.name ' -r | grep "^${CELERY_APP_NAME}-" | \
+while read pod;
+do
+  echo "   - Deleting: $pod"
+  curl -s \
+    --cacert /var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+    -H "Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)" \
+    -X DELETE \
+    -H "Accept: application/json, */*" \
+    -o /dev/null \
+    "https://$APISERVER/api/v1/namespaces/${NAMESPACE}/pods/$pod"
+done
+###
+
 echo " All Done"
-
-sleep 3600
-
 
