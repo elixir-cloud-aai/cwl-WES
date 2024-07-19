@@ -43,7 +43,7 @@ echo "Current Kubernetes namespace: $NAMESPACE"; echo
 
 echo " * Getting current default configuration"
 
-command -V yq || { echo "yq not found, exiting"; exit 6}
+command -V yq || { echo "yq not found, exiting"; exit 6; }
 
 APP_CONFIG=$(yq -y --arg MONGO_HOST "$MONGO_HOST" \
     --arg RABBIT_HOST "$RABBIT_HOST" \
