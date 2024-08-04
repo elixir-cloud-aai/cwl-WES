@@ -1,1 +1,1 @@
-"""cwl-WES controllers helper functions."""
+"""GA4GH WES API controller helpers package."""

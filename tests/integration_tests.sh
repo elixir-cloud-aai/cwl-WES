@@ -245,3 +245,7 @@ RESPONSE_STATUS=$(curl \
 )
 echo -n "$RESPONSE_STATUS | Result: "
 test $RESPONSE_STATUS = $EXPECTED_STATUS && echo "PASSED" || (echo "FAILED" && exit 1)
+# Check that status changed to CANCELING
+# Sleep 3-5 min
+# Check that run with $RUN_ID_COMPLETE has status COMPLETE
+# Check that run with $RUN_ID_CANCEL has status CANCELED

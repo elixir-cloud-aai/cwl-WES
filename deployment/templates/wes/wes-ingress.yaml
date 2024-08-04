@@ -58,10 +58,10 @@ status:
   loadBalancer: {}
 
 ---
-{{ if ne .Values.clusterType "kubernetes" }}
-apiVersion: batch/v1beta1
-{{ else }}
+{{ if .Capabilities.APIVersions.Has "batch/v1" }}
 apiVersion: batch/v1
+{{ else }}
+apiVersion: batch/v1beta1
 {{ end }}
 kind: CronJob
 metadata:

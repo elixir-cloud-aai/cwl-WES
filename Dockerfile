@@ -1,6 +1,6 @@
 FROM elixircloud/foca:20221110-py3.7
 
-LABEL version="1.1"
+LABEL version="2.0"
 LABEL software="cwl-WES"
 LABEL software.description="Trigger CWL workflows via GA4GH WES and TES"
 LABEL software.website="https://github.com/elixir-cloud-aai/cwl-WES"

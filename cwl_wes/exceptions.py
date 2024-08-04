@@ -20,6 +20,10 @@ exceptions = {
         "message": "An unexpected error occurred.",
         "code": "500",
     },
+    InternalServerError: {
+        "message": "An unexpected error occurred.",
+        "code": "500",
+    },
     BadRequest: {
         "message": "The request is malformed.",
         "code": "400",
@@ -47,10 +51,6 @@ exceptions = {
     NotFound: {
         "message": "The requested resource wasn't found.",
         "code": "404",
-    },
-    InternalServerError: {
-        "message": "An unexpected error occurred.",
-        "code": "500",
     },
     WorkflowNotFound: {
         "message": "The requested workflow run wasn't found.",
