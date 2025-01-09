@@ -16,7 +16,9 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.7"
+          python-version: "3.10"
+      - name: Pin pip version
+        run: python -m pip install --upgrade "pip<24.1"
       - name: Install requirements
         run: |
           pip install .
@@ -35,15 +37,17 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Deploy app
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
       - name: Wait for app startup
         shell: bash
-        run: sleep 20
+        run: |
+          sleep 20
+          docker compose ps
       - name: Run integration tests
         shell: bash
         run: bash tests/integration_tests.sh
       - name: Tear down app
-        run: docker-compose down
+        run: docker compose down
   publish:
     name: Build and publish app image
     runs-on: ubuntu-latest
