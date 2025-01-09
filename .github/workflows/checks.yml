@@ -35,7 +35,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v3
       - name: Deploy app
-        run: docker-compose up -d --build
+        run: docker compose up -d --build
       - name: Wait for app startup
         shell: bash
         run: sleep 20
