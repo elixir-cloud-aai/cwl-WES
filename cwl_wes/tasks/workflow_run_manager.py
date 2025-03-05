@@ -260,6 +260,7 @@ class WorkflowRunManager:  # pylint: disable=too-many-instance-attributes
             task_logs: Task run logs.
             **run_log_params: Run log parameters.
         """
+        document = None
         # TODO: Minimize db ops; try to compile entire object & update once
         # Update internal parameters
         if internal:

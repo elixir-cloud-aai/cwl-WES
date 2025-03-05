@@ -35,7 +35,7 @@ setup(
         "Intended Audience :: Science/Research",
         "Topic :: Scientific/Engineering :: Bio-Informatics",
         "Natural Language :: English",
-        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.12",
     ],
     install_requires=INSTALL_REQUIRES,
 )
