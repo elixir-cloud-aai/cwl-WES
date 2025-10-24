@@ -106,7 +106,7 @@ See [`values.yaml`](values.yaml) for default values.
 | flower.basicAuth | string | Set the username and password for the Flower app |
 | flower.image | string | Container image to be used for Flower |
 | wes.appName | string | name of the main application on Kubernetes cluster |
-| wes.image | string | containger image to be used for the main application |
+| wes.image | string | container image to be used for the main application |
 | wes.initResources | string | Set limits and requests cpu/memory for the WES initContainer (busybox) |
 | wes.resources | string | Set limits and requests cpu/memory for the WES container |
 | wes.netrc | string | login name for accessing the sFTP server |
