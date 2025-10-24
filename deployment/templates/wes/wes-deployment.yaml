@@ -12,11 +12,24 @@ spec:
       labels:
         app: {{ .Values.wes.appName }}
     spec:
+      {{- if eq .Values.storageAccessMode "ReadWriteOnce" }}
+      affinity:
+        podAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - {{ .Values.celeryWorker.appName }}
+            topologyKey: "kubernetes.io/hostname"
+      {{- end }}
       initContainers:
       - name: vol-init
         image: busybox
         command: [ 'mkdir' ]
         args: [ '-p', '/data/db', '/data/output', '/data/tmp' ]
+        resources: {{- toYaml .Values.wes.initResources | nindent 10 }}
         volumeMounts:
         - mountPath: /data
           name: wes-volume
@@ -37,17 +50,17 @@ spec:
         - name: MONGO_USERNAME
           valueFrom:
             secretKeyRef:
-              key: database-user
+              key: databaseUser
               name: {{ .Values.mongodb.appName }}
         - name: MONGO_PASSWORD
           valueFrom:
             secretKeyRef:
-              key: database-password
+              key: databasePassword
               name: {{ .Values.mongodb.appName }}
         - name: MONGO_DBNAME
           valueFrom:
             secretKeyRef:
-              key: database-name
+              key: databaseName
               name: {{ .Values.mongodb.appName }}
         - name: RABBIT_HOST
           value: {{ .Values.rabbitmq.appName }}
@@ -64,13 +77,7 @@ spec:
             port: wes-port
           initialDelaySeconds: 3
           periodSeconds: 3
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "300m"
-          limits:
-            memory: "8Gi"
-            cpu: "2"
+        resources: {{- toYaml .Values.wes.resources | nindent 10 }}
         ports:
         - containerPort: 8080
           name: wes-port
