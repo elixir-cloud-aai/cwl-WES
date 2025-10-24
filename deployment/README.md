@@ -103,7 +103,7 @@ See [`values.yaml`](values.yaml) for default values.
 | autocert.schedule | string | schedule for certificate refreshment |
 | autocert.testCert | string | whether to use Let's Encrypt staging so as not to exceed quota |
 | flower.appName | string | Name for the flower app |
-| flower.basicAuth | string | Set the username and password for the Flowe app |
+| flower.basicAuth | string | Set the username and password for the Flower app |
 | flower.image | string | Container image to be used for Flower |
 | wes.appName | string | name of the main application on Kubernetes cluster |
 | wes.image | string | containger image to be used for the main application |
