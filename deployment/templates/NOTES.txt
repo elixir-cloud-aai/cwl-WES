@@ -1,0 +1,11 @@
+Elixir Cloud cwl-WES is being deployed!
+
+Once deployed:
+
+  1. Access the API via https://{{ .Values.wes.appName }}.{{ .Values.applicationDomain }}/ga4gh/wes/v1/
+
+     To test the connection, you can run:
+
+       curl -X GET "https://{{ .Values.wes.appName }}.{{ .Values.applicationDomain }}/ga4gh/wes/v1/service-info" -H "Accept: application/json"
+
+  2. Access the Swagger UI via https://{{ .Values.wes.appName }}.{{ .Values.applicationDomain }}/ga4gh/wes/v1/ui
