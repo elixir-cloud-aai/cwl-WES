@@ -1,6 +1,6 @@
 apiVersion: v2
-name: drs-filer
-description: A Helm chart for deploying a DRS (Data Repository Service) filer on Kubernetes, facilitating efficient data storage and retrieval.
+name: cwlwes
+description: A cwl-WES Helm chart for Kubernetes.
 type: application
 version: 2.0.0
 appVersion: 2.0.0
