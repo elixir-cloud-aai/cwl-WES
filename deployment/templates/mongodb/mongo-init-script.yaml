@@ -1,0 +1,41 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mongo-init-script
+data:
+  init-script.js: |
+    db = db.getSiblingDB('cwl-wes-db');
+    dbCWLWES = db.getSiblingDB('{{ tpl .Values.mongodb.secret.databaseName . }}')
+
+    dbCWLWES.createUser({
+      user: "{{ tpl .Values.mongodb.secret.databaseUser . }}",
+      pwd: "{{ tpl .Values.mongodb.secret.databasePassword . }}",
+      roles: [
+        {
+          role: "readWrite",
+          db: "{{ tpl .Values.mongodb.secret.databaseName . }}"
+        }
+      ]
+    });
+
+    // Create the 'runs' and 'service_info' collections
+    // Database configuration from https://github.com/elixir-cloud-aai/cwl-WES/blob/b4c6d431090f2db580c89e085f290f5e498f85f9/cwl_wes/config.yaml#L33
+    db.createCollection('runs');
+    db.runs.createIndex(
+      { run_id: 1, task_id: 1 },
+      { unique: true, sparse: true }
+    );
+    db.createCollection('service_info');
+    db.service_info.createIndex(
+      { id: 1 }
+    );
+
+    dbCWLWES.createCollection('runs');
+    dbCWLWES.runs.createIndex(
+      { run_id: 1, task_id: 1 },
+      { unique: true, sparse: true }
+    );
+    dbCWLWES.createCollection('service_info');
+    dbCWLWES.service_info.createIndex(
+      { id: 1}
+    );

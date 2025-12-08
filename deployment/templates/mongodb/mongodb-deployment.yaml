@@ -28,25 +28,30 @@ spec:
       {{ end }}
       containers:
         - env:
-          - name: MONGODB_USER
+          - name: MONGO_INITDB_ROOT_USERNAME
             valueFrom:
               secretKeyRef:
-                key: database-user
+                key: databaseRootUsername
                 name: {{ .Values.mongodb.appName }}
-          - name: MONGODB_PASSWORD
+          - name: MONGO_INITDB_ROOT_PASSWORD
             valueFrom:
               secretKeyRef:
-                key: database-password
+                key: databaseRootPassword
                 name: {{ .Values.mongodb.appName }}
-          - name: MONGODB_ADMIN_PASSWORD
+          - name: MONGO_INITDB_DATABASE
             valueFrom:
               secretKeyRef:
-                key: database-admin-password
+                key: databaseName
                 name: {{ .Values.mongodb.appName }}
-          - name: MONGODB_DATABASE
+          - name: MONGO_APP_USERNAME
             valueFrom:
               secretKeyRef:
-                key: database-name
+                key: databaseUser
+                name: {{ .Values.mongodb.appName }}
+          - name: MONGO_APP_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: databasePassword
                 name: {{ .Values.mongodb.appName }}
           image: {{ .Values.mongodb.image }}
           imagePullPolicy: IfNotPresent
@@ -69,26 +74,28 @@ spec:
                 - '-i'
                 - '-c'
                 - >-
-                  mongo 127.0.0.1:27017/$MONGODB_DATABASE -u $MONGODB_USER -p
-                  $MONGODB_PASSWORD --eval="quit()"
+                  mongosh --host 127.0.0.1:27017 -u $MONGO_INITDB_ROOT_USERNAME -p $MONGO_INITDB_ROOT_PASSWORD --authenticationDatabase admin $MONGO_INITDB_DATABASE --eval="quit()" 
             failureThreshold: 3
-            initialDelaySeconds: 3
+            initialDelaySeconds: 30
             periodSeconds: 10
             successThreshold: 1
-            timeoutSeconds: 1
-          resources:
-            limits:
-              memory: 512Mi
+            timeoutSeconds: 50
+          resources: {{- toYaml .Values.mongodb.resources | nindent 12 }}
           {{ if eq .Values.clusterType "kubernetes" }}
           securityContext:
             runAsNonRoot: {{ .Values.mongodb.securityContext.runAsNonRoot }}
             runAsUser: {{ .Values.mongodb.securityContext.runAsUser }}
           {{ end }}
           volumeMounts:
-            - mountPath: /var/lib/mongodb/data
+            - mountPath: {{ .Values.mongodb.mountPath }}
               name: mongodb-data
+            - name: init-script
+              mountPath: /docker-entrypoint-initdb.d/init-script.js
+              subPath: init-script.js
       volumes:
         - name: mongodb-data
           persistentVolumeClaim:
             claimName: {{ .Values.mongodb.appName }}-volume
-
+        - name: init-script
+          configMap:
+            name: mongo-init-script
