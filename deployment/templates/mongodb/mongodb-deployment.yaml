@@ -54,7 +54,7 @@ spec:
                 key: databasePassword
                 name: {{ .Values.mongodb.appName }}
           image: {{ .Values.mongodb.image }}
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Values.mongodb.pullPolicy | quote }}
           livenessProbe:
             failureThreshold: 3
             initialDelaySeconds: 30
