@@ -164,7 +164,7 @@ wes:
 
 celeryWorker:
   appName: celery-worker
-  image: elixircloud/cwl-wes:latest
+  image: lvarin/cwl-wes:20220325
   initResources:
     limits:
       memory: 16Mi
