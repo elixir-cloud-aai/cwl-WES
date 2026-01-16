@@ -26,7 +26,7 @@ flower:
 
 wes:
   appName: csc-wes
-  image: elixircloud/cwl-wes:20250305
+  image: elixircloud/cwl-wes:20260116
   initResources:
     limits:
       memory: 16Mi
@@ -164,7 +164,7 @@ wes:
 
 celeryWorker:
   appName: celery-worker
-  image: lvarin/cwl-wes:20220325
+  image: elixircloud/cwl-wes:20260116
   initResources:
     limits:
       memory: 16Mi
