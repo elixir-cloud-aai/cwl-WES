@@ -6,4 +6,4 @@ gunicorn~=22.0
 py-tes~=0.4.2
 importlib-metadata==4.13.0
 yq==3.2.3
-setuptools<69
+setuptools~=78.1.1
